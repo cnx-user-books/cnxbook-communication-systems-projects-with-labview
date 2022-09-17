@@ -1,0 +1,490 @@
+<!--
+
+== title == 
+Intersymbol Interference (ISI) and the Eye Diagram 
+
+== keywords ==
+channel bandwidth
+delay distortion
+eye diagram
+eye pattern
+intersymbol interference
+ISI
+jitter
+LabVIEW
+noise margin
+raised cosine pulse
+rectangular pulse
+sinc pulse
+timing sensitivity
+
+== summary ==
+This project studies intersymbol interference (ISI) in an intuitive way by using a LabVIEW VI to simulate a pulse transmitter, 
+finite bandwidth channel, and received signaling waveform. Rectangular pulses are considered first to demonstrate the ISI problem, 
+and then two alternative pulse shapes are explored as a way to minimize ISI.  The eye diagram is also introduced in this project 
+as a visual aid to present the time-domain signaling waveform to promote understanding of the ISI phenomenon.
+-->
+
+<?xml version='1.0' standalone='yes' ?>
+<LVData>
+<Version>8.2</Version>
+
+<!--SUMMARY------------------------------------------------------>
+<String> <Name>sec</Name> <Val>Summary</Val> </String>
+
+<String> <Name>para</Name> <Val>
+		This project studies intersymbol interference (ISI) in an intuitive way by using a LabVIEW VI to simulate a pulse transmitter, 
+		finite bandwidth channel, and received signaling waveform. Rectangular pulses are considered first to demonstrate the ISI 
+		problem, and then two alternative pulse shapes are explored as a way to minimize ISI.  The eye diagram is also introduced in 
+		this project as a visual aid to present the time-domain signaling waveform to promote understanding of the ISI phenomenon.
+</Val> </String>
+
+
+<!--OBJECTIVES------------------------------------------------------>
+<String> <Name>secend</Name> <Val></Val> </String>
+<String> <Name>sec</Name> <Val>Objectives</Val> </String>
+
+<Cluster> <Name>list</Name> <NumElts>3</NumElts>
+<EW> <Name>type</Name> <Choice>Bulleted</Choice> <Choice>Enumerated</Choice> <Val>1</Val> </EW>
+<String> <Name>list name (optional)</Name> <Val></Val> </String>
+<Array> <Name>list items</Name> <Dimsize>4</Dimsize>
+	<String> <Name>String</Name> <Val>
+		Understand the root cause of intersymbol interference (ISI)
+	</Val> </String>
+	<String> <Name>String</Name> <Val>
+		Explain the significance of the sinc pulse and raised cosine pulse as a means to eliminate ISI
+	</Val> </String>
+	<String> <Name>String</Name> <Val>
+		Understand the construction of an eye diagram
+	</Val> </String>
+	<String> <Name>String</Name> <Val>
+		Be able to measure performance metrics (peak ISI, noise margin, jitter, and timing sensitivity) directly from the eye diagram
+	</Val> </String>
+</Array>
+</Cluster>
+
+
+
+
+<!--DELIVERABLES------------------------------------------------------>
+<String> <Name>secend</Name> <Val></Val> </String>
+<String> <Name>sec</Name> <Val>Deliverables</Val> </String>
+
+<Cluster> <Name>list</Name> <NumElts>3</NumElts>
+<EW> <Name>type</Name> <Choice>Bulleted</Choice> <Choice>Enumerated</Choice> <Val>1</Val> </EW>
+<String> <Name>list name (optional)</Name> <Val></Val> </String>
+<Array> <Name>list items</Name> <Dimsize>2</Dimsize>
+<String> <Name>String</Name> <Val>Summary write-up of your results</Val> </String>
+<String> <Name>String</Name> <Val>Any plots or diagrams requested</Val> </String>
+</Array>
+</Cluster>
+
+<Cluster> <Name>note</Name> <NumElts>2</NumElts>
+<EW> <Name>notetype</Name> <Choice>Note</Choice> <Choice>Important</Choice> <Val>0</Val> </EW>
+<String> <Name>text</Name> <Val>
+		You can easily export LabVIEW front-panel waveform plots directly to your report. Right-click on the waveform
+		indicator and choose "Export Simplified Image."
+</Val> </String>
+</Cluster>
+
+<!--SETUP------------------------------------------------------>
+<String> <Name>secend</Name> <Val></Val> </String>
+<String> <Name>sec</Name> <Val>Setup</Val> </String>
+
+<Cluster> <Name>list</Name> <NumElts>3</NumElts>
+<EW> <Name>type</Name> <Choice>Bulleted</Choice> <Choice>Enumerated</Choice> <Val>1</Val> </EW>
+<String> <Name>list name (optional)</Name> <Val></Val> </String>
+<Array> <Name>list items</Name> <Dimsize>1</Dimsize>
+<String> <Name>String</Name> <Val>LabVIEW 8.5 or later version</Val> </String>
+</Array>
+</Cluster>
+
+
+<!--TEXTBOOK LINKAGES------------------------------------------------------>
+<String> <Name>secend</Name> <Val></Val> </String>
+<String> <Name>sec</Name> <Val>Textbook Linkages</Val> </String>
+
+<String> <Name>para</Name> <Val>
+		Refer to the following textbooks for additional background on the project activities of this module;
+		see the "References" section below for publication details:
+</Val> </String>
+
+<Cluster> <Name>list</Name> <NumElts>3</NumElts>
+<EW> <Name>type</Name> <Choice>Bulleted</Choice> <Choice>Enumerated</Choice> <Val>0</Val> </EW>
+<String> <Name>list name (optional)</Name> <Val></Val> </String>
+<Array> <Name>list items</Name> <Dimsize>7</Dimsize>
+	<String><Name>String</Name><Val>Carlson, Crilly, and Rutledge -- Ch 11</Val></String>
+	<String><Name>String</Name><Val>Couch -- Ch 3</Val></String>
+	<String><Name>String</Name><Val>Haykin -- Ch 4</Val></String>
+	<String><Name>String</Name><Val>Haykin and Moher -- Ch 6</Val></String>
+	<String><Name>String</Name><Val>Proakis and Salehi (FCS) -- Ch 9</Val></String>
+	<String><Name>String</Name><Val>Proakis and Salehi (CSE) -- Ch 8</Val></String>
+	<String><Name>String</Name><Val>Stern and Mahmoud -- Ch 4</Val></String>
+</Array>
+</Cluster>
+
+
+
+<!--PREREQUISITE MODULES ------------------------------------------------------>
+<String> <Name>secend</Name> <Val></Val> </String>
+<String> <Name>sec</Name> <Val>Prerequisite Modules</Val> </String>
+<String> <Name>para</Name> <Val>
+		If you are relatively new to LabVIEW, consider taking the course 
+		{cnxn document=&quot;col10440&quot;}LabVIEW Techniques for Audio Signal Processing{/cnxn} 
+		which provides the foundation you need to complete this project activity, including:
+		block diagram editing techniques, essential programming structures, subVIs, arrays, and
+		audio. 
+</Val> </String>
+
+<!--INTRODUCTION------------------------------------------------------>
+<String> <Name>secend</Name> <Val></Val> </String>
+<String> <Name>sec</Name> <Val>Introduction</Val> </String>
+
+<String> <Name>para</Name> <Val>
+		Introductory digital logic courses present digital waveforms as essentially rectangular pulses. Indeed, the internal signals of a
+		digital integrated circuit ideally exist at one of two voltage levels (high and low), with minimal time spent changing from one
+		state to the other. Waveform displays from digital circuit simulators further emphasize the two-level rectangular shape of ideal
+		digital signals.
+
+		Rectangular pulses are not ideal for transmission through communication links, however, since communication channels
+		always restrict the bandwidth available between the transmitter and the receiver.  Rectangular signaling pulses contain significant
+		spectral energy across a wide frequency range due to the step-like transition between levels, and yet most communication
+		systems do not allocate nearly enough bandwidth to faithfully transmit these abrupt changes. Passing a rectangular pulse through a
+		limited-bandwidth channel distorts the pulse by "smearing" it -- that is, the pulse stretches out in time. The transmitter sends a
+		series of pulses to convey the message, therefore this time smearing causes {term}interference{/term} between adjacent
+		time slots (or {term}bit slots{/term}). This {term}intersymbol interference{/term} (abbreviated {term}ISI{/term}) adds extraneous
+		signal energy at the exact moments when a receiver's bit sampler decides whether a received bit should be called a logic "1" or a logic "0." 
+		ISI is not the same as additive random noise, but plays a similar role by reducing the {term}noise margin{/term}, i.e., the room for
+		error before the receiver's bit sampler makes an error.
+
+		This project studies intersymbol interference in an intuitive way by using a LabVIEW VI to simulate a pulse transmitter, finite bandwidth channel, 
+		and received signaling waveform. Rectangular pulses are considered first to demonstrate the ISI problem, and then 
+		two alternative pulse shapes are explored as a way to minimize ISI.
+
+		The {term}eye diagram{/term} is also introduced in this project as a visual aid to present the time-domain signaling waveform to promote understanding
+		of the ISI phenomenon. The eye diagram also reveals other key performance measures such as {term}noise margin{/term},
+		{term}timing jitter{/term}, and {term}timing sensitivity{/term}.
+</Val> </String>
+
+<!--VI Orientation------------------------------------------------------>
+<String> <Name>secend</Name> <Val></Val> </String>
+<String> <Name>sec</Name> <Val>ISI_and_EyeDiagram.vi</Val> </String>
+
+<String> <Name>para</Name> <Val>
+		{media type="image/png" src="LabVIEW.png"/} Download the LabVIEW VI {link src=&quot;ISI_and_EyeDiagram.vi&quot;}ISI_and_EyeDiagram.vi{/link},
+		an interactive tool to study various pulse shapes as they pass through a band-limited channel.
+
+		Open the VI which starts running automatically, and then view the {cnxn target=&quot;video-orientation&quot;/} 
+		screencast video for a short orientation tour of the VI.
+</Val> </String>
+
+<Cluster> <Name>video</Name> <NumElts>4</NumElts>
+<String> <Name>ID (optional)</Name> <Val>video-orientation</Val> </String>
+<String> <Name>video name</Name> <Val>orientation</Val> </String>
+<String> <Name>webpage title</Name> <Val>Orientation to "ISI_and_EyeDiagram.vi"</Val> </String>
+<String> <Name>caption</Name> <Val>Orientation tour of the "ISI_and_EyeDiagram.vi" LabVIEW VI</Val> </String>
+</Cluster>
+
+<!--Rectangle Pulse Shape------------------------------------------------------>
+<String> <Name>secend</Name> <Val></Val> </String>
+<String> <Name>sec</Name> <Val>Rectangle Pulse Shape</Val> </String>
+
+<String> <Name>para</Name> <Val>
+		Restore the front panel controls of "ISI_and_EyeDiagram.vi" to their default values by selecting "Edit | 
+		Reinitialize Values to Defaults." 
+
+		Set the {code type=&quot;inline&quot;}symbols{/code} control to 1 to produce a single rectangular pulse. The channel bandwidth should 
+		already be set to its maximum value of 0.49, which corresponds to essentially unlimited bandwidth. Note that this VI uses {term}normalized frequency{/term},
+		therefore the sampling frequency corresponds to 1 and the Nyquist frequency is 0.5.
+
+		Compare the "transmitted waveform" and the "received waveform" plots in the lower-right front panel. How well does the received pulse match the
+		transmitted pulse? Also, to what extent does the received pulse "spill out" of its designated time slot?
+
+		Decrease the channel bandwidth until you begin to observe noticeable pulse shape distortion. At what bandwidth does this occur?
+
+		Continue decreasing the channel bandwidth. What effects do you begin to observe?
+
+		Make a series of plots that show the progressive degradation of the rectangular pulse shape as the channel bandwidth is restricted.
+		Right-click on the plot and choose "Export Simplified Image" to copy the graph to the clipboard for pasting into your report.
+		Be sure to indicate the channel bandwidth for each plot.
+</Val> </String>
+
+<!--Sinc Pulse Shape------------------------------------------------------>
+<String> <Name>secend</Name> <Val></Val> </String>
+<String> <Name>sec</Name> <Val>Sinc Pulse Shape</Val> </String>
+
+<String> <Name>para</Name> <Val>
+		Restore the front panel controls of "ISI_and_EyeDiagram.vi" to their default values.
+
+		Set the {code type=&quot;inline&quot;}symbols{/code} control to 1 to produce a single pulse, and set the {code type=&quot;inline&quot;}bandwidth{/code} 
+		control to 0.02. The received pulse should show noticeable distortion.
+
+		Now set the {code type=&quot;inline&quot;}pulse shape{/code}  control to "Sinc." How much distortion is evident at the receiver? 
+		How much lower can you restrict the bandwidth while still preserving the basic sinc waveform shape?
+
+		The sinc function's ability to maintain its basic shape through a restricted channel bandwidth is important, but its true significance extends beyond this fact,
+		as explored in the next section.
+</Val> </String>
+
+
+<!--Multiple Pulses------------------------------------------------------>
+<String> <Name>secend</Name> <Val></Val> </String>
+<String> <Name>sec</Name> <Val>Multiple Pulses</Val> </String>
+
+<String> <Name>para</Name> <Val>
+		A transmitter converts a message, or sequence of bits, into a series of analog pulses to create the signaling waveform.
+		A receiver recovers the bitstream by periodically sampling the signaling waveform and comparing the sample to a threshold
+		value to decide "1" or "0."
+		Sinc-shaped pulse do not interfere with adjacent bit slots, {emphasis}provided{/emphasis} that the bit slots are sampled at
+		the correct instant in time.
+
+		To see this, reinitialize the front panel control values to their default settings, choose the "Sinc" pulse shape, and choose 2 symbols. Look carefully
+		at the transmitted and received pulses on the lower-left front panel plots. The white trace shows the first pulse in the sequence, while the red trace shows the
+		second pulse in the sequence. The first pulse has an amplitude of +1, while the second pulse has an amplitude of -1, corresponding to a bit sequence "10";
+		refer to the {code type=&quot;inline&quot;}message bitstream{/code} indicator to confirm that the first bit is {code type=&quot;inline&quot;}T{/code} (green LED indicator active)
+		and the second bit is {code type=&quot;inline&quot;}F{/code} (inactive LED indicator).
+
+		The waveform plots on the lower-right front panel show the actual transmitted and received waveforms, which superimpose (i.e., add) the individual pulses together.
+		The plots on the lower-left front panel illustrate the contribution of each individual pulse.
+
+		Look carefully at the time 450 samples, in which the second (red) pulse is at its most negative value. What is the value of the first (white) pulse
+		at this instant? Hopefully you can see that it is {emphasis}zero{/emphasis}, indicating that the first (white) pulse produces {emphasis}zero interference{/emphasis} 
+		at the instant the second (red) pulse attains its maximum absolute value.
+
+		Now, increase the number of symbols to 3, and also to higher values. Study the waveforms to convince yourself that even though a single sinc pulse 
+		extends over many bit time intervals, the contribution of all adjacent pulses is always zero at the moment that a given sinc pulse attains its
+		maximum absolute value. Therefore, the sinc pulse shape achieves zero ISI when properly sampled.
+
+		Make a series of plots from the "received pulses" waveform display and explain your understanding of the sinc pulse shape and its ability to achieve
+		zero ISI.
+
+		Restrict the channel bandwidth to 0.02, and confirm that the sinc pulses remain essentially unchanged. Now, set the pulse shape to "Rectangular." 
+		Set the {code type=&quot;inline&quot;}symbols{/code} control to 2 and study the lower-left front panel plots. Identify where the second (red) 
+		pulse attains its maximum absolute value. How much interference is present from the first (white) pulse?
+
+		Make a series of plots from the "received pulses" waveform display and explain your understanding of the rectangle pulse shape and its
+		susceptibility to intersymbol interference.
+</Val> </String>
+
+<!--Eye Diagram------------------------------------------------------>
+<String> <Name>secend</Name> <Val></Val> </String>
+<String> <Name>sec</Name> <Val>Eye Diagram</Val> </String>
+
+<String> <Name>para</Name> <Val>
+		Study the transmitted and received waveform plots on the lower-right front panel as you increase the number of symbols to 40, and try this for the two pulse
+		shapes considered so far. Also try varying the channel bandwidth. The received signaling waveform is reasonably easy to understand for
+		rectangle pulses, but is rather difficult to interpret when sinc pulses are used. For example, you should
+		find that you can easily correlate the "message bitstream" sequence with the high and low regions
+		in the received waveform when rectangular pulse shapes are transmitted; the correlation is more difficult when sinc pulses are used.
+
+		The {term}eye diagram{/term} provides a powerful visualization tool to interpret the behavior of the received waveform regardless of the pulse shape.
+		The {cnxn target=&quot;video-eyedgm&quot;/} screencast video continues the discussion by explaining the eye diagram plot
+		on the upper-right front panel of "ISI_and_EyeDiagram." Follow along with video, matching the front panel controls of "ISI_and_EyeDiagram.vi"
+		to those of the video.
+</Val> </String>
+
+<Cluster> <Name>video</Name> <NumElts>4</NumElts>
+<String> <Name>ID (optional)</Name> <Val>video-eyedgm</Val> </String>
+<String> <Name>video name</Name> <Val>eyedgm</Val> </String>
+<String> <Name>webpage title</Name> <Val>Eye diagram explained</Val> </String>
+<String> <Name>caption</Name> <Val>Explanation of the eye diagram plot in the "ISI_and_EyeDiagram.vi" LabVIEW VI</Val> </String>
+</Cluster>
+
+<String> <Name>para</Name> <Val>
+		The eye diagram reveals important performance metrics for a communication link, including {term}noise margin{/term}, {term}ISI{/term},
+		{term}timing sensitivity{/term}, and {term}zero-crossing jitter{/term}. In addition, the eye diagram shows the optimum sampling time for the
+		receiver to regenerate a bitstream from the received signaling waveform.
+		View the {cnxn target=&quot;video-eyemetrics&quot;/} screencast video to learn how to measure these performance metrics and how to determine
+		the optimum sampling time.
+</Val> </String>
+
+<Cluster> <Name>video</Name> <NumElts>4</NumElts>
+<String> <Name>ID (optional)</Name> <Val>video-eyemetrics</Val> </String>
+<String> <Name>video name</Name> <Val>eyemetrics</Val> </String>
+<String> <Name>webpage title</Name> <Val>Eye diagram metrics</Val> </String>
+<String> <Name>caption</Name> <Val>Measuring noise margin, ISI, timing sensitivity, zero-crossing jitter, and optimum sampling time using an eye diagram</Val> </String>
+</Cluster>
+
+<!--Eye Diagram Measurements------------------------------------------------------>
+<String> <Name>secend</Name> <Val></Val> </String>
+<String> <Name>sec</Name> <Val>Eye Diagram Measurements</Val> </String>
+
+<String> <Name>para</Name> <Val>
+		{cnxn target=&quot;figure-genericeye&quot;/} illustrates a generic eye pattern superimposed on a measured eye diagram plot 
+		and summarizes the definition of the various performance
+		metrics discussed earlier. Use these definitions for the following measurements.
+</Val> </String>
+
+<Cluster> <Name>image</Name> <NumElts>3</NumElts>
+<String> <Name>ID (optional)</Name> <Val>figure-genericeye</Val> </String>
+<String> <Name>name</Name> <Val>genericeye</Val> </String>
+<String> <Name>caption</Name> <Val>Generic eye pattern and definition of performance metrics</Val> </String>
+</Cluster>
+
+
+	<!--Eye Diagram Measurements: Rectangle Pulse------------------------------------------------------>
+	<String> <Name>sec</Name> <Val>Rectangle Pulse</Val> </String>
+
+<String> <Name>para</Name> <Val>
+		Restore the front panel controls of "ISI_and_EyeDiagram.vi" to their default values, and set the {code type=&quot;inline&quot;}symbols{/code} control
+		to 40. Vary the channel bandwidth and observe its effect on the eye diagram plot, and then set the channel bandwidth to 0.05. Increase the
+		eye diagram {code type=&quot;inline&quot;}start time{/code} to 245 samples to center the eye in the plot window.
+
+		Export the eye diagram plot to a piece of paper, and then use the eye diagram cursor as a tool to measure the following (show and label the relevant distances
+		you measured on your hardcopy plot):
+</Val> </String>
+
+<Cluster> <Name>list</Name> <NumElts>3</NumElts>
+<EW> <Name>type</Name> <Choice>Bulleted</Choice> <Choice>Enumerated</Choice> <Val>1</Val> </EW>
+<String> <Name>list name (optional)</Name> <Val></Val> </String>
+<Array> <Name>list items</Name> <Dimsize>4</Dimsize>
+	<String> <Name>String</Name> <Val>
+			Optimum sampling time; report this as the number of samples from the nearest zero crossing
+	</Val> </String>
+	<String> <Name>String</Name> <Val>
+			Peak ISI
+	</Val> </String>
+	<String> <Name>String</Name> <Val>
+			Zero crossing jitter; report this as the maximum variation in time samples
+	</Val> </String>
+	<String> <Name>String</Name> <Val>
+			Noise margin
+	</Val> </String>
+</Array>
+</Cluster>
+
+	<!--Eye Diagram Measurements: Sinc Pulse------------------------------------------------------>
+	<String> <Name>secend</Name> <Val></Val> </String>
+	<String> <Name>sec</Name> <Val>Sinc Pulse</Val> </String>
+
+<String> <Name>para</Name> <Val>
+		Ensure that the front panel controls of "ISI_and_EyeDiagram.vi" are the same as in the previous step, and then select the "Sinc" pulse shape. Adjust
+		the eye diagram {code type=&quot;inline&quot;}start time{/code} and {code type=&quot;inline&quot;}time span{/code} to maximize the number of displayed bit intervals
+		and also to avoid the initial startup transient that causes lines to cross through the center of the eye; also make adjustments to place the maximum
+		eye opening at the center of the plot window.
+		<!-- start time = 470 works well -->
+
+		As in the previous step, export the eye diagram plot to a piece of paper, and then use the eye diagram cursor as a tool to measure the following 
+		(show and label the relevant distances you measured on your hardcopy plot):
+</Val> </String>
+
+<Cluster> <Name>list</Name> <NumElts>3</NumElts>
+<EW> <Name>type</Name> <Choice>Bulleted</Choice> <Choice>Enumerated</Choice> <Val>1</Val> </EW>
+<String> <Name>list name (optional)</Name> <Val></Val> </String>
+<Array> <Name>list items</Name> <Dimsize>5</Dimsize>
+	<String> <Name>String</Name> <Val>
+			Peak ISI
+	</Val> </String>
+	<String> <Name>String</Name> <Val>
+			ISI at the optimum sampling time
+	</Val> </String>
+	<String> <Name>String</Name> <Val>
+			Zero crossing jitter; report this as the maximum variation in time samples
+	</Val> </String>
+	<String> <Name>String</Name> <Val>
+			Noise margin
+	</Val> </String>
+	<String> <Name>String</Name> <Val>
+			Timing error sensitivity; report this in terms of time samples
+	</Val> </String>
+</Array>
+</Cluster>
+
+	<!--Eye Diagram Measurements: Raised Cosine Pulse------------------------------------------------------>
+	<String> <Name>secend</Name> <Val></Val> </String>
+	<String> <Name>sec</Name> <Val>Raised Cosine Pulse</Val> </String>
+
+<String> <Name>para</Name> <Val>
+		Keep the front panel controls of "ISI_and_EyeDiagram.vi" at the same settings you used for the previous "Sinc" pulse measurements, and then
+		select the "Raised Cosine" pulse shape. You should expect to see the maximum eye opening remain centered in the eye diagram plot.
+
+		As in the previous steps, export the eye diagram plot to a piece of paper, and then use the eye diagram cursor as a tool to measure the 
+		the same five metrics as for the "Sinc" pulse. Show and label the relevant distances you measured on your hardcopy plot.
+
+		Compare your results for the raised cosine pulse and the sinc pulse. What appears to be advantageous about the raised cosine pulse shape?
+
+		See the video screencast in {cnxn document=&quot;m18566&quot;}pam_RaisedCosinePulse.vi{/cnxn} for more background about the raised cosine pulse, the
+		most widely-used pulse shape in digital communication systems.
+</Val> </String>
+
+<String> <Name>secend</Name> <Val></Val> </String>
+
+<!--Noise------------------------------------------------------>
+<String> <Name>secend</Name> <Val></Val> </String>
+<String> <Name>sec</Name> <Val>Noise</Val> </String>
+
+<String> <Name>para</Name> <Val>
+		Add random channel noise to the received waveform by moving the {code type=&quot;inline&quot;}noise standard deviation{/code} control away from zero.
+		Note how the eye pattern begins to close as the noise level increases. 
+
+		Report the noise standard deviation value at which the eye just begins to close completely for each of the three pulse shapes. Make hardcopy plots
+		of the eye diagram for each value that you report.
+</Val> </String>
+
+<!--Channel Filter------------------------------------------------------>
+<String> <Name>secend</Name> <Val></Val> </String>
+<String> <Name>sec</Name> <Val>Channel Filter</Val> </String>
+
+<String> <Name>para</Name> <Val>
+		"ISI_and_EyeDiagram.vi" uses a 10th-order IIR lowpass filter to model the limited-bandwidth channel. This type of filter is fairly realistic, and
+		produces {term}delay distortion{/term}, an effect caused by the filter's nonlinear phase response. Delay distortion causes the various signal frequency
+		components to arrive at the receiver at different times, and can severely distort the originally-transmitted pulse shape.
+
+		Engage the {code type=&quot;inline&quot;}FIR{/code} pushbutton control to select a linear-phase FIR filter that does not introduce delay distortion.
+</Val> </String>
+
+<!--Final Comments------------------------------------------------------>
+<String> <Name>secend</Name> <Val></Val> </String>
+<String> <Name>sec</Name> <Val>Final Comments</Val> </String>
+
+<String> <Name>para</Name> <Val>
+		The {code type=&quot;inline&quot;}seed{/code} front-panel control in the "Pulses" section primes the random number generator that creates the
+		message bitstream. Feel free to try other seed values to produce other bit sequences for the message.
+
+		"ISI_and_EyeDiagram.vi" uses two programming techniques that you may wish to investigate further, namely, an {term}event structure{/term} and
+		{term}property nodes{/term}. Type Ctrl+E to show the block diagram window, and observe the event structure within the while-loop structure. The
+		event structure only "fires" when a front-panel control value changes; the CPU does not do any work except to instantly respond to 
+		front-panel activity. The event structure makes the VI very responsive to user input, but does not burden the CPU as would a plain while-loop.
+
+		The property nodes allow front panel controls and indicators to be programmatically controlled. For example, changing the value of the
+		{code type=&quot;inline&quot;}samples{/code} front-panel control causes the upper limit of {code type=&quot;inline&quot;}start time{/code} to
+		automatically change to the same value.
+</Val> </String>
+
+
+<!--REFERENCES------------------------------------------------------>
+<String> <Name>secend</Name> <Val></Val> </String>
+<String> <Name>sec</Name> <Val>References</Val> </String>
+
+<Cluster> <Name>list</Name> <NumElts>3</NumElts>
+<EW> <Name>type</Name> <Choice>Bulleted</Choice> <Choice>Enumerated</Choice> <Val>1</Val> </EW>
+<String> <Name>list name (optional)</Name> <Val></Val> </String>
+<Array> <Name>list items</Name> <Dimsize>7</Dimsize>
+	<String><Name>String</Name><Val>
+		Carlson, A. Bruce, Paul B. Crilly, and Janet C. Rutledge, "Communication Systems," 4th ed., McGraw-Hill, 2002. ISBN-13: 978-0-07-011127-1
+	</Val></String>
+	<String><Name>String</Name><Val>
+		Couch, Leon W. II, "Digital and Analog Communication Systems," 7th ed., Pearson Prentice Hall, 2007. ISBN-10: 0-13-142492-0
+	</Val></String>
+	<String><Name>String</Name><Val>
+		Haykin, Simon. "Communication Systems," 4th ed., Wiley, 2001. ISBN-10: 0-471-17869-1
+	</Val></String>
+	<String><Name>String</Name><Val>
+		Haykin, Simon, and Michael Moher, "Introduction to Analog and Digital Communication Systems," 2nd ed., Wiley, 2007. ISBN-13: 978-0-471-43222-7
+	</Val></String>
+	<String><Name>String</Name><Val>
+		Proakis, John G., and Masoud Salehi, "Fundamentals of Communication Systems," Pearson Prentice Hall, 2005. ISBN-10: 0-13-147135-X
+	</Val></String>
+	<String><Name>String</Name><Val>
+		Proakis, John G., and Masoud Salehi, "Communication Systems Engineering," 2nd ed., Pearson Prentice Hall, 2002. ISBN-10: 0-13-061793-8
+	</Val></String>
+	<String><Name>String</Name><Val>
+		Stern, Harold P.E., and Samy A. Mahmoud, "Communication Systems," Pearson Prentice Hall, 2004. ISBN-10: 0-13-040268-0
+	</Val></String>
+</Array>
+</Cluster>
+
+<String> <Name>secend</Name> <Val></Val> </String>
+
+</LVData>
+

@@ -1,0 +1,271 @@
+<document xmlns="http://cnx.rice.edu/cnxml">
+  <title>Introduction to the LabVIEW Modulation Toolkit</title>
+<metadata xmlns:md="http://cnx.rice.edu/mdml">
+  <md:content-id>m18715</md:content-id>
+  <md:title>Introduction to the LabVIEW Modulation Toolkit</md:title>
+  <md:abstract>The LabVIEW Modulation Toolkit is an optional add-on to LabVIEW that offers a wide variety of
+subVIs to quickly and efficiently implement digital and analog communication systems. Many different
+modulation schemes are supported (PAM, ASK, PSK, FSK, QAM, CPM, and MSK), as are channel impairment
+models, channel coding, and visualizations such as constellation plots, eye diagrams, and trellis diagrams.
+This module introduces the toolkit with several demonstrations, and shows how to re-implement existing
+LabVIEW communication systems projects with the toolkit.</md:abstract>
+  <md:uuid>7f321d05-c020-4c36-a088-8332fbb31ed3</md:uuid>
+</metadata>
+<content>
+
+<table id="labview_banner" frame="none" summary=""><tgroup cols="2">
+<colspec rowsep="0" colsep="0"/> <colspec colwidth="6in" rowsep="0" colsep="0"/>
+<tbody>
+  <row>
+    <entry morerows="3"><media id="idp5164640" alt=""><image src="../../media/LabVIEWtop.png" mime-type="image/png"/></media></entry>
+    <entry> This module refers to LabVIEW, a software development environment that features a graphical programming language.
+       Please see the <link document="m15428">LabVIEW QuickStart Guide</link> module for tutorials and documentation that will help you:</entry>
+  </row>
+  <row> <entry>• Apply LabVIEW to Audio Signal Processing </entry> </row>
+  <row> <entry>• Get started with LabVIEW</entry> </row>
+  <row> <entry>• Obtain a fully-functional evaluation edition of LabVIEW</entry> </row>
+</tbody>
+</tgroup>
+</table>
+
+<note id="idp7954496">
+Visit <link document="m17319">LabVIEW Setup</link> to learn how to adjust your own LabVIEW environment to match the settings used by the LabVIEW screencast video(s) in this module.
+Click the "Fullscreen" button at the lower right corner of the video player if the video does not fit properly within your browser window.
+</note>
+
+<section id="sec1">
+<title>Introduction</title>
+
+<para id="par2">
+		The LabVIEW Modulation Toolkit is an optional add-on to LabVIEW that offers a wide variety of subVIs to 
+		quickly and efficiently implement digital and analog communication systems. The toolkit subVIs 
+		combine to create many modulation schemes including ASK (amplitude shift keying), PAM (pulse amplitude modulation), 
+		QAM (quadrature amplitude modulation), FSK (frequency shift keying), 
+		MSK (minimum shift keying, a variant of FSK), PSK (phase shift keying), and CPM (continuous phase modulation). 
+		Channel impairments simulate various real-world troubles, including additive white Gaussian noise (AWGN), 
+		phase noise (also called jitter), fading, multi-tone interference, and quadrature inaccuracies. 
+		Standard visualization tools such as constellation plots, eye diagrams, and trellis diagrams are 
+		available, as are standard measurement tools for bit error rate (BER), quadrature impairments, 
+		burst timing, and modulation quality. Channel coding with linear block codes and convolutional codes is 
+		supported, as well as direct sequence spread spectrum (DSSS). Channel equalization is available to correct inter-symbol interference (ISI).</para>
+
+<para id="par3">		The <link target-id="video-palettes"/> screencast video continues the introducation to the 
+		LabVIEW Modulation Toolkit with a quick walk-through of the various subVI palettes.
+</para>
+
+<figure id="video-palettes"><title><link url="https://youtu.be/uLhCyRVw4ic" window="new">https://youtu.be/uLhCyRVw4ic</link> (7:29)</title><media id="eip-idm358270784" display="block" alt="Insert alt text here"><video mime-type="video/mpeg" src="https://www.youtube.com/embed/uLhCyRVw4ic?rel=0" autoplay="false" width="640" height="460"/></media>
+
+
+<caption>[video] Tour of the LabVIEW Modulation Toolkit subVI palettes
+</caption></figure></section>
+
+<section id="sec5">
+<title>Complex Baseband Concept</title>
+
+<para id="par6">
+		The Modulation Toolkit uses complex baseband to represent signaling waveforms. All modulation schemes can be represented 
+		in this common mathematical notation. The real part of the complex signal is called the in-phase component and denoted I, 
+		while the imaginary part of the signal is called the quadrature component and denoted Q. 
+		
+		The <link target-id="video-complexbaseband"/> screencast video explains the mathematical foundation of the complex baseband concept, and describes how 
+		several different modulation schemes can all be conveniently represented in this notation.
+</para>
+
+<figure id="video-complexbaseband"><title><link url="https://youtu.be/PCZzLmuSG3w" window="new">https://youtu.be/PCZzLmuSG3w</link> (4:38)</title><media id="eip-idm256757216" display="block" alt="Insert alt text here"><video mime-type="video/mpeg" src="https://www.youtube.com/embed/PCZzLmuSG3w?rel=0" autoplay="false" width="640" height="460"/></media>
+<caption>[video] Explanation of the complex baseband concept
+</caption></figure></section>
+
+<section id="sec8">
+<title>Demonstrations</title>
+
+<para id="par9">
+		The LabVIEW Modulation Toolkit offers a powerful way to quickly implement and explore a wide variety of 
+		digital communication systems. A good working knowledge of digital modulation schemes is prerequisite to 
+		effective use of the toolkit, however. Working through the detailed implementations of the projects 
+		<link document="m18670">Texting Over the Speaker-Air-Microphone (SAM) Channel</link>,
+		<link document="m18663">Hamming Block Code Channel Encoder</link>,
+		<link document="m18665">Hamming Block Code Channel Decoder</link>,
+		and <link document="m18708">Caller ID Decoder</link> will give you the experience necessary to make intelligent use of the toolkit. 
+		
+		This section shows how an existing project can be re-implemented using the Modulation Toolkit, and then be 
+		quickly modified to try another modulation scheme. In addition, this section illustrates how a modulation scheme 
+		can be studied within LabVIEW to improve insight and understanding of the scheme.
+</para>
+
+<section id="sec10">
+<title>BASK Transmitter</title>
+
+<para id="par11">
+		The <link document="m18668">Binary ASK Transmitter</link> project implemented two-level amplitude shift keying (ASK) 
+		for transmission over a speaker-air-microphone (SAM) channel. The time-domain signaling waveform and associated 
+		power spectral density were also visualized in this project. The <link target-id="video-basktransmitter"/> screencast 
+		video shows how to re-implement this project with components from the LabVIEW Modulation Toolkit.
+</para>
+
+<figure id="video-basktransmitter"><title><link url="https://youtu.be/0dGoEdo1bec" window="new">https://youtu.be/0dGoEdo1bec</link> (10:15)</title><media id="eip-idm580839936" display="block" alt="Insert alt text here"><video mime-type="video/mpeg" src="https://www.youtube.com/embed/0dGoEdo1bec?rel=0" autoplay="false" width="640" height="460"/></media>
+<caption>[video] Re-implement the BASK transmitter with components from the LabVIEW Modulation Toolkit
+</caption></figure></section>
+
+<section id="sec13">
+<title>Alternative Transmitter Modulation Schemes</title>
+
+<para id="par14">
+		Once a particular modulation scheme has been implemented with Modulation Toolkit components, other modulation schemes can be explored with minimal effort. 
+		For example, the following screencast videos show how to convert the binary ASK scheme to multilevel ASK (<link target-id="video-mask"/>),
+		and then to binary PSK (<link target-id="video-bpsk"/>), and finally to quadrature PSK (QPSK) (<link target-id="video-qpsk"/>).
+</para>
+
+<figure id="video-mask"><title><link url="https://youtu.be/75zi35T8DEo" window="new">https://youtu.be/75zi35T8DEo</link> (3:05)</title><media id="eip-idm1273310928" display="block" alt="Insert alt text here"><video mime-type="video/mpeg" src="https://www.youtube.com/embed/75zi35T8DEo?rel=0" autoplay="false" width="640" height="460"/></media>
+
+
+<caption>[video] Convert the binary ASK transmitter to multi-level ASK
+</caption></figure><figure id="video-bpsk"><title><link url="https://youtu.be/6n1Nm4v2N0k" window="new">https://youtu.be/6n1Nm4v2N0k</link> (2:21)</title><media id="eip-idm453561728" display="block" alt="Insert alt text here"><video mime-type="video/mpeg" src="https://www.youtube.com/embed/6n1Nm4v2N0k?rel=0" autoplay="false" width="640" height="460"/></media>
+
+
+<caption>[video] Convert the binary ASK transmitter to binary PSK
+</caption></figure><figure id="video-qpsk"><title><link url="https://youtu.be/pWLhFbHRqEU" window="new">https://youtu.be/pWLhFbHRqEU</link> (3:34)</title><media id="eip-idm698471504" display="block" alt="Insert alt text here"><video mime-type="video/mpeg" src="https://www.youtube.com/embed/pWLhFbHRqEU?rel=0" autoplay="false" width="640" height="460"/></media>
+
+
+<caption>[video] Convert the binary PSK transmitter to quadrature PSK (QPSK)
+</caption></figure></section>
+
+<section id="sec18">
+<title>QAM Exploration</title>
+
+<para id="par19">
+		Quadrature amplitude modulation (QAM) is the modulation scheme used by modern dial-up modems.
+		Your textbook includes a section on QAM and explains the mathematical foundation for this scheme. 
+		The <link target-id="video-qam"/> screencast video shows how you can quickly develop deeper insight into a 
+		modulation scheme such as QAM by visualizing how a bitstream maps to a signaling waveform, and by visualizing the 
+		complex baseband signal as a constellation plot.
+</para>
+
+<figure id="video-qam"><title><link url="https://youtu.be/kXAxeJuVVfg" window="new">https://youtu.be/kXAxeJuVVfg</link> (13:38)</title><media id="eip-idm259665552" display="block" alt="Insert alt text here"><video mime-type="video/mpeg" src="https://www.youtube.com/embed/kXAxeJuVVfg?rel=0" autoplay="false" width="640" height="460"/></media>
+
+
+<caption>[video] Exploring the QAM modulation scheme
+</caption></figure></section>
+
+</section>
+
+<section id="sec21">
+<title>Project Ideas</title>
+
+<para id="par22">
+		The LabVIEW Modulation Toolkit greatly simplifies the implementation effort for many types of
+		modulation schemes. Try one or more of the following project activities to make interesting and
+		practical communication systems using the toolkit:
+</para>
+
+<list id="list23" list-type="enumerated">
+
+<item> 
+			Implement the project <link document="m18670">Texting Over the Speaker-Air-Microphone (SAM) Channel</link> 
+			with Modulation Toolkit subVIs, specifically those for binary ASK. Confirm that you can obtain the same results
+			as on the original version.
+	 </item>
+<item> 
+			Implement the project <link document="m18670">Texting Over the Speaker-Air-Microphone (SAM) Channel</link> 
+			with Modulation Toolkit subVIs, and try other modulation schemes such as M-ary ASK, PSK, FSK, and QAM. Compare the
+			spectra of the various schemes, and study the impact of channel noise for schemes with a high number of bits per symbol.
+	 </item>
+<item> 
+			Implement the projects <link document="m18663">Hamming Block Code Channel Encoder</link> and
+			<link document="m18665">Hamming Block Code Channel Decoder</link> using the block coding subVIs from the Modulation Toolkit.
+			Pick a modulation scheme and introduce channel impairments, and then measure the bit error rate with and without 
+			block coding.
+	 </item>
+<item> 
+			Implement the <link document="m18708">Caller ID Decoder</link> project using the FSK-related subVIs from the
+			Modulation Toolkit.
+	 </item>
+
+</list>
+
+</section>
+
+<section id="sec24">
+<title>Additional Project Resources</title>
+
+<para id="par25">
+		The National Instruments Developer Zone offers twenty-two software simulation and examples that explore a wide variety of communication
+		systems concepts. Some of these examples require the LabVIEW Modulation Toolkit, while others do not.
+		Visit <link url="http://zone.ni.com/devzone/cda/tut/p/id/6037#software">http://zone.ni.com/devzone/cda/tut/p/id/6037#software</link> 
+		to access these projects, which include:
+</para>
+
+<list id="list26" list-type="enumerated">
+
+<item> 
+			Amplitude Modulation -- This example includes background information and step-by-step instructions that examine Amplitude Modulation (AM). Construct a LabVIEW VI that transmits and receives a signal in software using AM.
+	 </item>
+<item> 
+			Frequency Modulation -- This example includes background information and step-by-step instructions that examine Frequency Modulation (FM). Construct a LabVIEW VI that transmits and receives a signal in software using FM.
+	 </item>
+<item> 
+			Single Sideband Modulation (SSB) -- This example examines Single Sideband Modulation (SSB) with a LabVIEW VI that produces a modulated single-sideband signal.
+	 </item>
+<item> 
+			Amplitude Shift Keying (ASK) -- This example includes background information and step-by-step instructions that examine the Amplitude Shift Keying (ASK) digital modulation scheme. Construct a LabVIEW VI that transmits and receives a bit stream in software using ASK.
+	 </item>
+<item> 
+		Frequency Key Shifting (FSK) -- Frequency Shift Keying (FSK) is a digital modulation scheme that modulates a carrier sinusoid's frequency to transfer digital information. In this step-by-step exercise, construct a LabVIEW VI that transmits and receives a digital bit stream in software using FSK.
+	 </item>
+<item> 
+		Phase Shift Keying (PSK) -- This example includes background information and step-by-step instructions that examine the Phase Shift Keying (PSK) digital modulation scheme. Construct a LabVIEW VI that transmits and receives a digital bit stream in software using PSK.
+	 </item>
+<item> 
+		Differential Phase Shift Keying (DPSK) -- This example includes background information and step-by-step instructions that examine the Differential Phase Shift Keying (DPSK) digital modulation scheme. Construct a LabVIEW VI that transmits and receives a digital bit stream in software using DPSK.
+	 </item>
+<item> 
+		OQPSK -- Offset Quadrature Phase Shift Keying (OQPSK) is a variant of Phase Shift Keying modulation that uses four different values of the phase to transmit. This example LabVIEW VI transmits and receives a digital bit stream in software using OQPSK.
+	 </item>
+<item> 
+		Minimum Shift Keying (MSK) -- This example examines the Minimum Shift Keying (MSK) digital modulation scheme. 
+	 </item>
+<item> 
+		QAM Symbol Mapping -- This example includes background information and step-by-step instructions that examine the Quadrature Amplitude Modulation (QAM) digital modulation scheme. 
+	 </item>
+<item> 
+		QAM M-ary vs. Channel Noise -- This step-by-step demo illustrates the effect of channel noise on an M-ary QAM signal with a LabVIEW-based simulation that shows how noise can effect the transmission of a textual message.
+	 </item>
+<item> 
+		Phase-Locked Loops -- This demo examines the theory behind phase-locked loops with a LabVIEW-based simulation that synchronizes the phase of a generated signal with a reference signal.
+	 </item>
+<item> 
+		LPF and HPF Filter -- This example includes background information and step-by-step instructions that explore high- and low-pass filters. Construct a LabVIEW VI that blocks or attenuates signals of frequencies outside the specified band.
+	 </item>
+<item> 
+		Time Division Multiplexing -- This example introduces Time Division Multiplexing (TDM) with a LabVIEW-based simulation that appends one signal to the end of another, and displays each in both analog and digital formats.
+	 </item>
+<item> 
+		OFDM -- This example examines orthogonal frequency-division multiplexing (OFDM) with a LabVIEW-based simulation of a multi-carrier OFDM digital communication system.
+	 </item>
+<item> 
+		Pulse Width Modulation (PWM) -- This example includes background information and step-by-step instructions that explore Pulse Width Modulation (PWM), a digital modulation scheme that transmits analog information by altering pulse width.
+	 </item>
+<item> 
+		Pulse Position Modulation (PPM) -- This example includes theory and step-by-step instructions that explore Pulse Position Modulation (PPM). 
+	 </item>
+<item> 
+		Pulse Amplitude Modulation (PAM) -- This example includes background information and step-by-step instructions that explore Pulse Amplitude Modulation (PAM). In this exercise, construct a LabVIEW VI that transmits analog information by changing pulse amplitude.
+	 </item>
+<item> 
+		IQ Data -- This demo introduces IQ data and explores why it is useful in communications. Analyze three LabVIEW VI's that show how IQ data represents changes in the magnitude and phase of a sine wave.
+	 </item>
+<item> 
+		Sampling Theorem -- This step-by-step example examines the sampling theorem and how it is used to determine minimum sampling speeds. In this exercise, construct a LabVIEW VI that illustrates the concept behind the sampling theorem.
+	 </item>
+<item> 
+		Channel Coding -- This example examines the processing technique of channel coding with a LabVIEW-based simulation that illustrates how channel coding allows original data to recover from noise in the channel.
+	 </item>
+<item> 
+		Carrier Recovery -- Channel noise can have a significant effect on carrier recovery. In this demo, analyze a LabVIEW VI that shows what behavior can occur when channel noise is significant enough to prevent carrier locking.
+	 </item>
+
+</list>
+
+</section>
+
+</content>
+</document>

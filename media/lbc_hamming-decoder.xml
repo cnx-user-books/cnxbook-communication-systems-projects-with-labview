@@ -1,0 +1,336 @@
+<!--
+
+== title == 
+Hamming Block Code Channel Decoder
+
+== keywords ==
+(n,k) block code
+binary symmetric channel
+block coding
+channel decoder
+channel encoder
+checkbits
+correction power
+error control coding
+error correction
+error detection
+generator matrix
+Hamming code
+Hamming distance
+LabVIEW
+modulo-2 matrix multiplication
+syndrome
+syndrome table
+table lookup decoder
+
+== summary ==
+Channel encoding inserts additional information into a transmitted bit stream to facilitate error detection and error correction at the receiver. Block coding breaks up a bit stream into words of length k bits and appends check bits to form a codeword of length n bits. A corresponding channel decoder examines the complete codeword, and detects and even corrects certain types of erroneous bits caused by the channel.  In the prerequisite project "Hamming Block Code Channel Encoder" you developed a channel encoder using a special class of block code called a Hamming code. In this project, develop the companion channel decoder, and then evaluate the performance of the complete encoder/decoder system.
+-->
+
+<?xml version='1.0' standalone='yes' ?>
+<LVData>
+<Version>8.2</Version>
+
+<!--SUMMARY------------------------------------------------------>
+<String> <Name>sec</Name> <Val>Summary</Val> </String>
+
+<String> <Name>para</Name> <Val>
+		{term}Channel encoding{/term} inserts additional information into a transmitted bit stream to facilitate {term}error detection{/term} and {term}error correction{/term} at the receiver. {term}Block coding{/term} breaks up a bit stream into words of length k bits and appends check bits to form a {term}codeword{/term} of length n bits. A corresponding {term}channel decoder{/term} examines the complete codeword, and detects and even corrects certain types of erroneous bits caused by the channel.
+
+		In the prerequisite project {cnxn document=&quot;m18663&quot;}Hamming Block Code Channel Encoder{/cnxn} you developed a channel encoder using a special class of block code called a Hamming code. In this project, develop the companion channel decoder, and then evaluate the performance of the complete encoder/decoder system.
+</Val> </String>
+
+
+<!--OBJECTIVES------------------------------------------------------>
+<String> <Name>secend</Name> <Val></Val> </String>
+<String> <Name>sec</Name> <Val>Objectives</Val> </String>
+
+<Cluster> <Name>list</Name> <NumElts>3</NumElts>
+<EW> <Name>type</Name> <Choice>Bulleted</Choice> <Choice>Enumerated</Choice> <Val>1</Val> </EW>
+<String> <Name>list name (optional)</Name> <Val></Val> </String>
+<Array> <Name>list items</Name> <Dimsize>3</Dimsize>
+<String> <Name>String</Name> <Val>Develop an (n,k) Hamming block code channel decoder capable of error detection and correction</Val> </String>
+<String> <Name>String</Name> <Val>Examine the behavior of the encoded bitstream before and after passing through the decoder</Val> </String>
+<String> <Name>String</Name> <Val>Evaluate the performance of the complete encoder/decoder system</Val> </String>
+</Array>
+</Cluster>
+
+
+<!--DELIVERABLES------------------------------------------------------>
+<String> <Name>secend</Name> <Val></Val> </String>
+<String> <Name>sec</Name> <Val>Deliverables</Val> </String>
+
+<Cluster> <Name>list</Name> <NumElts>3</NumElts>
+<EW> <Name>type</Name> <Choice>Bulleted</Choice> <Choice>Enumerated</Choice> <Val>1</Val> </EW>
+<String> <Name>list name (optional)</Name> <Val></Val> </String>
+<Array> <Name>list items</Name> <Dimsize>3</Dimsize>
+<String> <Name>String</Name> <Val>Summary write-up of your results</Val> </String>
+<String> <Name>String</Name> <Val>Hardcopy of all LabVIEW code that you develop (block diagrams and front panels)</Val> </String>
+<String> <Name>String</Name> <Val>Any plots or diagrams requested</Val> </String>
+</Array>
+</Cluster>
+
+<Cluster> <Name>note</Name> <NumElts>2</NumElts>
+<EW> <Name>notetype</Name> <Choice>Note</Choice> <Choice>Important</Choice> <Val>0</Val> </EW>
+<String> <Name>text</Name> <Val>
+		You can easily export LabVIEW front-panel waveform plots directly to your report. Right-click on the waveform
+		indicator and choose "Export Simplified Image."
+</Val> </String>
+</Cluster>
+
+<!--SETUP------------------------------------------------------>
+<String> <Name>secend</Name> <Val></Val> </String>
+<String> <Name>sec</Name> <Val>Setup</Val> </String>
+
+<Cluster> <Name>list</Name> <NumElts>3</NumElts>
+<EW> <Name>type</Name> <Choice>Bulleted</Choice> <Choice>Enumerated</Choice> <Val>1</Val> </EW>
+<String> <Name>list name (optional)</Name> <Val></Val> </String>
+<Array> <Name>list items</Name> <Dimsize>1</Dimsize>
+<String> <Name>String</Name> <Val>LabVIEW 8.5 or later version</Val> </String>
+</Array>
+</Cluster>
+
+<!--TEXTBOOK LINKAGES------------------------------------------------------>
+<String> <Name>secend</Name> <Val></Val> </String>
+<String> <Name>sec</Name> <Val>Textbook Linkages</Val> </String>
+
+<String> <Name>para</Name> <Val>
+		Refer to the following textbooks for additional background on the project activities of this module;
+		see the "References" section below for publication details:
+</Val> </String>
+
+<Cluster> <Name>list</Name> <NumElts>3</NumElts>
+<EW> <Name>type</Name> <Choice>Bulleted</Choice> <Choice>Enumerated</Choice> <Val>0</Val> </EW>
+<String> <Name>list name (optional)</Name> <Val></Val> </String>
+<Array> <Name>list items</Name> <Dimsize>6</Dimsize>
+	<String><Name>String</Name><Val>Carlson, Crilly, and Rutledge -- Ch 13 (basis for notation used in this module)</Val></String>
+	<String><Name>String</Name><Val>Haykin -- Ch 10</Val></String>
+	<String><Name>String</Name><Val>Lathi -- Ch 16</Val></String>
+	<String><Name>String</Name><Val>Proakis and Salehi (FCS) -- Ch 13</Val></String>
+	<String><Name>String</Name><Val>Proakis and Salehi (CSE) -- Ch 9</Val></String>
+	<String><Name>String</Name><Val>Stern and Mahmoud -- Ch 10</Val></String>
+</Array>
+</Cluster>
+
+<!--PREREQUISITE MODULES ------------------------------------------------------>
+<String> <Name>secend</Name> <Val></Val> </String>
+<String> <Name>sec</Name> <Val>Prerequisite Modules</Val> </String>
+<String> <Name>para</Name> <Val>
+
+		If you have not done so already, please complete the prerequisite module 
+		{cnxn document=&quot;m18663&quot;}Hamming Block Code Channel Encoder{/cnxn}.
+		
+		If you are relatively new to LabVIEW, consider taking the course 
+		{cnxn document=&quot;col10440&quot;}LabVIEW Techniques for Audio Signal Processing{/cnxn} 
+		which provides the foundation you need to complete this project activity, including:
+		block diagram editing techniques, essential programming structures, subVIs, arrays, and
+		audio. 
+</Val> </String>
+
+
+<!--INTRODUCTION------------------------------------------------------>
+<String> <Name>secend</Name> <Val></Val> </String>
+<String> <Name>sec</Name> <Val>Introduction</Val> </String>
+
+<String> <Name>para</Name> <Val>
+		{term}Error control coding{/term} describes a class of techniques that prepare
+		a digital message bitstream to pass through a noisy channel so that the 
+		receiver can detect and in some cases correct transmission errors. 
+		The prerequisite project {cnxn document=&quot;m18663&quot;}Hamming Block Code Channel Encoder{/cnxn} describes
+		how to create a specific type of channel encoder based on the 
+		{term}(n,k) Hamming code{/term}. The codeword length "n" and message length "k" are
+		specific values calculated from the user-defined number of checkbits "q".
+		As discussed in the prerequisite module, the code rate of the Hamming code
+		approaches 1 (100% efficiency) as "q" increases, but the minimum Hamming distance
+		"dmin" is fixed at 3. Therefore, the Hamming code can detect up to two bit errors
+		in a received codeword, and can correct up to one bit error.
+
+		The {term}channel decoder{/term}, a subsystem of the receiver, serves as a complement
+		to the channel encoder in the transmitter. The channel decoder examines each received
+		codeword, indicates detectable errors, fixes correctable errors, and extracts the
+		message. Not all types of errors are detectable nor correctable, therefore the channel
+		decoder can certainly emit garbled messages. Fortunately the channel noise must be rather
+		severe before this becomes a problem.
+
+		The channel decoder developed in this project is called a {term}table lookup syndrome decoder{/term}.
+		View the {cnxn target=&quot;video-decoder-syndrome&quot;/} screencast video to learn
+		how to calculate the {term}syndrome{/term} of a codeword, how to develop a {term}lookup table{/term} 
+		of most-likely error patterns indexed by syndrome value, and how to use these results as the
+		basic components of a channel decoder capable of detecting and correcting some types of
+		error patterns.
+</Val> </String>
+
+<Cluster> <Name>video</Name> <NumElts>4</NumElts>
+<String> <Name>ID (optional)</Name> <Val>video-decoder-syndrome</Val> </String>
+<String> <Name>video name</Name> <Val>syndrome</Val> </String>
+<String> <Name>webpage title</Name> <Val>Syndrome channel decoder</Val> </String>
+<String> <Name>caption</Name> <Val>Table lookup syndrome channel decoder for Hamming block code</Val> </String>
+</Cluster>
+
+
+<!--PROCEDURE------------------------------------------------------>
+<String> <Name>secend</Name> <Val></Val> </String>
+<String> <Name>sec</Name> <Val>Procedure</Val> </String>
+
+	<!--STEP------------------------------------------>
+<String> <Name>sec</Name> <Val>Manual calculations</Val> </String>
+
+<String> <Name>para</Name> <Val>
+		Work through the syndrome calculation process by hand to lay a good
+		foundation for developing a correct and understandable computer 
+		implementation. Write up this work on a separate page.
+
+		The end of the {cnxn target=&quot;video-decoder-syndrome&quot;/} screencast video
+		presents an example of a specific Hamming code generator matrix "G", a specific message vector "M" and 
+		associated codeword vector "X", and three received versions of the same transmitted codeword with
+		varying severity of bit errors.
+</Val> </String>
+
+<Cluster> <Name>list</Name> <NumElts>3</NumElts>
+<EW> <Name>type</Name> <Choice>Bulleted</Choice> <Choice>Enumerated</Choice> <Val>1</Val> </EW>
+<String> <Name>list name (optional)</Name> <Val></Val> </String>
+<Array> <Name>list items</Name> <Dimsize>4</Dimsize>
+	<String> <Name>String</Name> <Val>Determine the parity check matrix "HT" (the transpose of the matrix "H") that corresponds
+			to the generator matrix "G".</Val> </String>
+	<String> <Name>String</Name> <Val>Write the three received codeword vectors.</Val> </String>
+<String> <Name>String</Name> <Val>Calculate the syndrome for each of the three received codewords. Remember to use modulo-2
+		arithmetic for the matrix calculations.</Val> </String>
+<String> <Name>String</Name> <Val>Discuss your results in terms of the potential to detect and correct errors for
+		each of the three received codewords based on their calculated syndromes.</Val> </String>
+</Array>
+</Cluster>
+
+
+	<!--STEP------------------------------------------>
+<String> <Name>secend</Name> <Val></Val> </String>
+<String> <Name>sec</Name> <Val>SubVI construction</Val> </String>
+
+<String> <Name>para</Name> <Val>
+		Build the subVIs listed below. You may already have some of these available
+		from previous projects.
+
+		Demonstrate that each of these subVIs works properly before continuing to the next part.
+</Val> </String>
+
+<Cluster> <Name>list</Name> <NumElts>3</NumElts>
+<EW> <Name>type</Name> <Choice>Bulleted</Choice> <Choice>Enumerated</Choice> <Val>1</Val> </EW>
+<String> <Name>list name (optional)</Name> <Val></Val> </String>
+<Array> <Name>list items</Name> <Dimsize>5</Dimsize>
+	<String> <Name>String</Name> <Val>{cnxn document=&quot;m18460&quot;}hamming_ParityCheckMatrix.vi{/cnxn} </Val> </String>
+	<String> <Name>String</Name> <Val>{cnxn document=&quot;m18618&quot;}hamming_SyndromeTable.vi{/cnxn} </Val> </String>
+	<String> <Name>String</Name> <Val>{cnxn document=&quot;m18427&quot;}hamming_DetectorCorrector.vi{/cnxn} </Val> </String>
+	<String> <Name>String</Name> <Val>{cnxn document=&quot;m18631&quot;}util_BitstreamFromText.vi{/cnxn} </Val> </String>
+	<String> <Name>String</Name> <Val>{cnxn document=&quot;m18629&quot;}util_BitstreamToText.vi{/cnxn} </Val> </String>
+</Array>
+</Cluster>
+
+
+	<!--STEP------------------------------------------>
+<String> <Name>secend</Name> <Val></Val> </String>
+<String> <Name>sec</Name> <Val>Hamming block code channel decoder</Val> </String>
+
+<String> <Name>para</Name> <Val>
+		Use your top-level application VI from the prerequisite channel encoder project as a starting point for
+		this project.
+
+		Review again the background theory presented earlier for the Hamming block code channel decoder, then
+		extend the top-level application VI to decode the output of the channel. Follow the block diagram 
+		described near the end of the {cnxn target=&quot;video-decoder-syndrome&quot;/} screencast video.
+
+		Display Boolean array front-panel indicators for the following values:
+</Val> </String>
+
+		<Cluster> <Name>list</Name> <NumElts>3</NumElts>
+<EW> <Name>type</Name> <Choice>Bulleted</Choice> <Choice>Enumerated</Choice> <Val>0</Val> </EW>
+<String> <Name>list name (optional)</Name> <Val></Val> </String>
+<Array> <Name>list items</Name> <Dimsize>7</Dimsize>
+	<String> <Name>String</Name> <Val>message -- original message words</Val></String>
+<String> <Name>String</Name> <Val>encoded message -- message words with appended checkbits (transmitted codewords)</Val></String>
+	<String> <Name>String</Name> <Val>received message -- received codewords after passing through noisy channel</Val></String>
+<String> <Name>String</Name> <Val>pre-decoding errors -- bit error locations in received codewords</Val></String>
+	<String> <Name>String</Name> <Val>corrected message -- received codewords with error correction applied</Val></String>
+<String> <Name>String</Name> <Val>post-decoding errors -- bit error locations in corrected codewords</Val></String>
+	<String> <Name>String</Name> <Val>error detected (1-D array) -- error detected (non-zero syndrome)</Val></String>
+</Array>
+</Cluster>
+
+	<!--STEP------------------------------------------>
+<String> <Name>secend</Name> <Val></Val> </String>
+<String> <Name>sec</Name> <Val>Combined channel encoder/decoder performance</Val> </String>
+
+
+		<Cluster> <Name>list</Name> <NumElts>3</NumElts>
+<EW> <Name>type</Name> <Choice>Bulleted</Choice> <Choice>Enumerated</Choice> <Val>1</Val> </EW>
+<String> <Name>list name (optional)</Name> <Val></Val> </String>
+<Array> <Name>list items</Name> <Dimsize>4</Dimsize>
+	<String> <Name>String</Name> <Val>
+			Generate 50 words, and begin with 3 checkbits. Run the VI repeatedly and observe the channel decoder
+			output indicators. What bit error rate tends to limit the received codeword errors to single-bit errors?
+	</Val></String>
+	<String> <Name>String</Name> <Val>
+			Increase to 4 checkbits, then to 5 checkbits, and so on while holding the bit error rate fixed.
+       			Recalling the positive effect of increasing the number of checkbits (increased code rate), what appears to
+			be the negative effect of an increased number of checkbits? Explain.
+	</Val></String>
+	<String> <Name>String</Name> <Val>
+			Return to 3 checkbits. Run the VI until you observe a two-bit error in a received codeword. Does
+			the "error detected" indicator work properly? How about the corrected codeword? Explain these results.
+	</Val></String>
+	<String> <Name>String</Name> <Val>
+			Set the number of checkbits to 2 and run the VI several times. What is another name (hopefully familiar to you) for this code?
+	</Val></String>
+</Array>
+</Cluster>
+
+	<!--STEP------------------------------------------>
+<String> <Name>secend</Name> <Val></Val> </String>
+<String> <Name>sec</Name> <Val>Text messaging</Val> </String>
+
+<String> <Name>para</Name> <Val>
+		Replace the random number generator in the transmit section with the text data source 
+		{cnxn document=&quot;m18631&quot;}util_BitstreamFromText.vi{/cnxn}. Use the companion
+		subVI {cnxn document=&quot;m18629&quot;}util_BitstreamToText.vi{/cnxn} to display the receiver output. 
+		Experiment with short messages and long messages, making sure that
+		the intermediate Boolean displays make sense.
+
+		Experiment with intelligibility in the received message as a function of bit error rate (BER). Determine specific BER values you
+		associate with the following qualitative labels: {emphasis}excellent{/emphasis}, {emphasis}good{/emphasis}, {emphasis}barely acceptable{/emphasis}, and {emphasis}unintelligible{/emphasis}.
+</Val> </String>
+
+
+
+<String> <Name>secend</Name> <Val></Val> </String>
+
+<!--REFERENCES------------------------------------------------------>
+<String> <Name>secend</Name> <Val></Val> </String>
+<String> <Name>sec</Name> <Val>References</Val> </String>
+
+<Cluster> <Name>list</Name> <NumElts>3</NumElts>
+<EW> <Name>type</Name> <Choice>Bulleted</Choice> <Choice>Enumerated</Choice> <Val>1</Val> </EW>
+<String> <Name>list name (optional)</Name> <Val></Val> </String>
+<Array> <Name>list items</Name> <Dimsize>6</Dimsize>
+	<String><Name>String</Name><Val>
+		Carlson, A. Bruce, Paul B. Crilly, and Janet C. Rutledge, "Communication Systems," 4th ed., McGraw-Hill, 2002. ISBN-13: 978-0-07-011127-1
+	</Val></String>
+	<String><Name>String</Name><Val>
+		Haykin, Simon. "Communication Systems," 4th ed., Wiley, 2001. ISBN-10: 0-471-17869-1
+	</Val></String>
+	<String><Name>String</Name><Val>
+		Lathi, Bhagwandas P., "Modern Digital and Analog Communication Systems," 3rd ed., Oxford University Press, 1998. ISBN-10: 0-19-511009-9
+	</Val></String>
+	<String><Name>String</Name><Val>
+		Proakis, John G., and Masoud Salehi, "Fundamentals of Communication Systems," Pearson Prentice Hall, 2005. ISBN-10: 0-13-147135-X
+	</Val></String>
+	<String><Name>String</Name><Val>
+		Proakis, John G., and Masoud Salehi, "Communication Systems Engineering," 2nd ed., Pearson Prentice Hall, 2002. ISBN-10: 0-13-061793-8
+	</Val></String>
+	<String><Name>String</Name><Val>
+		Stern, Harold P.E., and Samy A. Mahmoud, "Communication Systems," Pearson Prentice Hall, 2004. ISBN-10: 0-13-040268-0
+	</Val></String>
+</Array>
+</Cluster>
+
+<String> <Name>secend</Name> <Val></Val> </String>
+
+</LVData>
+

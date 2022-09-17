@@ -1,0 +1,430 @@
+<document xmlns="http://cnx.rice.edu/cnxml" xmlns:m="http://www.w3.org/1998/Math/MathML">
+  <title>Digital Communication System Simulation and Visualization</title>
+<metadata xmlns:md="http://cnx.rice.edu/mdml">
+  <md:content-id>m18660</md:content-id>
+  <md:title>Digital Communication System Simulation and Visualization</md:title>
+  <md:abstract>Simulation and visualization enhance understanding of communication system behavior and performance. In this project, develop a simple model for a transmitter, channel, and receiver, and study the performance of the system in terms of bit error rate (BER). Channel errors are visualized as images and "auralized" as sound to further develop insight into the relationships between bit error rate and message length.</md:abstract>
+  <md:uuid>791dacec-179b-42f5-9517-cdb06832c7af</md:uuid>
+</metadata>
+<content>
+
+<table id="labview_banner" frame="none" summary=""><tgroup cols="2">
+<colspec rowsep="0" colsep="0"/> <colspec colwidth="6in" rowsep="0" colsep="0"/>
+<tbody>
+  <row>
+    <entry morerows="3"><media id="id44145347" alt=""><image src="../../media/LabVIEWtop.png" mime-type="image/png"/></media></entry>
+    <entry> This module refers to LabVIEW, a software development environment that features a graphical programming language.
+       Please see the <link document="m15428">LabVIEW QuickStart Guide</link> module for tutorials and documentation that will help you:</entry>
+  </row>
+  <row> <entry>• Apply LabVIEW to Audio Signal Processing </entry> </row>
+  <row> <entry>• Get started with LabVIEW</entry> </row>
+  <row> <entry>• Obtain a fully-functional evaluation edition of LabVIEW</entry> </row>
+</tbody>
+</tgroup>
+</table>
+
+<note id="id44145428">
+Visit <link document="m17319">LabVIEW Setup</link> to learn how to adjust your own LabVIEW environment to match the settings used by the LabVIEW screencast video(s) in this module.
+Click the "Fullscreen" button at the lower right corner of the video player if the video does not fit properly within your browser window.
+</note>
+
+<section id="sec1">
+<title>Summary</title>
+
+<para id="par2">
+		Simulation and visualization enhance understanding of communication system behavior and performance. In this project, develop a 
+		simple model for a transmitter, channel, and receiver, and study the performance of the system in terms of bit error rate (BER). 
+		Channel errors are visualized as images and "auralized" as sound to further develop insight into the relationships between bit 
+		error rate and message length.
+</para>
+
+</section>
+
+<section id="sec3">
+<title>Objectives</title>
+
+<list id="list4" list-type="enumerated">
+
+<item> 
+		Learn how to simulate a "black box" model of a binary communication system and to evaluate its performance
+	 </item>
+<item> 
+		Develop an understanding of the relationships between bit error rate (BER) and message length
+	 </item>
+<item> 
+		Develop a qualitative appreciation for BER and its impact on the received signal
+	 </item>
+<item> 
+		Learn several ways to observe bitstreams
+	 </item>
+
+</list>
+
+</section>
+
+<section id="sec5">
+<title>Deliverables</title>
+
+<list id="list6" list-type="enumerated">
+
+<item> Summary write-up of your results </item>
+<item> Hardcopy of all LabVIEW code that you develop (block diagrams and front panels) </item>
+<item> Any plots or diagrams requested </item>
+
+</list>
+
+<note id="id44146148">
+		You can easily export LabVIEW front-panel waveform plots directly to your report. Right-click on the waveform
+		indicator and choose "Export Simplified Image."
+</note>
+
+</section>
+
+<section id="sec7">
+<title>Setup</title>
+
+<list id="list8" list-type="enumerated">
+
+<item> LabVIEW 8.5 or later version </item>
+<item> Computer soundcard </item>
+<item> Speaker </item>
+
+</list>
+
+</section>
+
+<section id="sec9">
+<title>Textbook Linkages</title>
+
+<para id="par10">
+		Refer to the following textbooks for additional background on the 
+		<term>binary symmetric channel</term> (also known as the <term>discrete memoryless channel</term>)
+		used in this project; see the "References" section below for publication details:
+</para>
+
+<list id="list11" list-type="bulleted">
+
+<item> Carlson, Crilly, and Rutledge -- Ch 16 </item>
+<item> Couch -- Ch 7 </item>
+<item> Haykin -- Ch 10 </item>
+<item> Lathi -- Ch 15 </item>
+<item> Proakis and Salehi (FCS) -- Ch 12 </item>
+<item> Proakis and Salehi (CSE) -- Ch 9 </item>
+
+</list>
+
+</section>
+
+<section id="sec12">
+<title>Prerequisite Modules</title>
+
+<para id="par13">
+		If you are relatively new to LabVIEW, consider taking the course 
+		<link document="col10440">LabVIEW Techniques for Audio Signal Processing</link> 
+		which provides the foundation you need to complete this project activity, including:
+		block diagram editing techniques, essential programming structures, subVIs, arrays, and
+		audio. 
+</para>
+
+</section>
+
+<section id="sec14">
+<title>Introduction</title>
+
+<para id="par15">
+		<link target-id="figure-blockdgm"/> illustrates a generic communication system (transmitter, channel, and receiver) and a
+		comparator to compare the original source bitstream to the output bitstream and report bit errors.
+</para>
+
+<figure id="figure-blockdgm">
+<media id="id42725400" alt=""><image src="../../media/simviz_blackbox-blockdgm.png" mime-type="image/png"/></media>
+<caption>
+   Generic communication system with comparator
+</caption>
+</figure>
+
+<para id="par17">
+		This project implements <link target-id="figure-blockdgm"/> at an elementary level:
+</para>
+
+<list id="list18" list-type="enumerated">
+
+<item> 
+		The source is a bitstream with equiprobable 0s and 1s
+	 </item>
+<item> 
+		The transmitter, channel, and receiver are lumped together as a single "black box," i.e., the internal details are
+	        hidden and only the source and received bitstreams are visible
+	 </item>
+<item> 
+		The channel introduces errors according to the specified bit error rate (BER)
+	 </item>
+<item> 
+		The comparator detects mismatches between the input and output bitstreams (bit errors) and reports 
+		measured BER, the ratio of the total number of actual bit errors to the total number of bits observed
+	 </item>
+
+</list>
+
+</section>
+
+<section id="sec19">
+<title>Procedure</title>
+
+<section id="sec20">
+<title>Build the subVIs</title>
+
+<para id="par21">
+		Build the subVIs listed below. You may already have some of these available
+		from previous projects.</para>
+
+<para id="par22">		Demonstrate that each of these subVIs works properly before continuing to the next part.
+</para>
+
+<list id="list23" list-type="enumerated">
+
+<item> <link document="m18528">util_BitstreamFromRandom.vi</link>  </item>
+<item> <link document="m18537">util_BinarySymmetricChannel.vi</link>  </item>
+<item> <link document="m18547">util_MeasureBER.vi</link>  </item>
+
+</list>
+
+</section>
+
+<section id="sec24">
+<title>Construct base system</title>
+
+<list id="list25" list-type="enumerated">
+
+<item> 
+		Create the application VI <code display="inline">SystemOne.vi</code> pictured in 
+		<link target-id="figure-base-system"/> by assembling the
+		subVIs you built in the previous step. Use the default control and indicator styles for now.
+		Expand the Boolean array indicators to show 20 elements (click on the outer frame of the
+		indicator and drag either horizontally or vertically).
+	 </item>
+<item> 
+		Try small values for <code display="inline">length</code> (say, 10 or 20) and various levels
+		of bit error rate. Remember that the keyboard shortcut "Ctrl+R" runs the VI.
+	 </item>
+<item> 
+		Submit a screenshot of your front panel with handwritten calculations that confirms the correct
+		operation of the <code display="inline">measured BER</code> output.
+	 </item>
+
+</list>
+
+<figure id="figure-base-system">
+<media id="id43430090" alt=""><image src="../../media/simviz_blackbox-base-system.png" mime-type="image/png"/></media>
+<caption>
+   Generic communication system implemented as "SystemOne.vi"
+</caption>
+</figure>
+
+</section>
+
+<section id="sec27">
+<title>Improve usability of front panel</title>
+
+<para id="par28">
+		The default numerical controls and indicators are useful to examine details such as the BER calculation.
+		However, changing many of the controls and indicators to other forms greatly improves the usability of the front panel
+		and facilitates greater interactivity.</para>
+
+<para id="par29">		View the <link target-id="video-improve-usability"/> screencast video to learn how to convert the
+		numerical front panel controls to sliders and to visualize the bitstreams as waveforms. 
+		In addition, learn how to set the BER slider control to use logarithmic
+	       	mapping to more conveniently select values over a wide range. 
+		Modify your application VI front panel accordingly to produce <code display="inline">SystemTwo.vi</code>.
+</para>
+
+<figure id="video-improve-usability"><title><link url="https://youtu.be/bz08GqKAdEA" window="new">https://youtu.be/bz08GqKAdEA</link> (6:24)</title><media id="eip-idm1463103552" display="block" alt="Insert alt text here"><video mime-type="video/mpeg" src="https://www.youtube.com/embed/bz08GqKAdEA?rel=0" autoplay="false" width="640" height="460"/></media>
+
+
+<caption>[video] Improve the usability of the front panel controls
+</caption></figure></section>
+
+<section id="sec31">
+<title>Investigate the relationship between BER and bitstream length</title>
+
+<para id="par32">
+		You have noticed by now that the measured bit error rate value is rarely (if ever) the same value 
+		as the specified BER of the channel. Moreover, the measured BER can change considerably from one run 
+		to the next.  
+		
+		Continual operation of a VI greatly improves one's ability to see patterns and 
+		relationships emerge. In this section, modify the VI to run continually and observe the relationship 
+		between specified and measured BER value as a function of the bitstream length.
+		
+		View the <link target-id="video-run-continually"/> screencast video to learn how to add a
+		<term>while-loop structure</term> to operate the system continually, and then modify your application VI
+		accordingly to produce <code display="inline">SystemThree.vi</code>.
+</para>
+
+<figure id="video-run-continually"><title><link url="https://youtu.be/U9BdU1mmWhI" window="new">https://youtu.be/U9BdU1mmWhI</link> (3:30)</title><media id="eip-idm208233376" display="block" alt="Insert alt text here"><video mime-type="video/mpeg" src="https://www.youtube.com/embed/U9BdU1mmWhI?rel=0" autoplay="false" width="640" height="460"/></media>
+
+<caption>[video] Modify base system to run continually
+</caption></figure><para id="par34">
+		Experiment with <code display="inline">SystemThree.vi</code>:
+</para>
+
+<list id="list35" list-type="enumerated">
+
+<item> 
+			Estimate the average value (mean) of the measured BER as the specified channel BER varies over
+			the range 0 to 1.
+	 </item>
+<item> 
+			Estimate the variance of the measured BER as the bitstream length changes over the range
+			10 to 10,000 (a rough guess of the spread around the mean is adequate). Feel free to
+			increase the "millisecond multiple" constant if the loop goes too fast to see the numerical
+			displays.
+	 </item>
+
+</list>
+
+<para id="par36">
+		Discuss your results:
+</para>
+
+<list id="list37" list-type="enumerated">
+
+<item> 
+			How is the average value of the measured BER related to the specified channel BER?
+	 </item>
+<item> 
+			How is the variance of the measured BER related to the bitstream length?
+	 </item>
+
+</list>
+
+</section>
+
+<section id="sec38">
+<title>Visualize the bitstreams as images</title>
+
+<para id="par39">
+		Visualizing the error bitstream as 2-D image develops a qualitative feel for the impact of bit error rate on the 
+		data output of a binary communication system. That is, what value of BER corresponds to a "high quality" image transmission? 
+		Or, what value of BER makes the received image "poor quality"?</para>
+
+<para id="par40">		View the <link target-id="video-visualize-bitstream"/> screencast video to learn how to reshape the error bitstream
+		into a two-dimensional array suitable for display as a binary (2-level) image using the LabVIEW subVIs "Flatten Pixmap" and 
+		"Draw Flattened Pixmap." In addition, learn how to programmatically control the size of the front-panel image indicator 
+		using a "property node." Modify your application VI accordingly to produce <code display="inline">SystemFour.vi</code>.
+</para>
+
+<figure id="video-visualize-bitstream"><title><link url="https://youtu.be/I2RQh4e9VNU" window="new">https://youtu.be/I2RQh4e9VNU</link> (9:18)</title><media id="eip-idm631441648" display="block" alt="Insert alt text here"><video mime-type="video/mpeg" src="https://www.youtube.com/embed/I2RQh4e9VNU?rel=0" autoplay="false" width="640" height="460"/></media>
+
+
+<caption>[video] Visualize the error bitstream as a binary image
+</caption></figure><para id="par42">
+		Experiment with <code display="inline">SystemFour.vi</code> to study the relationship between BER and image size. To begin,
+		set the bitstream length to 1,024 to produce a 32x32 image. Set the bit error rate to 0.0001. Describe the appearance of the
+		error bitstream as an image, and state the relative "quality" of the image (remember that an ideal error image would always be
+		uniformly black).</para>
+
+<para id="par43">		Now, gradually increase the bitstream length to 200,000 while watching the image. Would you still consider the image to be at
+		the same quality level as before? What BER value do you need to obtain the same quality level you stated for the short bitstream
+		length?</para>
+
+<para id="par44">		Explain why a specific BER value can be considered acceptable for some types of transmitted messages and not for others. 
+</para>
+
+</section>
+
+<section id="sec45">
+<title>Listen to the error bitstream as sound</title>
+
+<para id="par46">
+		"Auralizing" the error bitstream as sound also develops your qualitative feel for bit error rate. 
+</para>
+
+<para id="par47">
+		<media id="id43428683" alt=""><image src="../../media/LabVIEW.png" mime-type="image/png"/></media> Download and run <link resource="bit_errors_as_sound.vi">bit_errors_as_sound.vi</link>. 
+</para>
+
+<para id="par48">
+		This application VI continually generates "the sound of silence" (bitstream of 0s) at the source with channel bit errors inserted according 
+		to the "BER" slider. Sound is generated in blocks (<term>frames</term>), and total errors within a frame are reported. The average bit 
+		errors per second is also reported. Note that the circular panel indicators use logarithmic mapping.
+</para>
+
+<list id="list49" list-type="enumerated">
+
+<item> 
+			Change the bit error rate (BER) slider and listen to the bit errors.
+	 </item>
+<item> 
+			Try different values of soundcard sampling frequency. Your soundcard may or may not support arbitrary values, 
+			but should definitely support CD-quality (44,100 Hz) and lower sampling rates of 
+<m:math>
+ <m:semantics>
+  <m:mrow>
+   <m:mfrac>
+    <m:mrow>
+     <m:mn>44</m:mn><m:mo>,</m:mo><m:mn>100</m:mn>
+    </m:mrow>
+    <m:mrow>
+     <m:msup>
+      <m:mn>2</m:mn>
+      <m:mi>N</m:mi>
+     </m:msup>
+    </m:mrow>
+   </m:mfrac>
+  </m:mrow>
+ <m:annotation encoding="MathType-MTEF">
+ MathType@MTEF@5@5@+=feaagaart1ev2aqatCvAUfeBSjuyZL2yd9gzLbvyNv2CaerbuLwBLnhiov2DGi1BTfMBaeXatLxBI9gBaerbd9wDYLwzYb1uaebbnrfifHhDYfgasaacH8srps0lbbf9q8WrFfeuY=Hhbbf9v8qqaqFr0xc9pk0xbba9q8WqFfea0=yr0RYxir=Jbba9q8aq0=yq=He9q8qqQ8frFve9Fve9Ff0dmeaabaqaciGacaGaaeqabaWaaeaaeaaakeaadaWcaaqaaiaaisdacaaI0aGaaiilaiaaigdacaaIWaGaaGimaaqaaiaaikdadaahaaWcbeqaaiaad6eaaaaaaaaa@3B6E@</m:annotation>
+ </m:semantics>
+</m:math>, where N is an integer greater than zero.
+	 </item>
+<item> 
+			If possible, use a media player to play music or speech through your soundcard while the VI is running. Determine the 
+			BER values you would associate with the following qualitative labels for the noise level's impact on the music signal: 
+			<emphasis>none</emphasis>, <emphasis>just noticeable</emphasis>, <emphasis>tolerable</emphasis>, <emphasis>annoying</emphasis>, and 
+			<emphasis>overwhelming</emphasis>. Tabulate your value/label pairs.
+	 </item>
+<item> 
+			For BER=0.001, describe the character of the bit error click sound as a function of sampling frequency. Propose an explanation for the 
+			change in sound.
+	 </item>
+<item> 
+			Explain the role of data rate (samples per second) on the impact of bit errors. In other words, does BER tell the whole story?
+	 </item>
+
+</list>
+
+</section>
+
+</section>
+
+<section id="sec50">
+<title>References</title>
+
+<list id="list51" list-type="enumerated">
+
+<item> 
+		Carlson, A. Bruce, Paul B. Crilly, and Janet C. Rutledge, "Communication Systems," 4th ed., McGraw-Hill, 2002. ISBN-13: 978-0-07-011127-1
+	 </item>
+<item> 
+		Couch, Leon W. II, "Digital and Analog Communication Systems," 7th ed., Pearson Prentice Hall, 2007. ISBN-10: 0-13-142492-0
+	 </item>
+<item> 
+		Haykin, Simon. "Communication Systems," 4th ed., Wiley, 2001. ISBN-10: 0-471-17869-1
+	 </item>
+<item> 
+		Lathi, Bhagwandas P., "Modern Digital and Analog Communication Systems," 3rd ed., Oxford University Press, 1998. ISBN-10: 0-19-511009-9
+	 </item>
+<item> 
+		Proakis, John G., and Masoud Salehi, "Fundamentals of Communication Systems," Pearson Prentice Hall, 2005. ISBN-10: 0-13-147135-X
+	 </item>
+<item> 
+		Proakis, John G., and Masoud Salehi, "Communication Systems Engineering," 2nd ed., Pearson Prentice Hall, 2002. ISBN-10: 0-13-061793-8
+	 </item>
+
+</list>
+
+</section>
+
+</content>
+</document>

@@ -1,0 +1,381 @@
+<!--title = Speaker-Air-Microphone (SAM) Channel Characterization
+summary:
+A speaker and microphone connected to a computer serve as an excellent communications channel because the transmitted information is audible. Listening to the channel while making parameter adjustments and viewing plots builds additional insights into the specific modulation scheme under study.
+This project describes how to characterize a "speaker-air-microphone" (SAM) channel for use in subsequent projects that use bandpass modulation techniques.
+-->
+
+<?xml version='1.0' standalone='yes' ?>
+<LVData>
+<Version>8.2</Version>
+
+<!--SUMMARY------------------------------------------------------>
+<String> <Name>sec</Name> <Val>Summary</Val> </String>
+
+<String> <Name>para</Name> <Val>
+A speaker and microphone connected to a computer serve as an excellent communications channel because the transmitted information is audible. Listening to the channel while making parameter adjustments and viewing plots builds additional insights into the specific modulation scheme under study.
+
+The passband limits and bandwidth of the {term}SAM channel{/term} (Speaker-to-Air-to-Microphone) must be characterized to effectively choose modulation parameters such as carrier frequency, bit rate, and signal pulse shape. This project describes how to characterize a SAM channel for use in subsequent projects that use bandpass modulation techniques.
+</Val> </String>
+
+
+<!--OBJECTIVES------------------------------------------------------>
+<String> <Name>secend</Name> <Val></Val> </String>
+<String> <Name>sec</Name> <Val>Objectives</Val> </String>
+
+<Cluster> <Name>list</Name> <NumElts>3</NumElts>
+<EW> <Name>type</Name> <Choice>Bulleted</Choice> <Choice>Enumerated</Choice> <Val>1</Val> </EW>
+<String> <Name>list name (optional)</Name> <Val></Val> </String>
+<Array> <Name>list items</Name> <Dimsize>2</Dimsize>
+<String> <Name>String</Name> <Val>Measure the passband limits and bandwidth of a speaker-air-microphone (SAM) channel</Val> </String>
+<String> <Name>String</Name> <Val>Learn how to use LabVIEW Express subVIs for audio and power spectrum measurement</Val> </String>
+</Array>
+</Cluster>
+
+
+<!--DELIVERABLES------------------------------------------------------>
+<String> <Name>secend</Name> <Val></Val> </String>
+<String> <Name>sec</Name> <Val>Deliverables</Val> </String>
+
+<Cluster> <Name>list</Name> <NumElts>3</NumElts>
+<EW> <Name>type</Name> <Choice>Bulleted</Choice> <Choice>Enumerated</Choice> <Val>1</Val> </EW>
+<String> <Name>list name (optional)</Name> <Val></Val> </String>
+<Array> <Name>list items</Name> <Dimsize>3</Dimsize>
+<String> <Name>String</Name> <Val>Summary write-up of your results</Val> </String>
+<String> <Name>String</Name> <Val>Hardcopy of all LabVIEW code that you develop (block diagrams and front panels)</Val> </String>
+<String> <Name>String</Name> <Val>Any plots or diagrams requested</Val> </String>
+</Array>
+</Cluster>
+
+
+<!--SETUP------------------------------------------------------>
+<String> <Name>secend</Name> <Val></Val> </String>
+<String> <Name>sec</Name> <Val>Setup</Val> </String>
+
+<Cluster> <Name>list</Name> <NumElts>3</NumElts>
+<EW> <Name>type</Name> <Choice>Bulleted</Choice> <Choice>Enumerated</Choice> <Val>1</Val> </EW>
+<String> <Name>list name (optional)</Name> <Val></Val> </String>
+<Array> <Name>list items</Name> <Dimsize>4</Dimsize>
+<String> <Name>String</Name> <Val>LabVIEW 8.5 or later version</Val> </String>
+<String> <Name>String</Name> <Val>Computer soundcard</Val> </String>
+<String> <Name>String</Name> <Val>Speaker</Val> </String>
+<String> <Name>String</Name> <Val>Microphone</Val> </String>
+</Array>
+</Cluster>
+
+<!--TEXTBOOK LINKAGES------------------------------------------------------>
+<String> <Name>secend</Name> <Val></Val> </String>
+<String> <Name>sec</Name> <Val>Textbook Linkages</Val> </String>
+<Cluster> <Name>list</Name> <NumElts>3</NumElts>
+<EW> <Name>type</Name> <Choice>Bulleted</Choice> <Choice>Enumerated</Choice> <Val>0</Val> </EW>
+<String> <Name>list name (optional)</Name> <Val></Val> </String>
+<Array> <Name>list items</Name> <Dimsize>8</Dimsize>
+	<String><Name>String</Name><Val>Carlson, Crilly, and Rutledge -- Ch 9</Val></String>
+	<String><Name>String</Name><Val>Couch -- Ch 6</Val></String>
+	<String><Name>String</Name><Val>Haykin -- Ch 1</Val></String>
+	<String><Name>String</Name><Val>Haykin and Moher -- Ch 8</Val></String>
+	<String><Name>String</Name><Val>Lathi -- Ch 3</Val></String>
+	<String><Name>String</Name><Val>Proakis and Salehi (FCS) -- Ch 5</Val></String>
+	<String><Name>String</Name><Val>Proakis and Salehi (CSE) -- Ch 4</Val></String>
+	<String><Name>String</Name><Val>Stern and Mahmoud -- Ch 2</Val></String>
+</Array>
+</Cluster>
+
+<String> <Name>para</Name> <Val>
+		See "References" for textbook publication details.
+</Val> </String>
+
+
+<!--PREREQUISITE MODULES ------------------------------------------------------>
+<String> <Name>secend</Name> <Val></Val> </String>
+<String> <Name>sec</Name> <Val>Prerequisite Modules</Val> </String>
+<String> <Name>para</Name> <Val>
+		If you are relatively new to LabVIEW, consider taking the course 
+		{cnxn document=&quot;col10440&quot;}LabVIEW Techniques for Audio Signal Processing{/cnxn} 
+		which provides the foundation you need to complete this project activity, including:
+		block diagram editing techniques, essential programming structures, subVIs, arrays, and
+		audio. 
+</Val> </String>
+
+
+<!--INTRODUCTION------------------------------------------------------>
+<String> <Name>secend</Name> <Val></Val> </String>
+<String> <Name>sec</Name> <Val>Introduction</Val> </String>
+
+<String> <Name>para</Name> <Val>
+		{cnxn target=&quot;fig-SAM-channel-diagram&quot;/} illustrates the speaker-to-air-to-microphone (SAM) channel.
+</Val> </String>
+
+<Cluster> <Name>image</Name> <NumElts>3</NumElts>
+<String> <Name>ID (optional)</Name> <Val>fig-SAM-channel-diagram</Val> </String>
+<String> <Name>name</Name> <Val>SAM-channel-diagram</Val> </String>
+<String> <Name>caption</Name> <Val>Speaker-air-microphone channel</Val> </String>
+</Cluster>
+
+<String> <Name>para</Name> <Val>
+The magnitude frequency response of the SAM channel can be easily measured by applying white noise to the speaker, recording the result, and calculating the power spectrum of the of the recorded signal.  White noise contains equal contribution from all frequencies; therefore, any deviation from a flat power spectrum at the channel output must be the response of the channel. 
+
+The computer sound card forms part of the channel, as well. Sound card microphone inputs are often AC-coupled and do not pass DC. Microphone inputs are sometimes intentionally lowpass filtered to reduce high-frequency hiss, and all soundcard inputs include lowpass filters to serve as anti-aliasing filters.
+
+Most modern sound cards are {term}full duplex{/term}, meaning that they can simultaneously generate and record sound -- a necessary feature for this project. Older {term}half duplex{/term} sound cards can still be used but require two computers, one to transmit the sound and another to receive the sound.
+</Val> </String>
+
+
+<!--PROCEDURE------------------------------------------------------>
+<String> <Name>secend</Name> <Val></Val> </String>
+<String> <Name>sec</Name> <Val>Procedure</Val> </String>
+
+	<!--STEP------------------------------------------>
+<String> <Name>sec</Name> <Val>White noise source</Val> </String>
+
+<String> <Name>para</Name> <Val>
+		Create a white noise sound source to serve as the SAM channel excitation:
+</Val> </String>
+
+<Cluster> <Name>list</Name> <NumElts>3</NumElts>
+<EW> <Name>type</Name> <Choice>Bulleted</Choice> <Choice>Enumerated</Choice> <Val>1</Val> </EW>
+<String> <Name>list name (optional)</Name> <Val></Val> </String>
+<Array> <Name>list items</Name> <Dimsize>3</Dimsize>
+	<String> <Name>String</Name> <Val>
+			Use the "Express | Output | Play Waveform" Express VI to generate audio for the speaker.
+	</Val> </String>
+	<String> <Name>String</Name> <Val>
+			Use the "Express | Signal Analysis | Simulate Signal" Express VI to generate uniform white noise in the range -1 to +1.
+	</Val> </String>
+	<String> <Name>String</Name> <Val>
+			Set the Express VI parameters to generate a signal with 44.1 kHz sampling frequency and duration of 10 seconds.
+	</Val> </String>
+</Array>
+</Cluster>
+
+<String> <Name>para</Name> <Val>
+		Refer to the video of {cnxn target=&quot;video-white-noise-source&quot;/} for LabVIEW coding techniques for the white noise source.
+</Val> </String>
+
+<Cluster> <Name>video</Name> <NumElts>4</NumElts>
+<String> <Name>ID (optional)</Name> <Val>video-white-noise-source</Val> </String>
+<String> <Name>video name</Name> <Val>white-noise-source</Val> </String>
+<String> <Name>webpage title</Name> <Val>White noise source</Val> </String>
+<String> <Name>caption</Name> <Val>LabVIEW coding techniques for white noise source</Val> </String>
+</Cluster>
+
+	<!--STEP------------------------------------------>
+<String> <Name>secend</Name> <Val></Val> </String>
+<String> <Name>sec</Name> <Val>Recording device</Val> </String>
+
+<String> <Name>para</Name> <Val>
+		Create a device to record the microphone signal:
+</Val> </String>
+
+<Cluster> <Name>list</Name> <NumElts>3</NumElts>
+<EW> <Name>type</Name> <Choice>Bulleted</Choice> <Choice>Enumerated</Choice> <Val>1</Val> </EW>
+<String> <Name>list name (optional)</Name> <Val></Val> </String>
+<Array> <Name>list items</Name> <Dimsize>3</Dimsize>
+	<String> <Name>String</Name> <Val>
+			Use the "Express | Input | Acquire Sound" Express VI configured for the same sampling frequency
+			as the white noise source (44.1 kHz) and a 0.1 second duration.
+	</Val> </String>
+	<String> <Name>String</Name> <Val>
+			Monitor the recorded signal as a time-domain plot.
+	</Val> </String>
+	<String> <Name>String</Name> <Val>
+			Use the "Express | Signal Manipulation | Extract Portion of Signal" Express VI to discard a 
+			user-specified number of samples at the beginning of the waveform to account for transient startup.
+	</Val> </String>
+</Array>
+</Cluster>
+
+<String> <Name>para</Name> <Val>
+		Refer to the video of {cnxn target=&quot;video-recording-device&quot;/} for LabVIEW coding techniques for the recording device.
+</Val> </String>
+
+<Cluster> <Name>video</Name> <NumElts>4</NumElts>
+<String> <Name>ID (optional)</Name> <Val>video-recording-device</Val> </String>
+<String> <Name>video name</Name> <Val>recording-device</Val> </String>
+<String> <Name>webpage title</Name> <Val>Recording device</Val> </String>
+<String> <Name>caption</Name> <Val>LabVIEW coding techniques for recording device</Val> </String>
+</Cluster>
+
+
+	<!--STEP------------------------------------------>
+<String> <Name>secend</Name> <Val></Val> </String>
+<String> <Name>sec</Name> <Val>Power spectrum display</Val> </String>
+
+<String> <Name>para</Name> <Val>
+		Create a graphical indicator to display the power spectrum of the recorded microphone signal:
+</Val> </String>
+
+<Cluster> <Name>list</Name> <NumElts>3</NumElts>
+<EW> <Name>type</Name> <Choice>Bulleted</Choice> <Choice>Enumerated</Choice> <Val>1</Val> </EW>
+<String> <Name>list name (optional)</Name> <Val></Val> </String>
+<Array> <Name>list items</Name> <Dimsize>3</Dimsize>
+	<String> <Name>String</Name> <Val>
+			Use the "Express | Signal Analysis | Spectral Measurements" Express VI configured for power spectrum measurement.
+	</Val> </String>
+	<String> <Name>String</Name> <Val>
+			Create a "Waveform Graph" indicator to display the power spectrum. Calibrate the Y-axis in decibels and the 
+			X-axis in hertz. Use logarithmic mapping for the frequency axis.
+	</Val> </String>
+	<String> <Name>String</Name> <Val>
+			Enclose the power spectrum measurement and recording-related subVIs in a for-loop structure (N=80). 
+			This arrangement takes 80 short recordings, calculates power spectrum for each, and averages them together 
+			to improve the estimated frequency response of the channel. The value of N is chosen to allow the 
+			recording/measurement process to complete before the white noise source stops.</Val> </String>
+</Array>
+</Cluster>
+
+<Cluster> <Name>note</Name> <NumElts>2</NumElts>
+<EW> <Name>notetype</Name> <Choice>Note</Choice> <Choice>Important</Choice> <Val>0</Val> </EW>
+<String> <Name>text</Name> <Val>
+		The white noise source and recording/measurement sections of the overall VI must be kept separate from each 
+		other to allow them to operate in parallel.</Val> </String>
+</Cluster>
+
+<String> <Name>para</Name> <Val>
+		Refer to the video of {cnxn target=&quot;video-power-spectrum&quot;/} for LabVIEW coding techniques for the power spectrum display.
+</Val> </String>
+
+<Cluster> <Name>video</Name> <NumElts>4</NumElts>
+<String> <Name>ID (optional)</Name> <Val>video-power-spectrum</Val> </String>
+<String> <Name>video name</Name> <Val>power-spectrum</Val> </String>
+<String> <Name>webpage title</Name> <Val>Power spectrum display</Val> </String>
+<String> <Name>caption</Name> <Val>LabVIEW coding techniques for power spectrum display</Val> </String>
+</Cluster>
+
+
+	<!--STEP------------------------------------------>
+<String> <Name>secend</Name> <Val></Val> </String>
+<String> <Name>sec</Name> <Val>SAM channel physical setup</Val> </String>
+
+<String> <Name>para</Name> <Val>
+		Set up the hardware for the SAM channel. Place the microphone within a few inches of the speaker. 
+		Adjust the soundcard setup and volume controls to generate and record sound to satisfy two goals:
+</Val> </String>
+
+<Cluster> <Name>list</Name> <NumElts>3</NumElts>
+<EW> <Name>type</Name> <Choice>Bulleted</Choice> <Choice>Enumerated</Choice> <Val>1</Val> </EW>
+<String> <Name>list name (optional)</Name> <Val></Val> </String>
+<Array> <Name>list items</Name> <Dimsize>2</Dimsize>
+	<String> <Name>String</Name> <Val>
+			Signal applied to sound card lies within the range &#xc2b1;1 with no clipping (saturation)
+	</Val> </String>
+	<String> <Name>String</Name> <Val>
+			Signal recorded from sound card fills as much as possible the range &#xc2b1;1 without clipping
+	</Val> </String>
+</Array>
+</Cluster>
+
+<String> <Name>para</Name> <Val>
+		The video of {cnxn target=&quot;video-winXP-audio-setup&quot;/} for LabVIEW coding techniques for the power spectrum display.
+</Val> </String>
+
+<Cluster> <Name>video</Name> <NumElts>4</NumElts>
+<String> <Name>ID (optional)</Name> <Val>video-winXP-audio-setup</Val> </String>
+<String> <Name>video name</Name> <Val>winXP-audio-setup</Val> </String>
+<String> <Name>webpage title</Name> <Val>Audio setup (Windows XP)</Val> </String>
+<String> <Name>caption</Name> <Val>Adjust the audio settings in Windows XP</Val> </String>
+</Cluster>
+
+
+	<!--STEP------------------------------------------>
+<String> <Name>secend</Name> <Val></Val> </String>
+<String> <Name>sec</Name> <Val>SAM channel measurements</Val> </String>
+
+<String> <Name>para</Name> <Val>
+		Apply the white noise source to the SAM channel and record its response for 5 to 10 seconds. 
+		Also record the {term}noise floor{/term} of the channel; use the identical speaker/microphone arrangement but do not 
+		generate any sound (set the "Noise Amplitude" parameter of the noise source to zero).
+
+		Subtract the noise floor measurement from the white noise measurement. The result should be 
+		approximately zero dB outside the passband region of the SAM channel.
+
+		Make hardcopy of your two measurements on the SAM channel as well as the measurement with the noise floor 
+		subtracted (right-click on the "Waveform Graph" indicator and choose "Export Simplified Image"). 
+		Annotate the plots with hand-written labels to identify the lower passband limit, the upper passband limit, 
+		and the overall bandwidth of the channel. 
+
+		State your numerical criterion for choosing the passband limits. Half-power frequency (frequency at which 
+		the response drops 3 dB) is a standard method.
+</Val> </String>
+
+<String> <Name>secend</Name> <Val></Val> </String>
+
+<!--OPTIONAL: TO GO FURTHER------------------------------------------------------>
+<String> <Name>secend</Name> <Val></Val> </String>
+<String> <Name>sec</Name> <Val>Optional: To Go Further</Val> </String>
+
+<String> <Name>para</Name> <Val>
+		Your instructor may ask you to complete one or more of the following activities:
+</Val> </String>
+
+<Cluster> <Name>list</Name> <NumElts>3</NumElts>
+<EW> <Name>type</Name> <Choice>Bulleted</Choice> <Choice>Enumerated</Choice> <Val>1</Val> </EW>
+<String> <Name>list name (optional)</Name> <Val></Val> </String>
+<Array> <Name>list items</Name> <Dimsize>3</Dimsize>
+	<String> <Name>String</Name> <Val>
+			If supported by your sound card, change the soundcard recording device to "Stereo Mix" and repeat 
+			the two measurements above. This soundcard loopback test helps you distinguish which parts of the 
+			frequency response to attribute to the soundcard itself as opposed to the speaker/microphone combination.
+	</Val> </String>
+	<String> <Name>String</Name> <Val>
+			Repeat the SAM channel measurement for other combinations of speakers and microphones
+	</Val> </String>
+	<String> <Name>String</Name> <Val>
+			Enhance the overall VI to record the white noise source on a first run of the VI and the noise floor 
+			on the next run of the VI. Subtract the noise floor from the white noise recording and display the result.
+	</Val> </String>
+</Array>
+</Cluster>
+
+<String> <Name>para</Name> <Val>
+		The video of {cnxn target=&quot;video-noise-floor&quot;/} shows how to retain a measurement from one run 
+		of the VI to the next.
+</Val> </String>
+
+<Cluster> <Name>video</Name> <NumElts>4</NumElts>
+<String> <Name>ID (optional)</Name> <Val>video-noise-floor</Val> </String>
+<String> <Name>video name</Name> <Val>noise-floor</Val> </String>
+<String> <Name>webpage title</Name> <Val>Retain a measurement</Val> </String>
+<String> <Name>caption</Name> <Val>Retain a measurement from one run of a VI to the next</Val> </String>
+</Cluster>
+
+
+
+<!--REFERENCES------------------------------------------------------>
+<String> <Name>secend</Name> <Val></Val> </String>
+<String> <Name>sec</Name> <Val>References</Val> </String>
+
+<Cluster> <Name>list</Name> <NumElts>3</NumElts>
+<EW> <Name>type</Name> <Choice>Bulleted</Choice> <Choice>Enumerated</Choice> <Val>1</Val> </EW>
+<String> <Name>list name (optional)</Name> <Val></Val> </String>
+<Array> <Name>list items</Name> <Dimsize>8</Dimsize>
+	<String><Name>String</Name><Val>
+		Carlson, A. Bruce, Paul B. Crilly, and Janet C. Rutledge, "Communication Systems," 4th ed., McGraw-Hill, 2002. ISBN-13: 978-0-07-011127-1
+	</Val></String>
+	<String><Name>String</Name><Val>
+		Couch, Leon W. II, "Digital and Analog Communication Systems," 7th ed., Pearson Prentice Hall, 2007. ISBN-10: 0-13-142492-0
+	</Val></String>
+	<String><Name>String</Name><Val>
+		Haykin, Simon. "Communication Systems," 4th ed., Wiley, 2001. ISBN-10: 0-471-17869-1
+	</Val></String>
+	<String><Name>String</Name><Val>
+		Haykin, Simon, and Michael Moher, "Introduction to Analog and Digital Communication Systems," 2nd ed., Wiley, 2007. ISBN-13: 978-0-471-43222-7
+	</Val></String>
+	<String><Name>String</Name><Val>
+		Lathi, Bhagwandas P., "Modern Digital and Analog Communication Systems," 3rd ed., Oxford University Press, 1998. ISBN-10: 0-19-511009-9
+	</Val></String>
+	<String><Name>String</Name><Val>
+		Proakis, John G., and Masoud Salehi, "Fundamentals of Communication Systems," Pearson Prentice Hall, 2005. ISBN-10: 0-13-147135-X
+	</Val></String>
+	<String><Name>String</Name><Val>
+		Proakis, John G., and Masoud Salehi, "Communication Systems Engineering," 2nd ed., Pearson Prentice Hall, 2002. ISBN-10: 0-13-061793-8
+	</Val></String>
+	<String><Name>String</Name><Val>
+		Stern, Harold P.E., and Samy A. Mahmoud, "Communication Systems," Pearson Prentice Hall, 2004. ISBN-10: 0-13-040268-0
+	</Val></String>
+</Array>
+</Cluster>
+
+<String> <Name>secend</Name> <Val></Val> </String>
+
+</LVData>
+

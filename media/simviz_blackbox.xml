@@ -1,0 +1,459 @@
+<!--
+== title ==
+Digital Communication System Simulation and Visualization
+
+== keywords ==
+audio
+BER
+binary symmetric channel
+bit error rate
+bitstream
+channel
+image
+LabVIEW
+random number generator
+receiver
+transmitter
+
+== summary == 
+Simulation and visualization enhance understanding of communication system behavior and performance. In this project, develop a simple model for a transmitter, channel, and receiver, and study the performance of the system in terms of bit error rate (BER). Channel errors are visualized as images and "auralized" as sound to further develop insight into the relationships between bit error rate and message length.
+
+-->
+
+<?xml version='1.0' standalone='yes' ?>
+<LVData>
+<Version>8.2</Version>
+
+<!--SUMMARY------------------------------------------------------>
+<String> <Name>sec</Name> <Val>Summary</Val> </String>
+
+<String> <Name>para</Name> <Val>
+		Simulation and visualization enhance understanding of communication system behavior and performance. In this project, develop a 
+		simple model for a transmitter, channel, and receiver, and study the performance of the system in terms of bit error rate (BER). 
+		Channel errors are visualized as images and "auralized" as sound to further develop insight into the relationships between bit 
+		error rate and message length.
+</Val> </String>
+
+
+<!--OBJECTIVES------------------------------------------------------>
+<String> <Name>secend</Name> <Val></Val> </String>
+<String> <Name>sec</Name> <Val>Objectives</Val> </String>
+
+<Cluster> <Name>list</Name> <NumElts>3</NumElts>
+<EW> <Name>type</Name> <Choice>Bulleted</Choice> <Choice>Enumerated</Choice> <Val>1</Val> </EW>
+<String> <Name>list name (optional)</Name> <Val></Val> </String>
+<Array> <Name>list items</Name> <Dimsize>4</Dimsize>
+	<String> <Name>String</Name> <Val>
+		Learn how to simulate a "black box" model of a binary communication system and to evaluate its performance
+	</Val> </String>
+	<String> <Name>String</Name> <Val>
+		Develop an understanding of the relationships between bit error rate (BER) and message length
+	</Val> </String>
+	<String> <Name>String</Name> <Val>
+		Develop a qualitative appreciation for BER and its impact on the received signal
+	</Val> </String>
+	<String> <Name>String</Name> <Val>
+		Learn several ways to observe bitstreams
+	</Val> </String>
+</Array>
+</Cluster>
+
+
+
+
+<!--DELIVERABLES------------------------------------------------------>
+<String> <Name>secend</Name> <Val></Val> </String>
+<String> <Name>sec</Name> <Val>Deliverables</Val> </String>
+
+<Cluster> <Name>list</Name> <NumElts>3</NumElts>
+<EW> <Name>type</Name> <Choice>Bulleted</Choice> <Choice>Enumerated</Choice> <Val>1</Val> </EW>
+<String> <Name>list name (optional)</Name> <Val></Val> </String>
+<Array> <Name>list items</Name> <Dimsize>3</Dimsize>
+<String> <Name>String</Name> <Val>Summary write-up of your results</Val> </String>
+<String> <Name>String</Name> <Val>Hardcopy of all LabVIEW code that you develop (block diagrams and front panels)</Val> </String>
+<String> <Name>String</Name> <Val>Any plots or diagrams requested</Val> </String>
+</Array>
+</Cluster>
+
+<Cluster> <Name>note</Name> <NumElts>2</NumElts>
+<EW> <Name>notetype</Name> <Choice>Note</Choice> <Choice>Important</Choice> <Val>0</Val> </EW>
+<String> <Name>text</Name> <Val>
+		You can easily export LabVIEW front-panel waveform plots directly to your report. Right-click on the waveform
+		indicator and choose "Export Simplified Image."
+</Val> </String>
+</Cluster>
+
+
+<!--SETUP------------------------------------------------------>
+<String> <Name>secend</Name> <Val></Val> </String>
+<String> <Name>sec</Name> <Val>Setup</Val> </String>
+
+<Cluster> <Name>list</Name> <NumElts>3</NumElts>
+<EW> <Name>type</Name> <Choice>Bulleted</Choice> <Choice>Enumerated</Choice> <Val>1</Val> </EW>
+<String> <Name>list name (optional)</Name> <Val></Val> </String>
+<Array> <Name>list items</Name> <Dimsize>3</Dimsize>
+<String> <Name>String</Name> <Val>LabVIEW 8.5 or later version</Val> </String>
+<String> <Name>String</Name> <Val>Computer soundcard</Val> </String>
+<String> <Name>String</Name> <Val>Speaker</Val> </String>
+</Array>
+</Cluster>
+
+<!--TEXTBOOK LINKAGES------------------------------------------------------>
+<String> <Name>secend</Name> <Val></Val> </String>
+<String> <Name>sec</Name> <Val>Textbook Linkages</Val> </String>
+
+<String> <Name>para</Name> <Val>
+		Refer to the following textbooks for additional background on the 
+		{term}binary symmetric channel{/term} (also known as the {term}discrete memoryless channel{/term})
+		used in this project; see the "References" section below for publication details:
+</Val> </String>
+
+<Cluster> <Name>list</Name> <NumElts>3</NumElts>
+<EW> <Name>type</Name> <Choice>Bulleted</Choice> <Choice>Enumerated</Choice> <Val>0</Val> </EW>
+<String> <Name>list name (optional)</Name> <Val></Val> </String>
+<Array> <Name>list items</Name> <Dimsize>6</Dimsize>
+	<String><Name>String</Name><Val>Carlson, Crilly, and Rutledge -- Ch 16</Val></String>
+	<String><Name>String</Name><Val>Couch -- Ch 7</Val></String>
+	<String><Name>String</Name><Val>Haykin -- Ch 10</Val></String>
+	<String><Name>String</Name><Val>Lathi -- Ch 15</Val></String>
+	<String><Name>String</Name><Val>Proakis and Salehi (FCS) -- Ch 12</Val></String>
+	<String><Name>String</Name><Val>Proakis and Salehi (CSE) -- Ch 9</Val></String>
+</Array>
+</Cluster>
+
+
+
+<!--PREREQUISITE MODULES ------------------------------------------------------>
+<String> <Name>secend</Name> <Val></Val> </String>
+<String> <Name>sec</Name> <Val>Prerequisite Modules</Val> </String>
+<String> <Name>para</Name> <Val>
+		If you are relatively new to LabVIEW, consider taking the course 
+		{cnxn document=&quot;col10440&quot;}LabVIEW Techniques for Audio Signal Processing{/cnxn} 
+		which provides the foundation you need to complete this project activity, including:
+		block diagram editing techniques, essential programming structures, subVIs, arrays, and
+		audio. 
+</Val> </String>
+
+<!--INTRODUCTION------------------------------------------------------>
+<String> <Name>secend</Name> <Val></Val> </String>
+<String> <Name>sec</Name> <Val>Introduction</Val> </String>
+
+<String> <Name>para</Name> <Val>
+		{cnxn target=&quot;figure-blockdgm&quot;/} illustrates a generic communication system (transmitter, channel, and receiver) and a
+		comparator to compare the original source bitstream to the output bitstream and report bit errors.
+</Val> </String>
+
+<Cluster> <Name>image</Name> <NumElts>3</NumElts>
+<String> <Name>ID (optional)</Name> <Val>figure-blockdgm</Val> </String>
+<String> <Name>name</Name> <Val>blockdgm</Val> </String>
+<String> <Name>caption</Name> <Val>Generic communication system with comparator</Val> </String>
+</Cluster>
+
+<String> <Name>para</Name> <Val>
+		This project implements {cnxn target=&quot;figure-blockdgm&quot;/} at an elementary level:
+</Val> </String>
+
+<Cluster> <Name>list</Name> <NumElts>3</NumElts>
+<EW> <Name>type</Name> <Choice>Bulleted</Choice> <Choice>Enumerated</Choice> <Val>1</Val> </EW>
+<String> <Name>list name (optional)</Name> <Val></Val> </String>
+<Array> <Name>list items</Name> <Dimsize>4</Dimsize>
+	<String> <Name>String</Name> <Val>
+		The source is a bitstream with equiprobable 0s and 1s
+	</Val> </String>
+	<String> <Name>String</Name> <Val>
+		The transmitter, channel, and receiver are lumped together as a single "black box," i.e., the internal details are
+	        hidden and only the source and received bitstreams are visible
+	</Val> </String>
+	<String> <Name>String</Name> <Val>
+		The channel introduces errors according to the specified bit error rate (BER)
+	</Val> </String>
+	<String> <Name>String</Name> <Val>
+		The comparator detects mismatches between the input and output bitstreams (bit errors) and reports 
+		measured BER, the ratio of the total number of actual bit errors to the total number of bits observed
+	</Val> </String>
+</Array>
+</Cluster>
+
+
+<!--PROCEDURE------------------------------------------------------>
+<String> <Name>secend</Name> <Val></Val> </String>
+<String> <Name>sec</Name> <Val>Procedure</Val> </String>
+
+
+	<!--STEP------------------------------------------>
+<String> <Name>sec</Name> <Val>Build the subVIs</Val> </String>
+
+<String> <Name>para</Name> <Val>
+		Build the subVIs listed below. You may already have some of these available
+		from previous projects.
+
+		Demonstrate that each of these subVIs works properly before continuing to the next part.
+</Val> </String>
+
+<Cluster> <Name>list</Name> <NumElts>3</NumElts>
+<EW> <Name>type</Name> <Choice>Bulleted</Choice> <Choice>Enumerated</Choice> <Val>1</Val> </EW>
+<String> <Name>list name (optional)</Name> <Val></Val> </String>
+<Array> <Name>list items</Name> <Dimsize>3</Dimsize>
+	<String> <Name>String</Name> <Val>{cnxn document=&quot;m18528&quot;}util_BitstreamFromRandom.vi{/cnxn} </Val> </String>
+	<String> <Name>String</Name> <Val>{cnxn document=&quot;m18537&quot;}util_BinarySymmetricChannel.vi{/cnxn} </Val> </String>
+	<String> <Name>String</Name> <Val>{cnxn document=&quot;m18547&quot;}util_MeasureBER.vi{/cnxn} </Val> </String>
+</Array>
+</Cluster>
+
+
+	<!--STEP------------------------------------------>
+<String> <Name>secend</Name> <Val></Val> </String>
+<String> <Name>sec</Name> <Val>Construct base system</Val> </String>
+
+<Cluster> <Name>list</Name> <NumElts>3</NumElts>
+<EW> <Name>type</Name> <Choice>Bulleted</Choice> <Choice>Enumerated</Choice> <Val>1</Val> </EW>
+<String> <Name>list name (optional)</Name> <Val></Val> </String>
+<Array> <Name>list items</Name> <Dimsize>3</Dimsize>
+	<String> <Name>String</Name> <Val>
+		Create the application VI {code type=&quot;inline&quot;}SystemOne.vi{/code} pictured in 
+		{cnxn target=&quot;figure-base-system&quot;/} by assembling the
+		subVIs you built in the previous step. Use the default control and indicator styles for now.
+		Expand the Boolean array indicators to show 20 elements (click on the outer frame of the
+		indicator and drag either horizontally or vertically).
+	</Val></String>
+	<String> <Name>String</Name> <Val>
+		Try small values for {code type=&quot;inline&quot;}length{/code} (say, 10 or 20) and various levels
+		of bit error rate. Remember that the keyboard shortcut "Ctrl+R" runs the VI.
+	</Val></String>
+	<String> <Name>String</Name> <Val>
+		Submit a screenshot of your front panel with handwritten calculations that confirms the correct
+		operation of the {code type=&quot;inline&quot;}measured BER{/code} output.
+	</Val></String>
+</Array>
+</Cluster>
+
+<Cluster> <Name>image</Name> <NumElts>3</NumElts>
+<String> <Name>ID (optional)</Name> <Val>figure-base-system</Val> </String>
+<String> <Name>name</Name> <Val>base-system</Val> </String>
+<String> <Name>caption</Name> <Val>Generic communication system implemented as "SystemOne.vi"</Val> </String>
+</Cluster>
+
+	<!--STEP------------------------------------------>
+<String> <Name>secend</Name> <Val></Val> </String>
+<String> <Name>sec</Name> <Val>Improve usability of front panel</Val> </String>
+
+<String> <Name>para</Name> <Val>
+		The default numerical controls and indicators are useful to examine details such as the BER calculation.
+		However, changing many of the controls and indicators to other forms greatly improves the usability of the front panel
+		and facilitates greater interactivity.
+
+		View the {cnxn target=&quot;video-improve-usability&quot;/} screencast video to learn how to convert the
+		numerical front panel controls to sliders and to visualize the bitstreams as waveforms. 
+		In addition, learn how to set the BER slider control to use logarithmic
+	       	mapping to more conveniently select values over a wide range. 
+		Modify your application VI front panel accordingly to produce {code type=&quot;inline&quot;}SystemTwo.vi{/code}.
+</Val> </String>
+
+<Cluster> <Name>video</Name> <NumElts>4</NumElts>
+<String> <Name>ID (optional)</Name> <Val>video-improve-usability</Val> </String>
+<String> <Name>video name</Name> <Val>improve-usability</Val> </String>
+<String> <Name>webpage title</Name> <Val>Improve front panel usability</Val> </String>
+<String> <Name>caption</Name> <Val>Improve the usability of the front panel controls</Val> </String>
+</Cluster>
+
+	<!--STEP------------------------------------------>
+<String> <Name>secend</Name> <Val></Val> </String>
+<String> <Name>sec</Name> <Val>Investigate the relationship between BER and bitstream length</Val> </String>
+
+<String> <Name>para</Name> <Val>
+		You have noticed by now that the measured bit error rate value is rarely (if ever) the same value 
+		as the specified BER of the channel. Moreover, the measured BER can change considerably from one run 
+		to the next.  
+		
+		Continual operation of a VI greatly improves one's ability to see patterns and 
+		relationships emerge. In this section, modify the VI to run continually and observe the relationship 
+		between specified and measured BER value as a function of the bitstream length.
+		
+		View the {cnxn target=&quot;video-run-continually&quot;/} screencast video to learn how to add a
+		{term}while-loop structure{/term} to operate the system continually, and then modify your application VI
+		accordingly to produce {code type=&quot;inline&quot;}SystemThree.vi{/code}.
+</Val> </String>
+
+<Cluster> <Name>video</Name> <NumElts>4</NumElts>
+<String> <Name>ID (optional)</Name> <Val>video-run-continually</Val> </String>
+<String> <Name>video name</Name> <Val>run-continually</Val> </String>
+<String> <Name>webpage title</Name> <Val>Run VI continually</Val> </String>
+<String> <Name>caption</Name> <Val>Modify base system to run continually</Val> </String>
+</Cluster>
+
+<String> <Name>para</Name> <Val>
+		Experiment with {code type=&quot;inline&quot;}SystemThree.vi{/code}:
+</Val> </String>
+
+
+<Cluster> <Name>list</Name> <NumElts>3</NumElts>
+<EW> <Name>type</Name> <Choice>Bulleted</Choice> <Choice>Enumerated</Choice> <Val>1</Val> </EW>
+<String> <Name>list name (optional)</Name> <Val></Val> </String>
+<Array> <Name>list items</Name> <Dimsize>2</Dimsize>
+	<String> <Name>String</Name> <Val>
+			Estimate the average value (mean) of the measured BER as the specified channel BER varies over
+			the range 0 to 1.
+	</Val></String>
+	<String> <Name>String</Name> <Val>
+			Estimate the variance of the measured BER as the bitstream length changes over the range
+			10 to 10,000 (a rough guess of the spread around the mean is adequate). Feel free to
+			increase the "millisecond multiple" constant if the loop goes too fast to see the numerical
+			displays.
+	</Val></String>
+</Array>
+</Cluster>
+
+<String> <Name>para</Name> <Val>
+		Discuss your results:
+</Val> </String>
+
+<Cluster> <Name>list</Name> <NumElts>3</NumElts>
+<EW> <Name>type</Name> <Choice>Bulleted</Choice> <Choice>Enumerated</Choice> <Val>1</Val> </EW>
+<String> <Name>list name (optional)</Name> <Val></Val> </String>
+<Array> <Name>list items</Name> <Dimsize>2</Dimsize>
+	<String> <Name>String</Name> <Val>
+			How is the average value of the measured BER related to the specified channel BER?
+	</Val></String>
+	<String> <Name>String</Name> <Val>
+			How is the variance of the measured BER related to the bitstream length?
+	</Val></String>
+</Array>
+</Cluster>
+
+
+	<!--STEP------------------------------------------>
+<String> <Name>secend</Name> <Val></Val> </String>
+<String> <Name>sec</Name> <Val>Visualize the bitstreams as images</Val> </String>
+
+<String> <Name>para</Name> <Val>
+		Visualizing the error bitstream as 2-D image develops a qualitative feel for the impact of bit error rate on the 
+		data output of a binary communication system. That is, what value of BER corresponds to a "high quality" image transmission? 
+		Or, what value of BER makes the received image "poor quality"?
+
+		View the {cnxn target=&quot;video-visualize-bitstream&quot;/} screencast video to learn how to reshape the error bitstream
+		into a two-dimensional array suitable for display as a binary (2-level) image using the LabVIEW subVIs "Flatten Pixmap" and 
+		"Draw Flattened Pixmap." In addition, learn how to programmatically control the size of the front-panel image indicator 
+		using a "property node." Modify your application VI accordingly to produce {code type=&quot;inline&quot;}SystemFour.vi{/code}.
+</Val> </String>
+
+<Cluster> <Name>video</Name> <NumElts>4</NumElts>
+<String> <Name>ID (optional)</Name> <Val>video-visualize-bitstream</Val> </String>
+<String> <Name>video name</Name> <Val>visualize-bitstream</Val> </String>
+<String> <Name>webpage title</Name> <Val>Visualize bitstream as an image</Val> </String>
+<String> <Name>caption</Name> <Val>Visualize the error bitstream as a binary image</Val> </String>
+</Cluster>
+
+<String> <Name>para</Name> <Val>
+		Experiment with {code type=&quot;inline&quot;}SystemFour.vi{/code} to study the relationship between BER and image size. To begin,
+		set the bitstream length to 1,024 to produce a 32x32 image. Set the bit error rate to 0.0001. Describe the appearance of the
+		error bitstream as an image, and state the relative "quality" of the image (remember that an ideal error image would always be
+		uniformly black).
+
+		Now, gradually increase the bitstream length to 200,000 while watching the image. Would you still consider the image to be at
+		the same quality level as before? What BER value do you need to obtain the same quality level you stated for the short bitstream
+		length?
+
+		Explain why a specific BER value can be considered acceptable for some types of transmitted messages and not for others. 
+</Val> </String>
+
+
+	<!--STEP------------------------------------------>
+<String> <Name>secend</Name> <Val></Val> </String>
+<String> <Name>sec</Name> <Val>Listen to the error bitstream as sound</Val> </String>
+
+<String> <Name>para</Name> <Val>
+		"Auralizing" the error bitstream as sound also develops your qualitative feel for bit error rate. 
+</Val> </String>
+
+<String> <Name>para</Name> <Val>
+		{media type="image/png" src="LabVIEW.png"/} Download and run {link src=&quot;bit_errors_as_sound.vi&quot;}bit_errors_as_sound.vi{/link}. 
+</Val> </String>
+
+<String> <Name>para</Name> <Val>
+		This application VI continually generates "the sound of silence" (bitstream of 0s) at the source with channel bit errors inserted according 
+		to the "BER" slider. Sound is generated in blocks ({term}frames{/term}), and total errors within a frame are reported. The average bit 
+		errors per second is also reported. Note that the circular panel indicators use logarithmic mapping.
+</Val> </String>
+
+<Cluster> <Name>list</Name> <NumElts>3</NumElts>
+<EW> <Name>type</Name> <Choice>Bulleted</Choice> <Choice>Enumerated</Choice> <Val>1</Val> </EW>
+<String> <Name>list name (optional)</Name> <Val></Val> </String>
+<Array> <Name>list items</Name> <Dimsize>5</Dimsize>
+	<String> <Name>String</Name> <Val>
+			Change the bit error rate (BER) slider and listen to the bit errors.
+	</Val></String>
+	<String> <Name>String</Name> <Val>
+			Try different values of soundcard sampling frequency. Your soundcard may or may not support arbitrary values, 
+			but should definitely support CD-quality (44,100 Hz) and lower sampling rates of 
+{m:math}
+ {m:semantics}
+  {m:mrow}
+   {m:mfrac}
+    {m:mrow}
+     {m:mn}44{/m:mn}{m:mo},{/m:mo}{m:mn}100{/m:mn}
+    {/m:mrow}
+    {m:mrow}
+     {m:msup}
+      {m:mn}2{/m:mn}
+      {m:mi}N{/m:mi}
+     {/m:msup}
+    {/m:mrow}
+   {/m:mfrac}
+  {/m:mrow}
+ {m:annotation encoding=&apos;MathType-MTEF&apos;}
+ MathType@MTEF@5@5@+=feaagaart1ev2aqatCvAUfeBSjuyZL2yd9gzLbvyNv2CaerbuLwBLnhiov2DGi1BTfMBaeXatLxBI9gBaerbd9wDYLwzYb1uaebbnrfifHhDYfgasaacH8srps0lbbf9q8WrFfeuY=Hhbbf9v8qqaqFr0xc9pk0xbba9q8WqFfea0=yr0RYxir=Jbba9q8aq0=yq=He9q8qqQ8frFve9Fve9Ff0dmeaabaqaciGacaGaaeqabaWaaeaaeaaakeaadaWcaaqaaiaaisdacaaI0aGaaiilaiaaigdacaaIWaGaaGimaaqaaiaaikdadaahaaWcbeqaaiaad6eaaaaaaaaa@3B6E@{/m:annotation}
+ {/m:semantics}
+{/m:math}, where N is an integer greater than zero.
+	</Val></String>
+	<String> <Name>String</Name> <Val>
+			If possible, use a media player to play music or speech through your soundcard while the VI is running. Determine the 
+			BER values you would associate with the following qualitative labels for the noise level's impact on the music signal: 
+			{emphasis}none{/emphasis}, {emphasis}just noticeable{/emphasis}, {emphasis}tolerable{/emphasis}, {emphasis}annoying{/emphasis}, and 
+			{emphasis}overwhelming{/emphasis}. Tabulate your value/label pairs.
+	</Val></String>
+	<String> <Name>String</Name> <Val>
+			For BER=0.001, describe the character of the bit error click sound as a function of sampling frequency. Propose an explanation for the 
+			change in sound.
+	</Val></String>
+	<String> <Name>String</Name> <Val>
+			Explain the role of data rate (samples per second) on the impact of bit errors. In other words, does BER tell the whole story?
+	</Val></String>
+</Array>
+</Cluster>
+
+
+<String> <Name>secend</Name> <Val></Val> </String>
+
+<!--REFERENCES------------------------------------------------------>
+<String> <Name>secend</Name> <Val></Val> </String>
+<String> <Name>sec</Name> <Val>References</Val> </String>
+
+<Cluster> <Name>list</Name> <NumElts>3</NumElts>
+<EW> <Name>type</Name> <Choice>Bulleted</Choice> <Choice>Enumerated</Choice> <Val>1</Val> </EW>
+<String> <Name>list name (optional)</Name> <Val></Val> </String>
+<Array> <Name>list items</Name> <Dimsize>6</Dimsize>
+	<String><Name>String</Name><Val>
+		Carlson, A. Bruce, Paul B. Crilly, and Janet C. Rutledge, "Communication Systems," 4th ed., McGraw-Hill, 2002. ISBN-13: 978-0-07-011127-1
+	</Val></String>
+	<String><Name>String</Name><Val>
+		Couch, Leon W. II, "Digital and Analog Communication Systems," 7th ed., Pearson Prentice Hall, 2007. ISBN-10: 0-13-142492-0
+	</Val></String>
+	<String><Name>String</Name><Val>
+		Haykin, Simon. "Communication Systems," 4th ed., Wiley, 2001. ISBN-10: 0-471-17869-1
+	</Val></String>
+	<String><Name>String</Name><Val>
+		Lathi, Bhagwandas P., "Modern Digital and Analog Communication Systems," 3rd ed., Oxford University Press, 1998. ISBN-10: 0-19-511009-9
+	</Val></String>
+	<String><Name>String</Name><Val>
+		Proakis, John G., and Masoud Salehi, "Fundamentals of Communication Systems," Pearson Prentice Hall, 2005. ISBN-10: 0-13-147135-X
+	</Val></String>
+	<String><Name>String</Name><Val>
+		Proakis, John G., and Masoud Salehi, "Communication Systems Engineering," 2nd ed., Pearson Prentice Hall, 2002. ISBN-10: 0-13-061793-8
+	</Val></String>
+</Array>
+</Cluster>
+
+<String> <Name>secend</Name> <Val></Val> </String>
+
+</LVData>
+

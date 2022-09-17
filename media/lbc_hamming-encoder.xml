@@ -1,0 +1,286 @@
+<!--
+
+== title ==
+Hamming Block Code Channel Encoder
+
+== keywords ==
+(n,k) block code
+binary symmetric channel
+block coding
+channel decoder
+channel encoder
+checkbits
+correction power
+error control coding
+error correction
+error detection
+generator matrix
+Hamming code
+Hamming distance
+LabVIEW
+modulo-2 matrix multiplication
+
+== summary ==
+Channel encoding inserts additional information into a transmitted bitstream to facilitate error detection and error correction at the receiver. Block coding breaks up a bitstream into words of length k bits and appends check bits to form a codeword of length n bits. A corresponding channel decoder examines the complete codeword, and detects and even corrects certain types of erroneous bits caused by the channel.  In this project, develop a channel encoder using a special class of block code called a Hamming code. In a follow-on project, develop a companion channel decoder, and then evaluate the performance of the complete encoder/decoder system.
+
+-->
+
+<?xml version='1.0' standalone='yes' ?>
+<LVData>
+<Version>8.2</Version>
+
+<!--SUMMARY------------------------------------------------------>
+<String> <Name>sec</Name> <Val>Summary</Val> </String>
+
+<String> <Name>para</Name> <Val>
+		{term}Channel encoding{/term} inserts additional information into a transmitted bitstream to facilitate {term}error detection{/term} and {term}error correction{/term} at the receiver. {term}Block coding{/term} breaks up a bitstream into words of length k bits and appends check bits to form a {term}codeword{/term} of length n bits. A corresponding {term}channel decoder{/term} examines the complete codeword, and detects and even corrects certain types of erroneous bits caused by the channel.
+
+		In this project, develop a channel encoder using a special class of block code called a Hamming code. In a follow-on project, develop a 
+		companion channel decoder, and then evaluate the performance of the complete encoder/decoder system.
+</Val> </String>
+
+
+<!--OBJECTIVES------------------------------------------------------>
+<String> <Name>secend</Name> <Val></Val> </String>
+<String> <Name>sec</Name> <Val>Objectives</Val> </String>
+
+<Cluster> <Name>list</Name> <NumElts>3</NumElts>
+<EW> <Name>type</Name> <Choice>Bulleted</Choice> <Choice>Enumerated</Choice> <Val>1</Val> </EW>
+<String> <Name>list name (optional)</Name> <Val></Val> </String>
+<Array> <Name>list items</Name> <Dimsize>3</Dimsize>
+<String> <Name>String</Name> <Val>Develop an (n,k) Hamming block code channel encoder</Val> </String>
+<String> <Name>String</Name> <Val>Examine the behavior of the encoded bitstream before and after passing through a binary symmetric channel (BSC)</Val> </String>
+<String> <Name>String</Name> <Val>Learn how to use LabVIEW matrix-oriented subVIs</Val> </String>
+</Array>
+</Cluster>
+
+
+<!--DELIVERABLES------------------------------------------------------>
+<String> <Name>secend</Name> <Val></Val> </String>
+<String> <Name>sec</Name> <Val>Deliverables</Val> </String>
+
+<Cluster> <Name>list</Name> <NumElts>3</NumElts>
+<EW> <Name>type</Name> <Choice>Bulleted</Choice> <Choice>Enumerated</Choice> <Val>1</Val> </EW>
+<String> <Name>list name (optional)</Name> <Val></Val> </String>
+<Array> <Name>list items</Name> <Dimsize>3</Dimsize>
+<String> <Name>String</Name> <Val>Summary write-up of your results</Val> </String>
+<String> <Name>String</Name> <Val>Hardcopy of all LabVIEW code that you develop (block diagrams and front panels)</Val> </String>
+<String> <Name>String</Name> <Val>Any plots or diagrams requested</Val> </String>
+</Array>
+</Cluster>
+
+<Cluster> <Name>note</Name> <NumElts>2</NumElts>
+<EW> <Name>notetype</Name> <Choice>Note</Choice> <Choice>Important</Choice> <Val>0</Val> </EW>
+<String> <Name>text</Name> <Val>
+		You can easily export LabVIEW front-panel waveform plots directly to your report. Right-click on the waveform
+		indicator and choose "Export Simplified Image."
+</Val> </String>
+</Cluster>
+
+<!--SETUP------------------------------------------------------>
+<String> <Name>secend</Name> <Val></Val> </String>
+<String> <Name>sec</Name> <Val>Setup</Val> </String>
+
+<Cluster> <Name>list</Name> <NumElts>3</NumElts>
+<EW> <Name>type</Name> <Choice>Bulleted</Choice> <Choice>Enumerated</Choice> <Val>1</Val> </EW>
+<String> <Name>list name (optional)</Name> <Val></Val> </String>
+<Array> <Name>list items</Name> <Dimsize>1</Dimsize>
+<String> <Name>String</Name> <Val>LabVIEW 8.5 or later version</Val> </String>
+</Array>
+</Cluster>
+
+<!--TEXTBOOK LINKAGES------------------------------------------------------>
+<String> <Name>secend</Name> <Val></Val> </String>
+<String> <Name>sec</Name> <Val>Textbook Linkages</Val> </String>
+
+<String> <Name>para</Name> <Val>
+		Refer to the following textbooks for additional background on the project activities of this module;
+		see the "References" section below for publication details:
+</Val> </String>
+
+<Cluster> <Name>list</Name> <NumElts>3</NumElts>
+<EW> <Name>type</Name> <Choice>Bulleted</Choice> <Choice>Enumerated</Choice> <Val>0</Val> </EW>
+<String> <Name>list name (optional)</Name> <Val></Val> </String>
+<Array> <Name>list items</Name> <Dimsize>6</Dimsize>
+	<String><Name>String</Name><Val>Carlson, Crilly, and Rutledge -- Ch 13 (basis for notation used in this module)</Val></String>
+	<String><Name>String</Name><Val>Haykin -- Ch 10</Val></String>
+	<String><Name>String</Name><Val>Lathi -- Ch 16</Val></String>
+	<String><Name>String</Name><Val>Proakis and Salehi (FCS) -- Ch 13</Val></String>
+	<String><Name>String</Name><Val>Proakis and Salehi (CSE) -- Ch 9</Val></String>
+	<String><Name>String</Name><Val>Stern and Mahmoud -- Ch 10</Val></String>
+</Array>
+</Cluster>
+
+<!--PREREQUISITE MODULES ------------------------------------------------------>
+<String> <Name>secend</Name> <Val></Val> </String>
+<String> <Name>sec</Name> <Val>Prerequisite Modules</Val> </String>
+<String> <Name>para</Name> <Val>
+		If you are relatively new to LabVIEW, consider taking the course 
+		{cnxn document=&quot;col10440&quot;}LabVIEW Techniques for Audio Signal Processing{/cnxn} 
+		which provides the foundation you need to complete this project activity, including:
+		block diagram editing techniques, essential programming structures, subVIs, arrays, and
+		audio. 
+</Val> </String>
+
+<!--INTRODUCTION------------------------------------------------------>
+<String> <Name>secend</Name> <Val></Val> </String>
+<String> <Name>sec</Name> <Val>Introduction</Val> </String>
+
+<String> <Name>para</Name> <Val>
+		{term}Error control coding{/term} describes a class of techniques that prepare
+		a digital message bitstream to pass through a noisy channel so that the 
+		receiver can detect transmission errors and in some cases correct these errors. 
+
+		The {cnxn target=&quot;video-coding-basics&quot;/} screencast video introduces
+		error control coding, including visualization of codewords, {term}Hamming distance{/term},
+		{term}minimum distance{/term} of a code, and error detection and correction power of a
+		code.
+</Val> </String>
+
+<Cluster> <Name>video</Name> <NumElts>4</NumElts>
+<String> <Name>ID (optional)</Name> <Val>video-coding-basics</Val> </String>
+<String> <Name>video name</Name> <Val>coding-basics</Val> </String>
+<String> <Name>webpage title</Name> <Val>Error control coding</Val> </String>
+<String> <Name>caption</Name> <Val>Error control coding basic concepts</Val> </String>
+</Cluster>
+
+<String> <Name>para</Name> <Val>
+		{term}(n,k) block codes{/term} break up a message bitstream into blocks of
+		k bits and insert additional blocks of {term}checkbits{/term}. The checkbit
+		information permits a receiver to diagnose the received bitstream for errors,
+		and to correct some types of errors automatically.
+
+		The {cnxn target=&quot;video-blockcodes&quot;/} screencast video introduces
+		(n,k) block codes, {term}code rate{/term}, the special case of 
+		{term}linear block codes{/term}, and
+		illustrates the trade-off between code rate and error control power.
+</Val> </String>
+
+<Cluster> <Name>video</Name> <NumElts>4</NumElts>
+<String> <Name>ID (optional)</Name> <Val>video-blockcodes</Val> </String>
+<String> <Name>video name</Name> <Val>blockcodes</Val> </String>
+<String> <Name>webpage title</Name> <Val>(n,k) block codes</Val> </String>
+<String> <Name>caption</Name> <Val>(n,k) block coding basic concepts</Val> </String>
+</Cluster>
+
+<String> <Name>para</Name> <Val>
+		{term}(n,k) Hamming block codes{/term} represent a popular type of block
+		code.
+		The {cnxn target=&quot;video-hammingcode&quot;/} screencast video introduces
+		the (n,k) Hamming block code, explains how to construct the {term}generator matrix{/term} 
+		to transform message blocks into codewords rate, and presents a detailed
+		example to illustrate the encoding process.
+</Val> </String>
+
+<Cluster> <Name>video</Name> <NumElts>4</NumElts>
+<String> <Name>ID (optional)</Name> <Val>video-hammingcode</Val> </String>
+<String> <Name>video name</Name> <Val>hammingcode</Val> </String>
+<String> <Name>webpage title</Name> <Val>(n,k) Hamming code</Val> </String>
+<String> <Name>caption</Name> <Val>(n,k) Hamming code construction rules and example</Val> </String>
+</Cluster>
+
+
+<!--PROCEDURE------------------------------------------------------>
+<String> <Name>secend</Name> <Val></Val> </String>
+<String> <Name>sec</Name> <Val>Procedure</Val> </String>
+
+	<!--STEP------------------------------------------>
+<String> <Name>sec</Name> <Val>Manual calculations</Val> </String>
+
+<String> <Name>para</Name> <Val>
+		Work through the Hamming code construction process by hand to lay a good
+		foundation for developing a correct and understandable computer 
+		implementation. Write up this work on a separate page.
+</Val> </String>
+
+<Cluster> <Name>list</Name> <NumElts>3</NumElts>
+<EW> <Name>type</Name> <Choice>Bulleted</Choice> <Choice>Enumerated</Choice> <Val>1</Val> </EW>
+<String> <Name>list name (optional)</Name> <Val></Val> </String>
+<Array> <Name>list items</Name> <Dimsize>2</Dimsize>
+<String> <Name>String</Name> <Val>Construct two distinct (7,4) Hamming code "G" matrices.</Val> </String>
+<String> <Name>String</Name> <Val>For each "G" matrix, calculate the codewords that emerge
+		from the following message words: 0000, 1010, and 1111.</Val> </String>
+</Array>
+</Cluster>
+
+
+	<!--STEP------------------------------------------>
+<String> <Name>secend</Name> <Val></Val> </String>
+<String> <Name>sec</Name> <Val>SubVI construction</Val> </String>
+
+<String> <Name>para</Name> <Val>
+		Build the subVIs listed below. You may already have some of these available
+		from previous projects.
+
+		Demonstrate that each of these subVIs works properly before continuing to the next part.
+</Val> </String>
+
+<Cluster> <Name>list</Name> <NumElts>3</NumElts>
+<EW> <Name>type</Name> <Choice>Bulleted</Choice> <Choice>Enumerated</Choice> <Val>1</Val> </EW>
+<String> <Name>list name (optional)</Name> <Val></Val> </String>
+<Array> <Name>list items</Name> <Dimsize>7</Dimsize>
+	<String> <Name>String</Name> <Val>{cnxn document=&quot;m18441&quot;}hamming_HammingCodeParameters.vi{/cnxn} </Val> </String>
+	<String> <Name>String</Name> <Val>{cnxn document=&quot;m18563&quot;}hamming_GeneratorMatrix.vi{/cnxn} </Val> </String>
+	<String> <Name>String</Name> <Val>{cnxn document=&quot;m18562&quot;}hamming_Mod2MatrixMultiply.vi{/cnxn} </Val> </String>
+	<String> <Name>String</Name> <Val>{cnxn document=&quot;m18528&quot;}util_BitstreamFromRandom.vi{/cnxn} </Val> </String>
+	<String> <Name>String</Name> <Val>{cnxn document=&quot;m18596&quot;}util_BitsToWords.vi{/cnxn} </Val> </String>
+	<String> <Name>String</Name> <Val>{cnxn document=&quot;m18551&quot;}util_WordsToBits.vi{/cnxn} </Val> </String>
+	<String> <Name>String</Name> <Val>{cnxn document=&quot;m18537&quot;}util_BinarySymmetricChannel.vi{/cnxn} </Val> </String>
+</Array>
+</Cluster>
+
+
+	<!--STEP------------------------------------------>
+<String> <Name>secend</Name> <Val></Val> </String>
+<String> <Name>sec</Name> <Val>Hamming block code channel encoder</Val> </String>
+
+<String> <Name>para</Name> <Val>
+		Review again the background theory presented earlier for the Hamming block code channel encoder, and then
+		assemble your subVIs into a top-level application VI that creates a message bitstream, encodes the
+		bitstream using Hamming coding, passes the bitstream through a noisy channel (the binary symmetric channel),
+		and displays selected results of the channel encoding process.
+
+		{media type="image/png" src="LabVIEW.png"/} Download the LabVIEW VI 
+		{link src=&quot;Front_Panel_Indicators.vi&quot;}Front_Panel_Indicators.vi{/link}. This VI contains
+		pre-formatted front panel indicators suitable for convenient display of binary values.
+
+		Debug your application until it works properly. Include a front-panel screenshot with hand-written annotations that
+		demonstrates correct operation of your encoder.
+</Val> </String>
+
+
+<String> <Name>secend</Name> <Val></Val> </String>
+
+<!--REFERENCES------------------------------------------------------>
+<String> <Name>secend</Name> <Val></Val> </String>
+<String> <Name>sec</Name> <Val>References</Val> </String>
+
+<Cluster> <Name>list</Name> <NumElts>3</NumElts>
+<EW> <Name>type</Name> <Choice>Bulleted</Choice> <Choice>Enumerated</Choice> <Val>1</Val> </EW>
+<String> <Name>list name (optional)</Name> <Val></Val> </String>
+<Array> <Name>list items</Name> <Dimsize>6</Dimsize>
+	<String><Name>String</Name><Val>
+		Carlson, A. Bruce, Paul B. Crilly, and Janet C. Rutledge, "Communication Systems," 4th ed., McGraw-Hill, 2002. ISBN-13: 978-0-07-011127-1
+	</Val></String>
+	<String><Name>String</Name><Val>
+		Haykin, Simon. "Communication Systems," 4th ed., Wiley, 2001. ISBN-10: 0-471-17869-1
+	</Val></String>
+	<String><Name>String</Name><Val>
+		Lathi, Bhagwandas P., "Modern Digital and Analog Communication Systems," 3rd ed., Oxford University Press, 1998. ISBN-10: 0-19-511009-9
+	</Val></String>
+	<String><Name>String</Name><Val>
+		Proakis, John G., and Masoud Salehi, "Fundamentals of Communication Systems," Pearson Prentice Hall, 2005. ISBN-10: 0-13-147135-X
+	</Val></String>
+	<String><Name>String</Name><Val>
+		Proakis, John G., and Masoud Salehi, "Communication Systems Engineering," 2nd ed., Pearson Prentice Hall, 2002. ISBN-10: 0-13-061793-8
+	</Val></String>
+	<String><Name>String</Name><Val>
+		Stern, Harold P.E., and Samy A. Mahmoud, "Communication Systems," Pearson Prentice Hall, 2004. ISBN-10: 0-13-040268-0
+	</Val></String>
+</Array>
+</Cluster>
+
+<String> <Name>secend</Name> <Val></Val> </String>
+
+</LVData>
+

@@ -1,0 +1,552 @@
+<document xmlns="http://cnx.rice.edu/cnxml">
+  <title>Caller ID Decoder</title>
+<metadata xmlns:md="http://cnx.rice.edu/mdml">
+  <md:content-id>m18708</md:content-id>
+  <md:title>Caller ID Decoder</md:title>
+  <md:abstract>The telephone company's "Caller ID" service provides the calling party's directory information as well as the time and date of the call as an FSK (frequency shift keying) signal between the first and second rings of a telephone call. In this project, develop a complete Caller ID decoder that analyzes an audio recording of the FSK signal to extract the directory and date information for display.</md:abstract>
+  <md:uuid>83fd7c8a-8819-496b-b491-9668ec2164bb</md:uuid>
+</metadata>
+<content>
+
+<table id="labview_banner" frame="none" summary=""><tgroup cols="2">
+<colspec rowsep="0" colsep="0"/> <colspec colwidth="6in" rowsep="0" colsep="0"/>
+<tbody>
+  <row>
+    <entry morerows="3"><media id="idp298496" alt=""><image src="../../media/LabVIEWtop.png" mime-type="image/png"/></media></entry>
+    <entry> This module refers to LabVIEW, a software development environment that features a graphical programming language.
+       Please see the <link document="m15428">LabVIEW QuickStart Guide</link> module for tutorials and documentation that will help you:</entry>
+  </row>
+  <row> <entry>• Apply LabVIEW to Audio Signal Processing </entry> </row>
+  <row> <entry>• Get started with LabVIEW</entry> </row>
+  <row> <entry>• Obtain a fully-functional evaluation edition of LabVIEW</entry> </row>
+</tbody>
+</tgroup>
+</table>
+
+<note id="idm1720720">
+Visit <link document="m17319">LabVIEW Setup</link> to learn how to adjust your own LabVIEW environment to match the settings used by the LabVIEW screencast video(s) in this module.
+Click the "Fullscreen" button at the lower right corner of the video player if the video does not fit properly within your browser window.
+</note>
+
+<section id="sec1">
+<title>Summary</title>
+
+<para id="par2">
+		The telephone company's "Caller ID" service provides the calling party's directory information as well as the time and date
+		of the call as an FSK (frequency shift keying) signal between the first and second rings of a telephone call. In this project,
+		develop a complete Caller ID decoder that analyzes an audio recording of the FSK signal to extract the directory and date
+		information for display.
+</para>
+
+</section>
+
+<section id="sec3">
+<title>Objectives</title>
+
+<list id="list4" list-type="enumerated">
+
+<item> 
+		Describe the Caller ID standard at the signal level
+	 </item>
+<item> 
+		Express a set of Caller ID information as a series of message bytes  
+	 </item>
+<item> 
+		Decode by hand a Caller ID data block bitstream 
+	 </item>
+<item> 
+		Implement a complete Caller ID decoder application in LabVIEW
+	 </item>
+
+</list>
+
+</section>
+
+<section id="sec5">
+<title>Deliverables</title>
+
+<list id="list6" list-type="enumerated">
+
+<item> Summary write-up of your results </item>
+<item> Hardcopy of all LabVIEW code that you develop (block diagrams and front panels) </item>
+<item> Any plots or diagrams requested </item>
+
+</list>
+
+<note id="idm6387664">
+		You can easily export LabVIEW front-panel waveform plots directly to your report. Right-click on the waveform
+		indicator and choose "Export Simplified Image."
+</note>
+
+</section>
+
+<section id="sec7">
+<title>Setup</title>
+
+<list id="list8" list-type="enumerated">
+
+<item> LabVIEW 8.5 or later version </item>
+<item> Modulation Toolkit 4.0 or later version </item>
+<item> Computer soundcard </item>
+<item> Speaker </item>
+
+</list>
+
+</section>
+
+<section id="sec9">
+<title>Textbook Linkages</title>
+
+<para id="par10">
+		Refer to the following textbooks for additional background on the project activities of this module;
+		see the "References" section below for publication details:
+</para>
+
+<list id="list11" list-type="bulleted">
+
+<item> Carlson, Crilly, and Rutledge -- Ch 14 </item>
+<item> Couch -- Ch 5 </item>
+<item> Haykin and Moher -- Ch 7 </item>
+<item> Lathi -- Ch 13 </item>
+<item> Proakis and Salehi (FCS) -- Ch 10 </item>
+<item> Stern and Mahmoud -- Ch 5 </item>
+<item> Wheeler -- Ch 14 (an excellent reference, provides much detail about Caller ID) </item>
+
+</list>
+
+</section>
+
+<section id="sec12">
+<title>Prerequisite Modules</title>
+
+<para id="par13">
+		If you are relatively new to LabVIEW, consider taking the course 
+		<link document="col10440">LabVIEW Techniques for Audio Signal Processing</link> 
+		which provides the foundation you need to complete this project activity, including:
+		block diagram editing techniques, essential programming structures, subVIs, arrays, and
+		audio. 
+</para>
+
+</section>
+
+<section id="sec14">
+<title>Introduction</title>
+
+<para id="par15">
+		You are no doubt familiar with <term>Caller ID</term>, the telephone company service that provides the name
+		and phone number of your incoming caller.
+		The Caller ID service transmits the calling party's <term>directory information</term> 
+		(name and telephone number) as well as the date and time of the call between the first and second ring as a 
+		<term>binary FSK</term> (<term>frequency shift keying</term>) signal. Click 
+		<link resource="CallerID_audio_example.mp3">CallerID_audio_example.mp3</link> to listen 
+		to a typical Caller ID FSK signal embedded between the first and second ringer pulses.</para>
+
+<para id="par16">		After successfully completing this project, your LabVIEW application will be able to read audio recordings such as
+		<link resource="CallerID_audio_example.mp3">CallerID_audio_example.mp3</link> and then extract the Caller ID message 
+		for display.</para>
+
+<para id="par17">		<link target-id="figure-systemdiagram"/> illustrates the Caller ID decoder system to be constructed in this project.
+</para>
+
+<figure id="figure-systemdiagram">
+<media id="idm11802336" alt=""><image src="../../media/bpm_cid-systemdiagram.png" mime-type="image/png"/></media>
+<caption>
+   Caller ID decoder system to be constructed in this project
+</caption>
+</figure>
+
+<para id="par19">
+		The process begins with a call placed by the calling party. The telephone company's <term>subscriber line interface card</term>
+		(<term>SLIC</term>) in the telephone company <term>central office</term> (<term>CO</term>) signals the 
+		<term>customer premises equipment</term> (<term>CPE</term>) -- telephone, modem, CallerID unit, etc. -- 
+		with a <term>ringing pulse</term> (90 VRMS, 20 Hz, 2 seconds on, 4 seconds off). The CO repeats the ringing pulse as long as the 
+		CPE is <term>on hook</term>, that is, the phone has not been answered. Answering the phone call places the CPE in the 
+		<term>off hook</term> state, 
+		and the CO connects the calling party to the CPE. The terms "on hook" and "off hook" refer to the position of the ear piece or 
+		handset in early telephone equipment. The SLIC detects the CPE hook state by the amount of DC current in the customer loop: 
+		zero current means on-hook, and non-zero current (about 10 to 20mA) indicates off-hook. The Caller ID FSK signal is 
+		transmitted between the first and second ringing pulses provided the CPE is on-hook. For this reason, the interface circuit 
+		indicated in Figure 1 must be AC-coupled to the SLIC to prevent drawing DC current.
+</para>
+
+</section>
+
+<section id="sec20">
+<title>FSK Signal</title>
+
+<para id="par21">
+		Caller ID uses the Bell 202 modem standard:
+</para>
+
+<list id="list22" list-type="bulleted">
+
+<item> 
+		Binary FSK (two-level frequency shift keying)
+	 </item>
+<item> 
+		Symbol rate: 1,200 symbols/second
+	 </item>
+<item> 
+		Bit rate: 1 bit per symbol
+	 </item>
+<item> 
+		Logic 0 ("space"): 2,200 Hz
+	 </item>
+<item> 
+		Logic 1 ("mark"): 1,300 Hz
+	 </item>
+
+</list>
+
+</section>
+
+<section id="sec23">
+<title>Caller ID Message Format</title>
+
+<para id="par24">
+		The complete Caller ID message is less than eight tenths of a second in duration. 
+		Listen to <link resource="reduced_tempo_FSK.wav">reduced_tempo_FSK.wav</link>,
+		a reduced tempo version of just the FSK signal; the signal is stretched out in time by a 
+		factor of 4, but the original frequencies are preserved.</para>
+
+<para id="par25">		Hopefully you could discern three distinct regions of the signal:
+</para>
+
+<list id="list26" list-type="enumerated">
+
+<item> 
+	Alternating 1's and 0's for 250 ms -- this <term>channel seizure</term> region "wakes up" the demodulator and gives the symbol synchronization
+	subsystem enough time to generate pulses synchronized to the FSK signal
+ </item>
+<item> 
+	Constant 1's for 150 ms -- this <term>steady mark</term> region separates the channel seizure region from the datablock; the relatively long
+      interval of constant "mark" level ensures that the first "space" symbol of the data block can be easily detected
+ </item>
+<item> 
+	Message bits for approximately 350 ms (the total time varies depending on the caller information) -- this <term>data block</term> region
+	contains the Caller ID information
+ </item>
+
+</list>
+
+<para id="par27">
+		The message consists of a sequence of 10-bit <term>frames</term>. A <term>start bit</term> of value 0 begins the frame,
+		8 bits of information follow, and the frame concludes with a <term>stop bit</term> of value 1.
+		The 8 information bits begin with the <term>LSB</term> (least significant bit) and end with the
+		<term>MSB</term> (most significant bit). The information bits form one byte.</para>
+
+<para id="par28">		The data block message bytes are organized as follows:
+</para>
+
+<list id="list29" list-type="enumerated">
+
+<item> 
+			Message type, 1 byte -- 0x80 (i.e., hexadecimal 80) for Multiple Data Message Format (MDMF), 
+			or 0x04 for Single Data Message Format (SDMF). Number-only Caller ID service uses SDMF, and number-plus-name
+			service uses MDMF. Number-plus-name service is much more common today, and is used in this project.
+	 </item>
+<item> 
+			Length of complete message, 1 byte -- This length value <emphasis>excludes</emphasis> the single-byte checksum at the end of the data block
+	 </item>
+<item> 
+			Data type, 1 byte -- 0x01 = date and time, 0x02 = phone number, 0x04 = number not present, 0x07 = name, and 0x08 = name not present
+	 </item>
+<item> 
+			Length of data, 1 byte
+	 </item>
+<item> 
+			Data bytes, variable number according to length
+	 </item>
+<item> 
+			Repeat Items 3, 4, and 5 as needed to complete the Caller ID message
+	 </item>
+<item> 
+			Checksum, 1 byte -- Add this to the modulo-256 sum of all the previous bytes in the message, including the message type and message length;
+		       	a zero result indicates no errors detected
+	 </item>
+
+</list>
+
+</section>
+
+<section id="sec30">
+<title>FSK Demodulator</title>
+
+<para id="par31">
+		The phase-lock loop (PLL) can easily discern the change in frequencies of an FSK signal. The LabVIEW Modulation Toolkit 
+		provides a PLL component that serves as an FSK demodulator for this project. Refer to the theory-of-operation screencast
+		video in <link document="m18638">cid_Demodulator.vi</link> learn how to use this PLL.
+</para>
+
+</section>
+
+<section id="sec32">
+<title>Timing Recovery</title>
+
+<para id="par33">
+		The Caller ID message symbol rate is 1,200 symbols per second. The baseband output of the FSK demodulator must be compared 
+		to a threshold and sampled at the symbol rate to recover the serial bit stream. The timing recovery system ensures that 
+		the thresholded demodulator output is sampled near the midpoint of the symbol. In this project a "local oscillator" 
+		produces a squarewave at a nominal frequency of 1,200 Hz. The local oscillator phase is synchronized to the thresholded FSK 
+		demodulator output. That is, the local oscillator phase is reset each time a transition is detected on the FSK demodulator output.
+</para>
+
+</section>
+
+<section id="sec34">
+<title>Procedure</title>
+
+<section id="sec35">
+<title>Download required project files</title>
+
+<para id="par36">
+		Download the required project files contained in <link resource="CID_Decoder_Project_Files.zip">CID_Decoder_Project_Files.zip</link>;
+		unpack the files to the same folder in which you plan to build your LabVIEW subVIs and top-level application VIs.</para>
+
+<para id="par37">		The .zip archive contains the following files:
+</para>
+
+<list id="list38" list-type="bulleted">
+
+<item> <code display="inline">cid_ParseMessage.vi</code> -- Accepts a text string containing the Caller ID data block bytes,
+			and parses the string to extract the Caller ID data fields, i.e., date, time, number, and name; also returns information about the data block itself,
+			namely, message type (SDMF or MDMF), message length, checksum value, and result of checksum calculation. All of the values are returned in a
+			single cluster.
+	 </item>
+<item> <code display="inline">cid_Display.ctl</code> -- Custom front-panel control to display Caller ID data block information
+			contained in the cluster generated by <code display="inline">cid_ParseMessage.vi</code>. Follow these steps to place the control on 
+			the front panel: Display the front panel, right-click and choose "Select a Control...", and then choose 
+			<code display="inline">cid_Display.ctl</code>.
+	 </item>
+<item> <code display="inline">CallerID-N.wav</code> -- Two audio recordings of Caller ID signal embedded between the first and second
+			ringer pulses. The recordings include three ringer pulses, are approximately 17 seconds in duration, and are sampled at 44.1 kHz.
+	 </item>
+<item> <code display="inline">CallerID-N_19.2kHz.wav</code> -- The same audio recordings
+			downsampled to 19.2 kHz to produce 16 samples per symbol, the default value for many of the LabVIEW Modulation Toolkit subVIs. Either
+			audio file can be used for this project, although the downsampled versions shorten run times of the Caller ID decoder application.
+	 </item>
+<item> <code display="inline">cid_Recorder.vi</code> -- LabVIEW VI to monitor the soundcard input for ringer activity;
+			when detected, record for a fixed time interval and save to a .wav file. Useful to collect several Caller ID signals automatically.
+			Requires a suitable interface circuit between the telephone wall jack and the computer sound card.
+	 </item>
+
+</list>
+
+</section>
+
+<section id="sec39">
+<title>Study the Caller ID signal audio recordings</title>
+
+<para id="par40">
+		Open the <code display="inline">CallerID-1.wav</code> audio recording in <link url="http://audacity.sourceforge.net">Audacity</link> 
+		or an equivalent sound editor to view and listen to the signal. Use the zoom features to study the fine detail of the FSK signal, 
+		especially at the transitions between frequencies.</para>
+
+<para id="par41">		Repeat for the other .wav audio files included in the download distribution.</para>
+
+<para id="par42">		Are you able to discern any obvious differences among the various audio recordings?
+</para>
+
+</section>
+
+<section id="sec43">
+<title>SubVI construction</title>
+
+<para id="par44">
+		Possible approaches to analyze the signal generated by the telephone central office include: (1) process each
+		sample as it arrives and generate the decoded message "on the fly," or (2) record the entire signal and then make repeated
+		passes over the recording as needed to extract the message. Real-time implementation requires the former approach, while
+		the latter "off-line" approach is easier to implement as a sequence of subVI calls, and is therefore the method of choice for this project.</para>
+
+<para id="par45">		Build the subVIs listed below. You may already have some of these available
+		from previous projects.</para>
+
+<para id="par46">		Demonstrate that each of these subVIs works properly before continuing to the next part. The order in which you
+		build the subVIs does not matter, however, the order presented roughly corresponds to the general processing flow
+		that begins with the audio recording and ends with a collection of bytes.
+</para>
+
+<list id="list47" list-type="enumerated">
+
+<item> <link document="m18532">util_GetAudio.vi</link>  </item>
+<item> <link document="m18638">cid_Demodulator.vi</link>  </item>
+<item> <link document="m18593">regen_Sampler.vi</link>  </item>
+<item> <link document="m18606">util_EdgeDetector.vi</link>  </item>
+<item> <link document="m18612">regen_BitClock.vi</link>  </item>
+<item> <link document="m18432">cid_DetectStartBit.vi</link>  </item>
+<item> <link document="m18629">util_BitstreamToText.vi</link>  </item>
+
+</list>
+
+</section>
+
+<section id="sec48">
+<title>Isolate and demodulate the FSK signal</title>
+
+<para id="par49">
+		Build a top-level VI that isolates and demodulates the FSK portion of the complete Caller ID audio signal. 
+		
+		<link document="m18532">util_GetAudio</link> to load the .wav audio file, and then pass this signal to
+		<link document="m18638">cid_Demodulator.vi</link>. Connect front-panel controls to the four parameter inputs
+		of <link document="m18638">cid_Demodulator.vi</link>. 
+		
+		Create a mixed-signal waveform chart to display the four signals associated with <link document="m18638">cid_Demodulator.vi</link>,
+		namely: <code display="inline">FSK signal</code> (the original audio signal applied to the demodulator input),
+		<code display="inline">baseband signal</code> (the demodulated output), <code display="inline">phase error magnitude</code>, and
+		<code display="inline">PLL locked</code>.</para>
+
+<para id="par50">		The <link target-id="video-mixedsignalgraph"/> screencast video describes how to set up a LabVIEW "Mixed Signal Graph" to
+		plot the waveform data type and Boolean 1-D array on a common timescale, much like an oscilloscope display with multiple analog
+		and digital signals.
+</para>
+
+<figure id="video-mixedsignalgraph"><title><link url="https://youtu.be/iD21gs05zsw" window="new">https://youtu.be/iD21gs05zsw</link> (6:34)</title><media id="eip-idm249475456" display="block" alt="Insert alt text here"><video mime-type="video/mpeg" src="https://www.youtube.com/embed/iD21gs05zsw?rel=0" autoplay="false" width="640" height="460"/></media>
+
+<caption>[video] Set up a "Mixed Signal Graph" to display both "analog" and "digital" signals on a common timescale
+</caption></figure><para id="par52">
+		Set the demodulator VCO carrier frequency to the average value of the mark and space frequencies of the FSK signal.</para>
+
+<para id="par53">		Experiment with the remaining demodulator parameters <code display="inline">VCO gain</code> 
+		(start with values in the range 0.05 to 0.20), 
+		<code display="inline">phase error LPF cutoff frequency</code>, and 
+		<code display="inline">comparator threshold for PLL lock</code> to satisfy the following goals:
+</para>
+
+<list id="list54" list-type="bulleted">
+
+<item> Baseband signal in FSK region "looks good", i.e., reasonably quick rise time without high-frequency ringing
+			or other non-ideal artifacts
+	 </item>
+<item> <code display="inline">PLL locked</code> is active (<code display="inline">T</code>) only during
+			the FSK signal and is inactive during silence and ringer pulses.
+	 </item>
+
+</list>
+
+<para id="par55">
+		Report your four demodulator parameter values and plot the mixed signal graph that demonstrates the ability of your system to
+		identify the time region over which the FSK signal is active.
+</para>
+
+</section>
+
+<section id="sec56">
+<title>Sample the baseband signal</title>
+
+<para id="par57">
+		Use <link document="m18593">regen_Sampler.vi</link> to extract the FSK signal region from the baseband signal produced by
+		<link document="m18638">cid_Demodulator.vi</link>. Note that <link document="m18593">regen_Sampler.vi</link> 
+		is used like a "gating" circuit here: the <code display="inline">PLL locked</code> signal is active over the entire time that the
+		FSK signal is detected, therefore <link document="m18593">regen_Sampler.vi</link> picks out every value from the original
+		audio recording over which <code display="inline">PLL locked</code> is active.</para>
+
+<para id="par58">		Add the bit sync system to your VI using a zero-crossing comparator, <link document="m18606">util_EdgeDetector.vi</link> 
+		(two instances),
+		<link document="m18612">regen_BitClock.vi</link> set to 1,200 Hz, and another instance of <link document="m18593">regen_Sampler.vi</link>. 
+		Use the zero-crossing
+		comparator to convert the FSK signal to a Boolean 1-D array. This signal is <emphasis>not</emphasis> a bitstream yet, but rather serves to identify
+		the beginning of bit intervals.
+		
+		Use one edge detector
+		to produce indicator pulses for each zero crossing of the baseband signal (both rising edges and falling edges). 
+		These indicator pulses serve as the synchronization for the bit clock oscillator, which produces a square wave synchronized to the
+		baseband signal. The square wave transitions low-to-high at the beginning of the symbol interval and transitions high-to-low at the midpoint
+		of the signal interval. Use an edge detector to produce indicator pulses at the midpoint of the symbol interval which control when
+		the sampler should take samples from the isolated FSK signal.</para>
+
+<para id="par59">		Create another mixed signal waveform graph to display the isolated FSK signal, the thresholded version of this signal, the
+		indicator pulses that synchronize the bit clock, the bit clock output, and "actual sampling instants" produced by the sampler.</para>
+
+<para id="par60">		Study your results to ensure that the demodulated baseband signal is sampled properly.</para>
+
+<para id="par61">		The <link target-id="video-tabbed"/> screencast video shows how you can conserve front-panel real estate by placing
+		two waveform graphs inside a tabbed control.
+</para>
+
+<figure id="video-tabbed"><title><link url="https://youtu.be/ZrePmWBT0gU" window="new">https://youtu.be/ZrePmWBT0gU</link> (1:58)</title><media id="eip-idm1356133136" display="block" alt="Insert alt text here"><video mime-type="video/mpeg" src="https://www.youtube.com/embed/ZrePmWBT0gU?rel=0" autoplay="false" width="640" height="460"/></media>
+
+
+<caption>[video] Conserve front-panel real estate with a tabbed control
+</caption></figure></section>
+
+<section id="sec63">
+<title>Decode the message bitstream</title>
+
+<para id="par64">
+		Use a zero-crossing comparator (specifically of the "less than zero" type) to convert the sampled baseband signal to
+		a bitstream. Process this bitstream with <link document="m18432">cid_DetectStartBit.vi</link> to extract only the
+		data block portion of the bitstream.</para>
+
+<para id="par65">		Use <link document="m18629">util_BitstreamToText.vi</link> to convert the bitstream to a sequence of 8-bit
+		values ("string" data type), and then use <code display="inline">cid_ParseMessage</code> to convert
+		the text string into an information cluster to be displayed with the custom front-panel control
+		<code display="inline">CID Display</code>.</para>
+
+<para id="par66">		Include front panel indicators for the <code display="inline">framing error</code> and 
+		<code display="inline">text out</code> outputs from <link document="m18629">util_BitstreamToText.vi</link>.
+		The string indicator can be easily switched from ASCII display to hexadecimal display, as needed: right-click on the
+		front panel indicator and choose either "Normal Display" or "Hex Display."</para>
+
+<para id="par67">		The framing error indicator should be dark for the entire data block region; some "left over" bits are likely after the
+		data block ends due to the delay until the FSK demodulator's <code display="inline">PLL locked</code> output
+		returns to <code display="inline">F</code>, and the resulting framing errors may be safely ignored.
+</para>
+
+</section>
+
+<section id="sec68">
+<title>Evaluate the completed system</title>
+
+<para id="par69">
+		Choose one of the Caller ID signal recordings, and run your VI to decode the FSK signal. When all goes well,
+		the <code display="inline">CID Display</code> indicator will show "OK" for both the parsing process
+		and the checksum calculation.</para>
+
+<para id="par70">		Confirm that the data block values are correctly extracted by manually decoding the hex values in the text string
+		front panel indicator. More specifically, copy the hex values to a piece of paper, and work through the
+		interpretation of each byte. For example, the first byte of the data block is 0x80, which indicates the
+		Caller ID message is of the MDMF (Multiple Data Message Format) type. The next byte is an 8-bit unsigned
+		integer that indicates message length; convert the hexadecimal value to decimal and report this value.
+		Continue in this way to demonstrate that you understand the significance of each byte in the data block.</para>
+
+<para id="par71">		Try your Caller ID decoder on other signal recordings. Report the <code display="inline">CID Display</code> 
+		indicator values for each audio signal recording.
+</para>
+
+</section>
+
+</section>
+
+<section id="sec72">
+<title>References</title>
+
+<list id="list73" list-type="enumerated">
+
+<item> 
+		Carlson, A. Bruce, Paul B. Crilly, and Janet C. Rutledge, "Communication Systems," 4th ed., McGraw-Hill, 2002. ISBN-13: 978-0-07-011127-1
+	 </item>
+<item> 
+		Couch, Leon W. II, "Digital and Analog Communication Systems," 7th ed., Pearson Prentice Hall, 2007. ISBN-10: 0-13-142492-0
+	 </item>
+<item> 
+		Haykin, Simon, and Michael Moher, "Introduction to Analog and Digital Communication Systems," 2nd ed., Wiley, 2007. ISBN-13: 978-0-471-43222-7
+	 </item>
+<item> 
+		Lathi, Bhagwandas P., "Modern Digital and Analog Communication Systems," 3rd ed., Oxford University Press, 1998. ISBN-10: 0-19-511009-9
+	 </item>
+<item> 
+		Proakis, John G., and Masoud Salehi, "Fundamentals of Communication Systems," Pearson Prentice Hall, 2005. ISBN-10: 0-13-147135-X
+	 </item>
+<item> 
+		Stern, Harold P.E., and Samy A. Mahmoud, "Communication Systems," Pearson Prentice Hall, 2004. ISBN-10: 0-13-040268-0
+	 </item>
+<item> 
+		Wheeler, Tom, "Electronic Communications for Technicians," 2nd ed., Pearson Prentice Hall, 2006. ISBN-10: 0-13-113049-8
+	 </item>
+
+</list>
+
+</section>
+
+</content>
+</document>

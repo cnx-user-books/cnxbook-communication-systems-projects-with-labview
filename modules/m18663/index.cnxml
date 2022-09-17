@@ -1,0 +1,264 @@
+<document xmlns="http://cnx.rice.edu/cnxml">
+  <title>Hamming Block Code Channel Encoder</title>
+<metadata xmlns:md="http://cnx.rice.edu/mdml">
+  <md:content-id>m18663</md:content-id>
+  <md:title>Hamming Block Code Channel Encoder</md:title>
+  <md:abstract>Channel encoding inserts additional information into a transmitted bitstream to facilitate error detection and error correction at the receiver. Block coding breaks up a bitstream into words of length k bits and appends check bits to form a codeword of length n bits. A corresponding channel decoder examines the complete codeword, and detects and even corrects certain types of erroneous bits caused by the channel.  In this project, develop a channel encoder using a special class of block code called a Hamming code. In a follow-on project, develop a companion channel decoder, and then evaluate the performance of the complete encoder/decoder system.</md:abstract>
+  <md:uuid>35b829ab-3829-4825-88a9-6f300599e769</md:uuid>
+</metadata>
+<content>
+
+<table id="labview_banner" frame="none" summary=""><tgroup cols="2">
+<colspec rowsep="0" colsep="0"/> <colspec colwidth="6in" rowsep="0" colsep="0"/>
+<tbody>
+  <row>
+    <entry morerows="3"><media id="idm3086192" alt=""><image src="../../media/LabVIEWtop.png" mime-type="image/png"/></media></entry>
+    <entry> This module refers to LabVIEW, a software development environment that features a graphical programming language.
+       Please see the <link document="m15428">LabVIEW QuickStart Guide</link> module for tutorials and documentation that will help you:</entry>
+  </row>
+  <row> <entry>• Apply LabVIEW to Audio Signal Processing </entry> </row>
+  <row> <entry>• Get started with LabVIEW</entry> </row>
+  <row> <entry>• Obtain a fully-functional evaluation edition of LabVIEW</entry> </row>
+</tbody>
+</tgroup>
+</table>
+
+<note id="idm9951360">
+Visit <link document="m17319">LabVIEW Setup</link> to learn how to adjust your own LabVIEW environment to match the settings used by the LabVIEW screencast video(s) in this module.
+Click the "Fullscreen" button at the lower right corner of the video player if the video does not fit properly within your browser window.
+</note>
+
+<section id="sec1">
+<title>Summary</title>
+
+<para id="par2">
+		<term>Channel encoding</term> inserts additional information into a transmitted bitstream to facilitate <term>error detection</term> and <term>error correction</term> at the receiver. <term>Block coding</term> breaks up a bitstream into words of length k bits and appends check bits to form a <term>codeword</term> of length n bits. A corresponding <term>channel decoder</term> examines the complete codeword, and detects and even corrects certain types of erroneous bits caused by the channel.</para>
+
+<para id="par3">		In this project, develop a channel encoder using a special class of block code called a Hamming code. In a follow-on project, develop a 
+		companion channel decoder, and then evaluate the performance of the complete encoder/decoder system.
+</para>
+
+</section>
+
+<section id="sec4">
+<title>Objectives</title>
+
+<list id="list5" list-type="enumerated">
+
+<item> Develop an (n,k) Hamming block code channel encoder </item>
+<item> Examine the behavior of the encoded bitstream before and after passing through a binary symmetric channel (BSC) </item>
+<item> Learn how to use LabVIEW matrix-oriented subVIs </item>
+
+</list>
+
+</section>
+
+<section id="sec6">
+<title>Deliverables</title>
+
+<list id="list7" list-type="enumerated">
+
+<item> Summary write-up of your results </item>
+<item> Hardcopy of all LabVIEW code that you develop (block diagrams and front panels) </item>
+<item> Any plots or diagrams requested </item>
+
+</list>
+
+<note id="idp8985712">
+		You can easily export LabVIEW front-panel waveform plots directly to your report. Right-click on the waveform
+		indicator and choose "Export Simplified Image."
+</note>
+
+</section>
+
+<section id="sec8">
+<title>Setup</title>
+
+<list id="list9" list-type="enumerated">
+
+<item> LabVIEW 8.5 or later version </item>
+
+</list>
+
+</section>
+
+<section id="sec10">
+<title>Textbook Linkages</title>
+
+<para id="par11">
+		Refer to the following textbooks for additional background on the project activities of this module;
+		see the "References" section below for publication details:
+</para>
+
+<list id="list12" list-type="bulleted">
+
+<item> Carlson, Crilly, and Rutledge -- Ch 13 (basis for notation used in this module) </item>
+<item> Haykin -- Ch 10 </item>
+<item> Lathi -- Ch 16 </item>
+<item> Proakis and Salehi (FCS) -- Ch 13 </item>
+<item> Proakis and Salehi (CSE) -- Ch 9 </item>
+<item> Stern and Mahmoud -- Ch 10 </item>
+
+</list>
+
+</section>
+
+<section id="sec13">
+<title>Prerequisite Modules</title>
+
+<para id="par14">
+		If you are relatively new to LabVIEW, consider taking the course 
+		<link document="col10440">LabVIEW Techniques for Audio Signal Processing</link> 
+		which provides the foundation you need to complete this project activity, including:
+		block diagram editing techniques, essential programming structures, subVIs, arrays, and
+		audio. 
+</para>
+
+</section>
+
+<section id="sec15">
+<title>Introduction</title>
+
+<para id="par16">
+		<term>Error control coding</term> describes a class of techniques that prepare
+		a digital message bitstream to pass through a noisy channel so that the 
+		receiver can detect transmission errors and in some cases correct these errors. </para>
+
+<para id="par17">		The <link target-id="video-coding-basics"/> screencast video introduces
+		error control coding, including visualization of codewords, <term>Hamming distance</term>,
+		<term>minimum distance</term> of a code, and error detection and correction power of a
+		code.
+</para>
+
+<figure id="video-coding-basics"><title><link url="https://youtu.be/6iBXylDj8xE" window="new">https://youtu.be/6iBXylDj8xE</link> (7:45)</title><media id="eip-idm257370064" display="block" alt="Insert alt text here"><video mime-type="video/mpeg" src="https://www.youtube.com/embed/6iBXylDj8xE?rel=0" autoplay="false" width="640" height="460"/></media>
+
+
+<caption>[video] Error control coding basic concepts
+</caption></figure><para id="par19">
+		<term>(n,k) block codes</term> break up a message bitstream into blocks of
+		k bits and insert additional blocks of <term>checkbits</term>. The checkbit
+		information permits a receiver to diagnose the received bitstream for errors,
+		and to correct some types of errors automatically.</para>
+
+<para id="par20">		The <link target-id="video-blockcodes"/> screencast video introduces
+		(n,k) block codes, <term>code rate</term>, the special case of 
+		<term>linear block codes</term>, and
+		illustrates the trade-off between code rate and error control power.
+</para>
+
+<figure id="video-blockcodes"><title><link url="https://youtu.be/ns1J8mEnjpw" window="new">https://youtu.be/ns1J8mEnjpw</link> (8:05)</title><media id="eip-idm378999856" display="block" alt="Insert alt text here"><video mime-type="video/mpeg" src="https://www.youtube.com/embed/ns1J8mEnjpw?rel=0" autoplay="false" width="640" height="460"/></media>
+
+
+<caption>[video] (n,k) block coding basic concepts
+</caption></figure><para id="par22">
+		<term>(n,k) Hamming block codes</term> represent a popular type of block
+		code.
+		The <link target-id="video-hammingcode"/> screencast video introduces
+		the (n,k) Hamming block code, explains how to construct the <term>generator matrix</term> 
+		to transform message blocks into codewords rate, and presents a detailed
+		example to illustrate the encoding process.
+</para>
+
+<figure id="video-hammingcode"><title><link url="https://youtu.be/siMKiIFSmV0" window="new">https://youtu.be/siMKiIFSmV0</link> (11:12)</title><media id="eip-idm366735120" display="block" alt="Insert alt text here"><video mime-type="video/mpeg" src="https://www.youtube.com/embed/siMKiIFSmV0?rel=0" autoplay="false" width="640" height="460"/></media>
+
+
+<caption>[video] (n,k) Hamming code construction rules and example
+</caption></figure></section>
+
+<section id="sec24">
+<title>Procedure</title>
+
+<section id="sec25">
+<title>Manual calculations</title>
+
+<para id="par26">
+		Work through the Hamming code construction process by hand to lay a good
+		foundation for developing a correct and understandable computer 
+		implementation. Write up this work on a separate page.
+</para>
+
+<list id="list27" list-type="enumerated">
+
+<item> Construct two distinct (7,4) Hamming code "G" matrices. </item>
+<item> For each "G" matrix, calculate the codewords that emerge
+		from the following message words: 0000, 1010, and 1111. </item>
+
+</list>
+
+</section>
+
+<section id="sec28">
+<title>SubVI construction</title>
+
+<para id="par29">
+		Build the subVIs listed below. You may already have some of these available
+		from previous projects.</para>
+
+<para id="par30">		Demonstrate that each of these subVIs works properly before continuing to the next part.
+</para>
+
+<list id="list31" list-type="enumerated">
+
+<item> <link document="m18441">hamming_HammingCodeParameters.vi</link>  </item>
+<item> <link document="m18563">hamming_GeneratorMatrix.vi</link>  </item>
+<item> <link document="m18562">hamming_Mod2MatrixMultiply.vi</link>  </item>
+<item> <link document="m18528">util_BitstreamFromRandom.vi</link>  </item>
+<item> <link document="m18596">util_BitsToWords.vi</link>  </item>
+<item> <link document="m18551">util_WordsToBits.vi</link>  </item>
+<item> <link document="m18537">util_BinarySymmetricChannel.vi</link>  </item>
+
+</list>
+
+</section>
+
+<section id="sec32">
+<title>Hamming block code channel encoder</title>
+
+<para id="par33">
+		Review again the background theory presented earlier for the Hamming block code channel encoder, and then
+		assemble your subVIs into a top-level application VI that creates a message bitstream, encodes the
+		bitstream using Hamming coding, passes the bitstream through a noisy channel (the binary symmetric channel),
+		and displays selected results of the channel encoding process.</para>
+
+<para id="par34">		<media id="idm10408288" alt=""><image src="../../media/LabVIEW.png" mime-type="image/png"/></media> Download the LabVIEW VI 
+		<link resource="Front_Panel_Indicators.vi">Front_Panel_Indicators.vi</link>. This VI contains
+		pre-formatted front panel indicators suitable for convenient display of binary values.</para>
+
+<para id="par35">		Debug your application until it works properly. Include a front-panel screenshot with hand-written annotations that
+		demonstrates correct operation of your encoder.
+</para>
+
+</section>
+
+</section>
+
+<section id="sec36">
+<title>References</title>
+
+<list id="list37" list-type="enumerated">
+
+<item> 
+		Carlson, A. Bruce, Paul B. Crilly, and Janet C. Rutledge, "Communication Systems," 4th ed., McGraw-Hill, 2002. ISBN-13: 978-0-07-011127-1
+	 </item>
+<item> 
+		Haykin, Simon. "Communication Systems," 4th ed., Wiley, 2001. ISBN-10: 0-471-17869-1
+	 </item>
+<item> 
+		Lathi, Bhagwandas P., "Modern Digital and Analog Communication Systems," 3rd ed., Oxford University Press, 1998. ISBN-10: 0-19-511009-9
+	 </item>
+<item> 
+		Proakis, John G., and Masoud Salehi, "Fundamentals of Communication Systems," Pearson Prentice Hall, 2005. ISBN-10: 0-13-147135-X
+	 </item>
+<item> 
+		Proakis, John G., and Masoud Salehi, "Communication Systems Engineering," 2nd ed., Pearson Prentice Hall, 2002. ISBN-10: 0-13-061793-8
+	 </item>
+<item> 
+		Stern, Harold P.E., and Samy A. Mahmoud, "Communication Systems," Pearson Prentice Hall, 2004. ISBN-10: 0-13-040268-0
+	 </item>
+
+</list>
+
+</section>
+
+</content>
+</document>

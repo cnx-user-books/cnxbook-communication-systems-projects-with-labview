@@ -1,0 +1,563 @@
+<!--
+
+== title == 
+Texting Over the Speaker-Air-Microphone (SAM) Channel
+
+== keywords ==
+text messaging
+ASK
+amplitude shift keying
+transmitter
+speaker-air-microphone channel
+LabVIEW
+receiver filter
+envelope detector
+bit synchronizer
+frame synchronization
+bitstream regeneration
+receiver
+preamble
+
+
+== summary ==
+Texting and instant messaging are familiar and popular communication techniques. Text messages composed of ASCII characters, with each character composed of eight bits, ultimately form a stream of bits transmitted from the source to the receiver.  Normally the text message moves through a complex data network, and the users see only the system endpoints. In this project, however, you will be able to follow the text message on its complete journey through a binary ASK transmitter, a speaker-air-microphone (SAM) channel, and a binary ASK receiver.
+-->
+
+<?xml version='1.0' standalone='yes' ?>
+<LVData>
+<Version>8.2</Version>
+
+<!--SUMMARY------------------------------------------------------>
+<String> <Name>sec</Name> <Val>Summary</Val> </String>
+
+<String> <Name>para</Name> <Val>
+		Texting and instant messaging are familiar and popular communication techniques. Text
+		messages composed of ASCII characters, with each character composed of
+		eight bits, ultimately form a stream of bits transmitted from the source to the receiver.
+		Normally the text message moves through a complex data network, and the user only sees
+		the endpoints of the system. In this project, however, you will be able to follow the
+		text message on its complete journey through a binary ASK transmitter, 
+		a speaker-air-microphone (SAM) channel, and a binary ASK receiver.
+
+		This project depends on successful completion of the two prerequisite projects,
+		{cnxn document=&quot;m18666&quot;}Speaker-Air-Microphone (SAM) Channel Characterization{/cnxn} and
+		{cnxn document=&quot;m18668&quot;}Binary ASK Transmitter{/cnxn}.
+</Val> </String>
+
+
+<!--OBJECTIVES------------------------------------------------------>
+<String> <Name>secend</Name> <Val></Val> </String>
+<String> <Name>sec</Name> <Val>Objectives</Val> </String>
+
+<Cluster> <Name>list</Name> <NumElts>3</NumElts>
+<EW> <Name>type</Name> <Choice>Bulleted</Choice> <Choice>Enumerated</Choice> <Val>1</Val> </EW>
+<String> <Name>list name (optional)</Name> <Val></Val> </String>
+<Array> <Name>list items</Name> <Dimsize>4</Dimsize>
+	<String> <Name>String</Name> <Val>
+			Implement an ASK demodulator based on an envelope detector, a noncoherent detector
+	</Val> </String>
+	<String> <Name>String</Name> <Val>
+			Appreciate the importance of a message preamble for successful receiver operation
+	</Val> </String>
+	<String> <Name>String</Name> <Val>
+			Translate the ASK receiver block diagram into a LabVIEW block diagram
+	</Val> </String>
+	<String> <Name>String</Name> <Val>
+			Develop an ASK receiver for the speaker-air-microphone (SAM) channel
+	</Val> </String>
+</Array>
+</Cluster>
+
+
+<!--DELIVERABLES------------------------------------------------------>
+<String> <Name>secend</Name> <Val></Val> </String>
+<String> <Name>sec</Name> <Val>Deliverables</Val> </String>
+
+<Cluster> <Name>list</Name> <NumElts>3</NumElts>
+<EW> <Name>type</Name> <Choice>Bulleted</Choice> <Choice>Enumerated</Choice> <Val>1</Val> </EW>
+<String> <Name>list name (optional)</Name> <Val></Val> </String>
+<Array> <Name>list items</Name> <Dimsize>3</Dimsize>
+<String> <Name>String</Name> <Val>Summary write-up of your results</Val> </String>
+<String> <Name>String</Name> <Val>Hardcopy of all LabVIEW code that you develop (block diagrams and front panels)</Val> </String>
+<String> <Name>String</Name> <Val>Any plots or diagrams requested</Val> </String>
+</Array>
+</Cluster>
+
+<Cluster> <Name>note</Name> <NumElts>2</NumElts>
+<EW> <Name>notetype</Name> <Choice>Note</Choice> <Choice>Important</Choice> <Val>0</Val> </EW>
+<String> <Name>text</Name> <Val>
+		You can easily export LabVIEW front-panel waveform plots directly to your report. Right-click on the waveform
+		indicator and choose "Export Simplified Image."
+</Val> </String>
+</Cluster>
+
+
+<!--SETUP------------------------------------------------------>
+<String> <Name>secend</Name> <Val></Val> </String>
+<String> <Name>sec</Name> <Val>Setup</Val> </String>
+
+<Cluster> <Name>list</Name> <NumElts>3</NumElts>
+<EW> <Name>type</Name> <Choice>Bulleted</Choice> <Choice>Enumerated</Choice> <Val>1</Val> </EW>
+<String> <Name>list name (optional)</Name> <Val></Val> </String>
+<Array> <Name>list items</Name> <Dimsize>6</Dimsize>
+<String> <Name>String</Name> <Val>LabVIEW 8.5 or later version</Val> </String>
+<String> <Name>String</Name> <Val>Modulation Toolkit 4.0 or later version</Val> </String>
+<String> <Name>String</Name> <Val>Computer soundcard that supports full-duplex operation</Val> </String>
+<String> <Name>String</Name> <Val>Speaker</Val> </String>
+<String> <Name>String</Name> <Val>Microphone</Val> </String>
+<String> <Name>String</Name> <Val>Two computers (optional)</Val> </String>
+</Array>
+</Cluster>
+
+<!--TEXTBOOK LINKAGES------------------------------------------------------>
+<String> <Name>secend</Name> <Val></Val> </String>
+<String> <Name>sec</Name> <Val>Textbook Linkages</Val> </String>
+
+<String> <Name>para</Name> <Val>
+		Refer to the following textbooks for additional background on the project activities of this module;
+		see the "References" section below for publication details:
+</Val> </String>
+
+<Cluster> <Name>list</Name> <NumElts>3</NumElts>
+<EW> <Name>type</Name> <Choice>Bulleted</Choice> <Choice>Enumerated</Choice> <Val>0</Val> </EW>
+<String> <Name>list name (optional)</Name> <Val></Val> </String>
+<Array> <Name>list items</Name> <Dimsize>6</Dimsize>
+	<String><Name>String</Name><Val>Carlson, Crilly, and Rutledge -- Ch 14</Val></String>
+	<String><Name>String</Name><Val>Couch -- Ch 3 and 5</Val></String>
+	<String><Name>String</Name><Val>Haykin and Moher -- Ch 7</Val></String>
+	<String><Name>String</Name><Val>Lathi -- Ch 13</Val></String>
+	<String><Name>String</Name><Val>Proakis and Salehi (FCS) -- Ch 10</Val></String>
+	<String><Name>String</Name><Val>Stern and Mahmoud -- Ch 5</Val></String>
+</Array>
+</Cluster>
+
+
+<!--PREREQUISITE MODULES ------------------------------------------------------>
+<String> <Name>secend</Name> <Val></Val> </String>
+<String> <Name>sec</Name> <Val>Prerequisite Modules</Val> </String>
+<String> <Name>para</Name> <Val>
+		Complete the lab projects
+		{cnxn document=&quot;m18666&quot;}Speaker-Air-Microphone (SAM) Channel Characterization{/cnxn} and
+		{cnxn document=&quot;m18668&quot;}Binary ASK Transmitter{/cnxn}
+		before you begin this project.
+
+		If you are relatively new to LabVIEW, consider taking the course 
+		{cnxn document=&quot;col10440&quot;}LabVIEW Techniques for Audio Signal Processing{/cnxn} 
+		which provides the foundation you need to complete this project activity, including:
+		block diagram editing techniques, essential programming structures, subVIs, arrays, and
+		audio. 
+</Val> </String>
+
+<!--INTRODUCTION------------------------------------------------------>
+<String> <Name>secend</Name> <Val></Val> </String>
+<String> <Name>sec</Name> <Val>Introduction</Val> </String>
+
+<String> <Name>para</Name> <Val>
+		{cnxn target=&quot;figure-concept-diagram&quot;/} shows the hardware setup for this
+		project. One computer running a "text sender" LabVIEW VI translates a text message into
+		a bitstream, modulates the bitstream as an ASK signal, and plays the signal to a speaker.
+		A second computer running a "text receiver" VI listens to the microphone signal, records
+		and demodulates the ASK signal, regenerates the transmitted bitstream, and translates the
+		bitstream back to text. The text sender and receiver VIs can run in parallel on a single 
+		computer to simplify development.
+</Val> </String>
+
+<Cluster> <Name>image</Name> <NumElts>3</NumElts>
+<String> <Name>ID (optional)</Name> <Val>figure-concept-diagram</Val> </String>
+<String> <Name>name</Name> <Val>concept-diagram</Val> </String>
+<String> <Name>caption</Name> <Val>High-level block diagram of the project</Val> </String>
+</Cluster>
+
+<String> <Name>para</Name> <Val>
+		The frequency response and bandwidth of the speaker-air-microphone (SAM) channel were measured in an
+		earlier project, {cnxn document=&quot;m18666&quot;}Speaker-Air-Microphone (SAM) Channel Characterization{/cnxn}.
+		As discussed in the {cnxn document=&quot;m18668&quot;}Binary ASK Transmitter{/cnxn} project, the
+		bit rate and pulse shape can be adjusted to place the transmitted signal in various sub-bands or
+		to fully occupy the available channel bandwidth. 
+		The channel bandwidth can be allocated in a number of different ways for this project. For example, use
+		the full channel bandwidth to minimize the amount of time to transmit a message. However, transmitting
+		messages simultaneously between two computers requires two different transmitter carrier frequencies and
+		careful choice of bit rates and pulse shapes to ensure the signals remain contained in a sub-band of the channel.
+
+		The text message to be transmitted is a collection of ASCII characters. {term}ASCII{/term}, the
+		{term}American Standard Code for Information Interchange{/term}, defines a mapping
+		between familiar alpha-numeric characters (as well as other types of characters)
+		and 7-bit binary patterns. For example, the five character sequence "hello" maps to
+		the bit sequence {code type=&quot;inline&quot;}1101000 1100101 1101100 1101100 1101111{/code}. 	
+		See the {link src=&quot;http://wikipedia.org/wiki/ASCII&quot;}Wikipedia article on ASCII{/link} for
+		ASCII mapping tables and further information.
+
+		LabVIEW offers a complete set of tools to manipulate and process text, including
+		methods to translate text to bit sequences and vice versa. Swapping the random number generator
+		currently serving as the message source in the transmitter from the
+		{cnxn document=&quot;m18668&quot;}Binary ASK Transmitter{/cnxn} project with a text-to-bitstream
+		converter quickly creates the necessary text sender for this project.
+</Val> </String>
+
+<String> <Name>para</Name> <Val>
+		{cnxn target=&quot;figure-receiver-diagram&quot;/} shows a high-level block diagram of
+		the ASK receiver to be constructed in this project.
+</Val> </String>
+
+<Cluster> <Name>image</Name> <NumElts>3</NumElts>
+<String> <Name>ID (optional)</Name> <Val>figure-receiver-diagram</Val> </String>
+<String> <Name>name</Name> <Val>receiver-diagram</Val> </String>
+<String> <Name>caption</Name> <Val>ASK receiver block diagram</Val> </String>
+</Cluster>
+
+<String> <Name>para</Name> <Val>
+		The recorded microphone signal serves as the receiver input. The {term}receiver filter{/term} is a bandpass filter centered at
+		the transmitter's carrier frequency with a bandwidth selected to match the transmission bandwidth. The receiver filter
+		therefore admits the signal of interest but removes out-of-band noise and signals in adjacent bands.
+
+		The ASK signal spectrum contains a strong carrier component, making noncoherent detection feasible. Coherent detection
+		requires carrier synchronization, a more complex approach. Noncoherent detection, on the other hand, can be simply
+		implemented using an {term}envelope detector{/term}. The envelope detector recovers the baseband signal.
+		
+		The {cnxn target=&quot;video-envelope-detector&quot;/} screencast video discusses the envelope
+		detector principles of operation, implementation by a lowpass filter followed by a rectifier, and
+		choice of lowpass filter corner frequency based on bit rate.
+</Val> </String>
+
+<Cluster> <Name>video</Name> <NumElts>4</NumElts>
+<String> <Name>ID (optional)</Name> <Val>video-envelope-detector</Val> </String>
+<String> <Name>video name</Name> <Val>envelope-detector</Val> </String>
+<String> <Name>webpage title</Name> <Val>Envelope detector</Val> </String>
+<String> <Name>caption</Name> <Val>Envelope detector principles of operation, implementation, and parameter selection</Val> </String>
+</Cluster>
+
+
+<String> <Name>para</Name> <Val>
+		The {term}normalizer{/term}, the third block in the sequence, shifts the baseband signal to eliminate the DC
+		bias and scales the signal to the range &#xb1;1. The normalizer can be considered a type of
+		{term}automatic gain control{/term} ({term}AGC{/term}) to compensate for variations in speaker
+		signal strength and microphone gain settings.
+
+		Up to this point the baseband signal can be considered an "analog" signal, even though it is
+		in reality a discrete-time sampled signal. The {term}sampler{/term} selects a single sample
+		point from the baseband signal once each bit interval. The sampling process itself is very simple,
+		but how does the sampler know when a bit interval has elapsed? Fortunately a hidden yet vital
+		component in the sampler block called the {term}bit synchronizer{/term} extracts timing pulses
+		directly from the baseband signal, {emphasis}provided{/emphasis} the signal meets certain
+		requirements.
+
+		The {cnxn target=&quot;video-bitsync&quot;/} screencast video discusses the bit synchronizer
+		principles of operation and implementation considerations.
+</Val> </String>
+
+<Cluster> <Name>video</Name> <NumElts>4</NumElts>
+<String> <Name>ID (optional)</Name> <Val>video-bitsync</Val> </String>
+<String> <Name>video name</Name> <Val>bitsync</Val> </String>
+<String> <Name>webpage title</Name> <Val>Bit synchronizer</Val> </String>
+<String> <Name>caption</Name> <Val>Bit synchronizer principles of operation and implementation</Val> </String>
+</Cluster>
+
+<String> <Name>para</Name> <Val>
+		As discussed in the previous video, the bit synchronizer's bandpass filter can be
+		considered a high-Q resonator tuned to the bit rate, where {term}Q{/term} stands for
+		{term}quality factor{/term}, the ratio of the bandpass filter's center frequency to its
+		bandwidth; high Q indicates narrow bandwidth. The resonator produces sustained oscillations
+		when the input bitstream contains approximately equiprobable ones and zeros. The high Q
+		value assures that the resonator will continue to oscillate for a short time even when the
+		bitstream has occasional runs of constant values. A high-Q resonator possesses {term}inertia{/term} --
+		once oscillations have started, the resonator will continue to oscillate for a time, even without excitation. 
+		However, just as in any system with inertia, an inactive resonator requires excitation for a
+		significant period of time before oscillation reaches a useful amplitude.
+
+		Now consider a receiver waiting for a signal, and suppose the transmitter only generates nonzero
+		signals when it is actually sending a message. If the bitstream can only be sampled once the
+		bit synchronizer "revs up," so to speak, how can the first few bits of the message be correctly
+		sampled? In fact, the first few bits of the message {emphasis}could not{/emphasis} be recovered this way.
+		However, the transmitter is free to transmit additional bits {emphasis}before{/emphasis} the message
+		bits -- a preliminary bit sequence called a {term}preamble{/term}.
+
+		The {cnxn target=&quot;video-preamble&quot;/} screencast video discusses the design of the preamble
+		to accomplish two goals: (1) to "wake up" the bit synchronizer (more formally called
+		{term}channel seizure{/term}), and (2) to facilitate
+		{term}frame synchronization{/term}, the process of recovering meaningful symbols (ASCII characters,
+		in this case) from the stream of ones and zeros.
+</Val> </String>
+
+<Cluster> <Name>video</Name> <NumElts>4</NumElts>
+<String> <Name>ID (optional)</Name> <Val>video-preamble</Val> </String>
+<String> <Name>video name</Name> <Val>preamble</Val> </String>
+<String> <Name>webpage title</Name> <Val>Preamble design</Val> </String>
+<String> <Name>caption</Name> <Val>Preamble design for bit synchronizer "wake up" and frame synchronization</Val> </String>
+</Cluster>
+
+<String> <Name>para</Name> <Val>
+		Consider once again the receiver block diagram of 
+		{cnxn target=&quot;figure-receiver-diagram&quot;/}. The {term}threshold comparator{/term} (also
+		called the {term}decision device{/term}) follows the sampler and compares each sampled signal
+		value to zero. A sampled signal value higher than the threshold is declared a binary {code type=&quot;inline&quot;}1{/code},
+		and a value lower than the threshold is declared a binary {code type=&quot;inline&quot;}0{/code}. 
+		The threshold comparator completes the bitstream {term}regeneration{/term} process; in the absence of noise,
+		the bitstream produced by the comparator is identical to the transmitted bitstream.
+
+		The last block in the receiver retrieves ASCII characters from the bitstream. The earlier
+		{cnxn target=&quot;video-preamble&quot;/} screencast video briefly discussed the need for
+		frame synchronization, which is now considered in more detail. Suppose the message preamble
+		consisted only of the alternating one-zero pattern necessary to start the bit synchronizer.
+		Certainly the total length of the preamble is known, so in principle it would seem that the
+		first message bit could be determined after some well-defined number of cycles after the
+		bit synchronizer starts up. The problem is that this "well-defined" number of cycles can
+		vary slightly due to noise levels, signal amplitude, and many other variables; the first
+		actual message bit cannot be determined reliably this way.
+
+		Also, suppose the individual ASCII bit patterns were all transmitted as one contiguous
+		bitstream by packing all the 7-bit patterns one after another. If the first message could
+		not be determined correctly, then {emphasis}all{/emphasis} remaining bits would likewise
+		be interpreted incorrectly. Good system design should be {term}fault tolerant{/term}, meaning
+		that an interpretation error on one character should not affect the entire message.
+
+		These problems are addressed by inserting {term}framing bits{/term} around each ASCII character.
+		The {cnxn target=&quot;video-framesync&quot;/} screencast video describes the concepts
+		of framing bits and frame synchronization, and why a sequence of binary ones (also called the
+		{term}steady mark{/term} sequence) is an important second part of the preamble.
+</Val> </String>
+
+<Cluster> <Name>video</Name> <NumElts>4</NumElts>
+<String> <Name>ID (optional)</Name> <Val>video-framesync</Val> </String>
+<String> <Name>video name</Name> <Val>framesync</Val> </String>
+<String> <Name>webpage title</Name> <Val>Frame synchronization</Val> </String>
+<String> <Name>caption</Name> <Val>Frame synchronization and steady mark sequence in preamble</Val> </String>
+</Cluster>
+
+
+<!--PROCEDURE------------------------------------------------------>
+<String> <Name>secend</Name> <Val></Val> </String>
+<String> <Name>sec</Name> <Val>Procedure</Val> </String>
+
+
+	<!--STEP------------------------------------------>
+<String> <Name>sec</Name> <Val>SubVI construction</Val> </String>
+
+<String> <Name>para</Name> <Val>
+		Build the subVIs listed below. You may already have some of these available
+		from previous projects.
+
+		Demonstrate that each of these subVIs works properly before continuing to the next part.
+</Val> </String>
+
+<Cluster> <Name>list</Name> <NumElts>3</NumElts>
+<EW> <Name>type</Name> <Choice>Bulleted</Choice> <Choice>Enumerated</Choice> <Val>1</Val> </EW>
+<String> <Name>list name (optional)</Name> <Val></Val> </String>
+<Array> <Name>list items</Name> <Dimsize>11</Dimsize>
+	<String> <Name>String</Name> <Val>{cnxn document=&quot;m18631&quot;}util_BitstreamFromText.vi{/cnxn} </Val> </String>
+	<String> <Name>String</Name> <Val>{cnxn document=&quot;m18629&quot;}util_BitstreamToText.vi{/cnxn} </Val> </String>
+	<String> <Name>String</Name> <Val>{cnxn document=&quot;m18596&quot;}util_BitsToWords.vi{/cnxn} </Val> </String>
+	<String> <Name>String</Name> <Val>{cnxn document=&quot;m18641&quot;}sam_GrabAudioDynamic.vi{/cnxn} </Val> </String>
+	<String> <Name>String</Name> <Val>{cnxn document=&quot;m18436&quot;}bpm_ReceiverFilter.vi{/cnxn} </Val> </String>
+	<String> <Name>String</Name> <Val>{cnxn document=&quot;m18420&quot;}bpm_EnvelopeDetector.vi{/cnxn} </Val> </String>
+	<String> <Name>String</Name> <Val>{cnxn document=&quot;m18627&quot;}regen_BitSync.vi{/cnxn} </Val> </String>
+	<String> <Name>String</Name> <Val>{cnxn document=&quot;m18576&quot;}regen_FrameSync.vi{/cnxn} </Val> </String>
+	<String> <Name>String</Name> <Val>{cnxn document=&quot;m18585&quot;}regen_ExtractPreamble.vi{/cnxn} </Val> </String>
+	<String> <Name>String</Name> <Val>{cnxn document=&quot;m18483&quot;}regen_NormalizeToPreamble.vi{/cnxn} </Val> </String>
+	<String> <Name>String</Name> <Val>{cnxn document=&quot;m18593&quot;}regen_Sampler.vi{/cnxn} </Val> </String>
+</Array>
+</Cluster>
+
+
+	<!--STEP------------------------------------------>
+<String> <Name>secend</Name> <Val></Val> </String>
+<String> <Name>sec</Name> <Val>Text sender</Val> </String>
+
+<String> <Name>para</Name> <Val>
+		Copy the application VI you completed at the end of the {cnxn document=&quot;m18668&quot;}Binary ASK Transmitter{/cnxn}
+		project to a new VI named {code type=&quot;inline&quot;}TextSender.vi{/code}. Be sure to use the
+		version that includes raised cosine pulse shaping as an option.
+
+		Modify the message generation section to use {cnxn document=&quot;m18631&quot;}util_BitstreamFromText.vi{/cnxn} to
+		convert a front-panel text control value into a bitstream.
+
+		Design a preamble sequence that satisfies the requirements for bit sync and frame sync described in the introduction.
+		Concatenate the preamble to the beginning of the message bitstream.
+
+		Clearly state your preamble sequence in your report.
+
+		Use {cnxn document=&quot;m18629&quot;}util_BitstreamToText.vi{/cnxn} to display the complete transmitted message
+		in hexadecimal format.
+
+		Listen to your transmitted ASK signal and view the power spectrum for several choices of bit rate, 
+		carrier frequency, and pulse shape.
+
+		The {cnxn target=&quot;video-preamble-tips&quot;/} screencast video describes two different ways to
+		form the preamble sequence, and describes how to choose the hexadecimal display modes for text
+		controls and indicators.
+</Val> </String>
+
+<Cluster> <Name>video</Name> <NumElts>4</NumElts>
+<String> <Name>ID (optional)</Name> <Val>video-preamble-tips</Val> </String>
+<String> <Name>video name</Name> <Val>preamble-tips</Val> </String>
+<String> <Name>webpage title</Name> <Val>Forming the preamble; hexadecimal displays</Val> </String>
+<String> <Name>caption</Name> <Val>LabVIEW coding tips for preamble sequence and hexadecimal displays</Val> </String>
+</Cluster>
+
+
+	<!--STEP------------------------------------------>
+<String> <Name>secend</Name> <Val></Val> </String>
+<String> <Name>sec</Name> <Val>Audio test signals</Val> </String>
+
+<String> <Name>para</Name> <Val>
+		Record several receiver input signals as audio .wav files as test signals to save development time in the next section.
+		Use {cnxn document=&quot;m18641&quot;}sam_GrabAudioDynamic.vi{/cnxn} to capture the audio and
+		save to a .wav file using "Graphics and Sound | Sound | Files | Sound File Write Simple.vi" as
+		shown in {cnxn target=&quot;figure-capture-audio&quot;/}.
+</Val> </String>
+
+<Cluster> <Name>image</Name> <NumElts>3</NumElts>
+<String> <Name>ID (optional)</Name> <Val>figure-capture-audio</Val> </String>
+<String> <Name>name</Name> <Val>capture-audio</Val> </String>
+<String> <Name>caption</Name> <Val>Record receiver input audio test signals</Val> </String>
+</Cluster>
+
+
+	<!--STEP------------------------------------------>
+<String> <Name>secend</Name> <Val></Val> </String>
+<String> <Name>sec</Name> <Val>Text receiver construction</Val> </String>
+
+<String> <Name>para</Name> <Val>
+		Review the ASK receiver block diagram of {cnxn target=&quot;figure-receiver-diagram&quot;/}. 
+		
+		Assemble your subVIs to create {code type=&quot;inline&quot;}TextReceiver.vi{/code} according to the block diagram.
+		Note that several of the blocks on the diagram are composed of two subVIs: (1) The "normalizer" includes
+		{cnxn document=&quot;m18585&quot;}regen_ExtractPreamble.vi{/cnxn} and 
+		{cnxn document=&quot;m18483&quot;}regen_NormalizeToPreamble.vi{/cnxn}, (2) the "sampler" includes
+		{cnxn document=&quot;m18627&quot;}regen_BitSync.vi{/cnxn} and 
+		{cnxn document=&quot;m18593&quot;}regen_Sampler.vi{/cnxn}, and (3) the "bitstream to text" block includes
+		{cnxn document=&quot;m18576&quot;}regen_FrameSync.vi{/cnxn} and
+		{cnxn document=&quot;m18629&quot;}util_BitstreamToText.vi{/cnxn}.
+
+		Remember to test as you build. Start with the input signal, add a processing block, and then add relevant
+		waveform indicators to confirm correct operation before you proceed to the next processing block.
+
+		Include the following front panel control values:
+</Val> </String>
+
+<Cluster> <Name>list</Name> <NumElts>3</NumElts>
+<EW> <Name>type</Name> <Choice>Bulleted</Choice> <Choice>Enumerated</Choice> <Val>0</Val> </EW>
+<String> <Name>list name (optional)</Name> <Val></Val> </String>
+<Array> <Name>list items</Name> <Dimsize>7</Dimsize>
+	<String> <Name>String</Name> <Val>{code type=&quot;inline&quot;}recorded .wav file{/code} -- path</Val></String>
+	<String> <Name>String</Name> <Val>{code type=&quot;inline&quot;}use recorded signal{/code} -- Boolean</Val></String>
+	<String> <Name>String</Name> <Val>{code type=&quot;inline&quot;}fs, sampling frequency [Hz]{/code} -- DBL</Val></String>
+	<String> <Name>String</Name> <Val>{code type=&quot;inline&quot;}fc, carrier frequency [Hz]{/code} -- DBL</Val></String>
+	<String> <Name>String</Name> <Val>{code type=&quot;inline&quot;}Tb, bit interval [s]{/code} -- DBL</Val></String>
+	<String> <Name>String</Name> <Val>{code type=&quot;inline&quot;}adjust sampling instant [% of bit interval] (0%){/code} -- DBL</Val></String>
+	<String> <Name>String</Name> <Val>{code type=&quot;inline&quot;}receiver filter bandwidth [Hz]{/code} -- DBL</Val></String>
+</Array>
+</Cluster>
+
+<String> <Name>para</Name> <Val>
+		The following front-panel indicators, especially the waveform graph indicators stacked vertically in the order listed below, 
+		visualize the complete "inner workings" of the ASK demodulation, bit sync, and frame sync operations; these visualizations
+		will greatly improve your understanding of the behavior of each major component of the receiver as well as their interrelationships:
+</Val> </String>
+
+<Cluster> <Name>list</Name> <NumElts>3</NumElts>
+<EW> <Name>type</Name> <Choice>Bulleted</Choice> <Choice>Enumerated</Choice> <Val>0</Val> </EW>
+<String> <Name>list name (optional)</Name> <Val></Val> </String>
+<Array> <Name>list items</Name> <Dimsize>11</Dimsize>
+	<String> <Name>String</Name> <Val>{code type=&quot;inline&quot;}received signal{/code} -- the receiver input signal from the microphone or test file</Val></String>
+	<String> <Name>String</Name> <Val>{code type=&quot;inline&quot;}received spectrum{/code} -- with amplitude calibrated in dB</Val></String>
+	<String> <Name>String</Name> <Val>{code type=&quot;inline&quot;}receiver filter spectrum{/code} -- received filter output signal, with amplitude calibrated in dB and Y-scale to match the received spectrum; output of the receiver filter</Val></String>
+	<String> <Name>String</Name> <Val>{code type=&quot;inline&quot;}receiver filter{/code} -- receiver filter output signal</Val></String>
+	<String> <Name>String</Name> <Val>{code type=&quot;inline&quot;}baseband{/code} -- envelope filter output signal</Val></String>
+	<String> <Name>String</Name> <Val>{code type=&quot;inline&quot;}preamble{/code} -- {cnxn document=&quot;m18585&quot;}regen_ExtractPreamble.vi{/cnxn} output signal</Val></String>
+	<String> <Name>String</Name> <Val>{code type=&quot;inline&quot;}normalized baseband{/code} -- {cnxn document=&quot;m18483&quot;}regen_NormalizeToPreamble.vi{/cnxn} output signal</Val></String>
+	<String> <Name>String</Name> <Val>{code type=&quot;inline&quot;}baseband absolute value{/code} -- intermediate signal from {cnxn document=&quot;m18627&quot;}regen_BitSync.vi{/cnxn}</Val></String>
+	<String> <Name>String</Name> <Val>{code type=&quot;inline&quot;}bandpass filter{/code} -- intermediate signal from {cnxn document=&quot;m18627&quot;}regen_BitSync.vi{/cnxn}</Val></String>
+	<String> <Name>String</Name> <Val>{code type=&quot;inline&quot;}thresholded bandpass filter{/code} -- intermediate signal from {cnxn document=&quot;m18627&quot;}regen_BitSync.vi{/cnxn}</Val></String>
+	<String> <Name>String</Name> <Val>{code type=&quot;inline&quot;}baseband + sampling instants{/code} -- envelope detector and "actual sampling instants" from {cnxn document=&quot;m18593&quot;}regen_Sampler.vi{/cnxn} signals overlaid on the same waveform graph</Val></String>
+</Array>
+</Cluster>
+
+<String> <Name>para</Name> <Val>
+		Also include the following indicators on the front panel, clustered together below the vertical stack of waveform graphs:
+</Val> </String>
+
+<Cluster> <Name>list</Name> <NumElts>3</NumElts>
+<EW> <Name>type</Name> <Choice>Bulleted</Choice> <Choice>Enumerated</Choice> <Val>0</Val> </EW>
+<String> <Name>list name (optional)</Name> <Val></Val> </String>
+<Array> <Name>list items</Name> <Dimsize>10</Dimsize>
+	<String> <Name>String</Name> <Val>{code type=&quot;inline&quot;}eye diagram{/code} -- waveform graph; output of the LabVIEW Modulation Toolkit "MT Format Eye Diagram.vi" to
+	show the eye diagram of the baseband signal produced by the envelope detector</Val></String>
+	<String> <Name>String</Name> <Val>{code type=&quot;inline&quot;}preamble detected?{/code} -- Boolean from {cnxn document=&quot;m18585&quot;}regen_ExtractPreamble.vi{/cnxn}</Val></String>
+	<String> <Name>String</Name> <Val>{code type=&quot;inline&quot;}message detected?{/code} -- Boolean from {cnxn document=&quot;m18576&quot;}regen_FrameSync.vi{/cnxn}</Val></String>
+	<String> <Name>String</Name> <Val>{code type=&quot;inline&quot;}bitstream length{/code} -- length of bitstream produced by {cnxn document=&quot;m18576&quot;}regen_FrameSync.vi{/cnxn}</Val></String>
+	<String> <Name>String</Name> <Val>{code type=&quot;inline&quot;}bitstream{/code} -- Boolean 1-D array produced by threshold comparator</Val></String>
+	<String> <Name>String</Name> <Val>{code type=&quot;inline&quot;}bitstream (hex){/code} -- text with hex display mode to show output of threshold comparator</Val></String>
+	<String> <Name>String</Name> <Val>{code type=&quot;inline&quot;}received message{/code} -- text produced by {cnxn document=&quot;m18629&quot;}util_BitstreamToText.vi{/cnxn}</Val></String>
+	<String> <Name>String</Name> <Val>{code type=&quot;inline&quot;}framing error?{/code} -- Boolean 1-D array produced by {cnxn document=&quot;m18629&quot;}util_BitstreamToText.vi{/cnxn}</Val></String>
+	<String> <Name>String</Name> <Val>{code type=&quot;inline&quot;}received frames{/code} -- Boolean 2-D array produced by {cnxn document=&quot;m18596&quot;}util_BitsToWords.vi{/cnxn}</Val></String>
+	<String> <Name>String</Name> <Val>{code type=&quot;inline&quot;}bit rate [Hz]{/code} -- reciprocal of bit interval, Tb</Val></String>
+</Array>
+</Cluster>
+
+<String> <Name>para</Name> <Val>
+		The {cnxn target=&quot;video-panel-layout&quot;/} screencast video shows a suggested front-panel
+		layout for the text receiver.
+</Val> </String>
+
+<Cluster> <Name>video</Name> <NumElts>4</NumElts>
+<String> <Name>ID (optional)</Name> <Val>video-panel-layout</Val> </String>
+<String> <Name>video name</Name> <Val>panel-layout</Val> </String>
+<String> <Name>webpage title</Name> <Val>Panel layout for text receiver</Val> </String>
+<String> <Name>caption</Name> <Val>Recommended panel layout for the text receiver</Val> </String>
+</Cluster>
+
+
+	<!--STEP------------------------------------------>
+<String> <Name>secend</Name> <Val></Val> </String>
+<String> <Name>sec</Name> <Val>Testing and demonstration</Val> </String>
+
+<String> <Name>para</Name> <Val>
+		Debug and test your receiver with your pre-recorded audio .wav files. Once you are satisfied that your receiver works properly, run
+		your text sender as a separate application. Your soundcard is likely full duplex, and so both the text sender and text receiver should
+		be able to access the soundcard simultaneously. You may also like to work with a friend with his or her own computer to make the
+		texting activity more interesting.
+
+		Demonstrate your completed system to your instructor when you are ready.
+
+		You may also want to experiment with full-duplex texting between two different machines. Choose two different carrier frequencies,
+		one for your friend and another for yourself. Be sure to choose a bit rate and pulse shaping so that each of you only uses up to half
+		of the available SAM channel bandwidth.  Try relatively long messages and confirm that you can
+		simultaneously send and receive messages. This is the essence of {term}frequency division multiplexing{/term}.
+</Val> </String>
+
+
+<String> <Name>secend</Name> <Val></Val> </String>
+
+<!--REFERENCES------------------------------------------------------>
+<String> <Name>secend</Name> <Val></Val> </String>
+<String> <Name>sec</Name> <Val>References</Val> </String>
+
+<Cluster> <Name>list</Name> <NumElts>3</NumElts>
+<EW> <Name>type</Name> <Choice>Bulleted</Choice> <Choice>Enumerated</Choice> <Val>1</Val> </EW>
+<String> <Name>list name (optional)</Name> <Val></Val> </String>
+<Array> <Name>list items</Name> <Dimsize>6</Dimsize>
+	<String><Name>String</Name><Val>
+		Carlson, A. Bruce, Paul B. Crilly, and Janet C. Rutledge, "Communication Systems," 4th ed., McGraw-Hill, 2002. ISBN-13: 978-0-07-011127-1
+	</Val></String>
+	<String><Name>String</Name><Val>
+		Couch, Leon W. II, "Digital and Analog Communication Systems," 7th ed., Pearson Prentice Hall, 2007. ISBN-10: 0-13-142492-0
+	</Val></String>
+	<String><Name>String</Name><Val>
+		Haykin, Simon, and Michael Moher, "Introduction to Analog and Digital Communication Systems," 2nd ed., Wiley, 2007. ISBN-13: 978-0-471-43222-7
+	</Val></String>
+	<String><Name>String</Name><Val>
+		Lathi, Bhagwandas P., "Modern Digital and Analog Communication Systems," 3rd ed., Oxford University Press, 1998. ISBN-10: 0-19-511009-9
+	</Val></String>
+	<String><Name>String</Name><Val>
+		Proakis, John G., and Masoud Salehi, "Fundamentals of Communication Systems," Pearson Prentice Hall, 2005. ISBN-10: 0-13-147135-X
+	</Val></String>
+	<String><Name>String</Name><Val>
+		Stern, Harold P.E., and Samy A. Mahmoud, "Communication Systems," Pearson Prentice Hall, 2004. ISBN-10: 0-13-040268-0
+	</Val></String>
+</Array>
+</Cluster>
+
+<String> <Name>secend</Name> <Val></Val> </String>
+
+</LVData>
+

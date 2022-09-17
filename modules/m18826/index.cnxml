@@ -1,0 +1,120 @@
+<document xmlns="http://cnx.rice.edu/cnxml" id="new" module-id="" cnxml-version="0.7">
+  <title>Introduction</title>
+
+<content>
+
+<table id="labview_banner" frame="none" summary=""><tgroup cols="2">
+<colspec rowsep="0" colsep="0"/> <colspec colwidth="6in" rowsep="0" colsep="0"/>
+<tbody>
+  <row>
+    <entry morerows="3"><media id="id44396349" alt=""><image src="../../media/LabVIEWtop.png" mime-type="image/png"/></media></entry>
+    <entry> This module refers to LabVIEW, a software development environment that features a graphical programming language.
+       Please see the <link document="m15428">LabVIEW QuickStart Guide</link> module for tutorials and documentation that will help you:</entry>
+  </row>
+  <row> <entry>• Apply LabVIEW to Audio Signal Processing </entry> </row>
+  <row> <entry>• Get started with LabVIEW</entry> </row>
+  <row> <entry>• Obtain a fully-functional evaluation edition of LabVIEW</entry> </row>
+</tbody>
+</tgroup>
+</table>
+
+
+
+<section id="sec1">
+<title>Introduction</title>
+
+<para id="par2">
+		Welcome to <term>Communication Systems Projects with LabVIEW</term>, a multimedia-enhanced series of projects that explore
+		digital communication systems through LabVIEW simulations, visualizations, and implementations of practical systems. </para>
+
+<para id="par3">		Communication systems play an exciting role in our increasingly interconnected society. Digital communication systems form the heart of 
+		computer data networks, satellite communications, mobile telephones, and wireless hand-held devices. All electrical and computer engineering programs 
+		emphasize communication systems as part of the core curriculum. </para>
+
+<para id="par4">		Communication systems analysis and design requires a firm grasp of mathematical models, and demands mathematical skill with signals, systems, probability, and 
+		random variables. Insight and intuition, also important for the successful study of communication systems, do not always follow immediately from 
+		the mathematical presentations of traditional textbooks, however. Hands-on construction of real communication systems and interactive simulations 
+		that supplement the mathematics help to more quickly achieve insightful understanding of the myriad details involved in designing and optimizing a 
+		communications link for a given application.</para>
+
+<para id="par5">		<term>Communication Systems Projects with LabVIEW</term> features ten laboratory projects based on the LabVIEW graphical dataflow programming environment. 
+		LabVIEW offers an unparalleled way to directly translate communication system diagrams and mathematical descriptions into a LabVIEW program called 
+		a <term>block diagram</term>. The LabVIEW <term>front panel</term> GUI (graphical user interface) that emerges automatically as part of the programming activity
+		enables real-time interaction with the communication system and visualization of the signals as waveforms, binary patterns, and text. This real-time 
+		interaction reveals connections, patterns, and often unexpected relationships -- the basis of strong intuition and insight. 
+		Many of the projects emphasize listening to the signals as sound, further enhancing one's insight.
+		
+		Some of the laboratory projects simulate and visualize
+		fundamental concepts such as baseband modulation, pulse shaping, intersymbol interference (ISI) and eye diagrams, while other projects result in
+		fully-operational systems such as a Caller ID decoder and a text messaging system between a speaker and a microphone.</para>
+
+<para id="par6">		Each project begins with an explanation of the background theory necessary to complete the project. These introductions feature 
+		narrated videos called <term>screencasts</term> that simulate a classroom lecture with a whiteboard visual aid.  Continue by constructing 
+		a set of <term>subVIs</term> (LabVIEW reusable function blocks) according to precise specifications. Each subVI includes a screencast video that demonstrates
+		the LabVIEW tool in operation to introduce and explain relevant LabVIEW programming techniques for the given subVI. Once the subVIs have been 
+		built and tested individually, assemble them into a working "top-level" VI (literally a <term>Virtual Instrument</term>, the name of a LabVIEW program). 
+		The project directions provide guidance through the complete development process, each step of the way.
+</para>
+
+</section>
+
+<section id="sec7">
+<title>To the Instructor</title>
+
+<para id="par8">
+		<term>Communication Systems Projects with LabVIEW</term> has been designed to augment existing communication systems
+		laboratory projects, or to serve as the complete laboratory component of an introductory engineering communication systems course. 
+		
+		Seven guiding principles motivate the design and organization of <term>Communication Systems Projects with LabVIEW</term>:
+</para>
+
+<list id="list9" list-type="enumerated">
+
+<item> 
+			Build the concept for deepest learning -- transforming a set of ideas into a working system clearly demonstrates a firm grasp of the concepts
+	 </item>
+<item> 
+			Engage the senses to develop intuition and insight -- seeing signals as waveform plots, listening to signals as sound, and changing the way
+			signals are processed through virtual knobs and slider controls all work together to enhance understanding of the system under study
+	 </item>
+<item> 
+			Interact with the system to develop understanding -- LabVIEW offers an unparalleled means to automatically generate an interactive graphical
+			user interface as part of the programming activity
+	 </item>
+<item> 
+			Motivate with "real life" activities -- many of the projects culminate in practical, working systems
+	 </item>
+<item> 
+			Experience impairments -- once the deleterious effects of real-world constraints such as finite channel bandwidth and noise become clear
+			through direct experience, the standard methods to mitigate those effects can be appreciated more deeply
+	 </item>
+<item> 
+			Integrate teaching and instruction with project activities -- each project includes numerous narrated videos to explain concepts and to
+			demonstrate task-specific LabVIEW programming techniques; each project also includes "textbook linkages" to many popular communication
+			systems textbooks
+	 </item>
+<item> 
+			Offer learning materials in a modular and open format -- each project builds on a well-defined set of building blocks; the projects can
+			easily be modified, extended, and tailored to specific needs
+	 </item>
+
+</list>
+
+<para id="par10">
+		Each project requires four activities on the part of the student: (1) Study the introductory material that explains theory and concepts, (2)
+		implement several subVIs as low-level building blocks, (3) assemble the subVIs into an application VI, and (4) interact with the finished VI
+		to explore the theory and concepts. 
+		
+		Constructing the subVIs helps students to develop skills with a wide variety of LabVIEW programming
+		techniques, and also helps them to establish a firm grasp on the various LabVIEW data types. The subVIs are carefully specified around 
+		standard datatypes, i.e., Boolean array for bitstreams, waveform data type for "analog" signals; successful completion of the subVIs
+		reduces the debugging effort required for the application VIs. Many of the subVIs are reused across multiple projects. The modularity of
+		the projects -- 10 projects total with a library of over 40 subVIs -- allows the projects to be easily customized as necessary.</para>
+
+<para id="par11">		An instructor's manual and complete set of application VIs and subVIs is available; please contact the author for details.
+</para>
+
+</section>
+
+</content>
+</document>

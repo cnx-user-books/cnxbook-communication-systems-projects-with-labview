@@ -1,0 +1,474 @@
+<document xmlns="http://cnx.rice.edu/cnxml">
+  <title>Intersymbol Interference (ISI) and the Eye Diagram</title>
+<metadata xmlns:md="http://cnx.rice.edu/mdml">
+  <md:content-id>m18662</md:content-id>
+  <md:title>Intersymbol Interference (ISI) and the Eye Diagram</md:title>
+  <md:abstract>This project studies intersymbol interference (ISI) in an intuitive way by using a LabVIEW VI to simulate a pulse transmitter, 
+finite bandwidth channel, and received signaling waveform. Rectangular pulses are considered first to demonstrate the ISI problem, 
+and then two alternative pulse shapes are explored as a way to minimize ISI.  The eye diagram is also introduced in this project 
+as a visual aid to present the time-domain signaling waveform to promote understanding of the ISI phenomenon.</md:abstract>
+  <md:uuid>2a23a7a1-f0f8-48f5-9feb-6248ef909f28</md:uuid>
+</metadata>
+<content>
+
+<table id="labview_banner" frame="none" summary=""><tgroup cols="2">
+<colspec rowsep="0" colsep="0"/> <colspec colwidth="6in" rowsep="0" colsep="0"/>
+<tbody>
+  <row>
+    <entry morerows="3"><media id="idp41776" alt=""><image src="../../media/LabVIEWtop.png" mime-type="image/png"/></media></entry>
+    <entry> This module refers to LabVIEW, a software development environment that features a graphical programming language.
+       Please see the <link document="m15428">LabVIEW QuickStart Guide</link> module for tutorials and documentation that will help you:</entry>
+  </row>
+  <row> <entry>• Apply LabVIEW to Audio Signal Processing </entry> </row>
+  <row> <entry>• Get started with LabVIEW</entry> </row>
+  <row> <entry>• Obtain a fully-functional evaluation edition of LabVIEW</entry> </row>
+</tbody>
+</tgroup>
+</table>
+
+<note id="idm12870784">
+Visit <link document="m17319">LabVIEW Setup</link> to learn how to adjust your own LabVIEW environment to match the settings used by the LabVIEW screencast video(s) in this module.
+Click the "Fullscreen" button at the lower right corner of the video player if the video does not fit properly within your browser window.
+</note>
+
+<section id="sec1">
+<title>Summary</title>
+
+<para id="par2">
+		This project studies intersymbol interference (ISI) in an intuitive way by using a LabVIEW VI to simulate a pulse transmitter, 
+		finite bandwidth channel, and received signaling waveform. Rectangular pulses are considered first to demonstrate the ISI 
+		problem, and then two alternative pulse shapes are explored as a way to minimize ISI.  The eye diagram is also introduced in 
+		this project as a visual aid to present the time-domain signaling waveform to promote understanding of the ISI phenomenon.
+</para>
+
+</section>
+
+<section id="sec3">
+<title>Objectives</title>
+
+<list id="list4" list-type="enumerated">
+
+<item> 
+		Understand the root cause of intersymbol interference (ISI)
+	 </item>
+<item> 
+		Explain the significance of the sinc pulse and raised cosine pulse as a means to eliminate ISI
+	 </item>
+<item> 
+		Understand the construction of an eye diagram
+	 </item>
+<item> 
+		Be able to measure performance metrics (peak ISI, noise margin, jitter, and timing sensitivity) directly from the eye diagram
+	 </item>
+
+</list>
+
+</section>
+
+<section id="sec5">
+<title>Deliverables</title>
+
+<list id="list6" list-type="enumerated">
+
+<item> Summary write-up of your results </item>
+<item> Any plots or diagrams requested </item>
+
+</list>
+
+<note id="idm13995056">
+		You can easily export LabVIEW front-panel waveform plots directly to your report. Right-click on the waveform
+		indicator and choose "Export Simplified Image."
+</note>
+
+</section>
+
+<section id="sec7">
+<title>Setup</title>
+
+<list id="list8" list-type="enumerated">
+
+<item> LabVIEW 8.5 or later version </item>
+
+</list>
+
+</section>
+
+<section id="sec9">
+<title>Textbook Linkages</title>
+
+<para id="par10">
+		Refer to the following textbooks for additional background on the project activities of this module;
+		see the "References" section below for publication details:
+</para>
+
+<list id="list11" list-type="bulleted">
+
+<item> Carlson, Crilly, and Rutledge -- Ch 11 </item>
+<item> Couch -- Ch 3 </item>
+<item> Haykin -- Ch 4 </item>
+<item> Haykin and Moher -- Ch 6 </item>
+<item> Proakis and Salehi (FCS) -- Ch 9 </item>
+<item> Proakis and Salehi (CSE) -- Ch 8 </item>
+<item> Stern and Mahmoud -- Ch 4 </item>
+
+</list>
+
+</section>
+
+<section id="sec12">
+<title>Prerequisite Modules</title>
+
+<para id="par13">
+		If you are relatively new to LabVIEW, consider taking the course 
+		<link document="col10440">LabVIEW Techniques for Audio Signal Processing</link> 
+		which provides the foundation you need to complete this project activity, including:
+		block diagram editing techniques, essential programming structures, subVIs, arrays, and
+		audio. 
+</para>
+
+</section>
+
+<section id="sec14">
+<title>Introduction</title>
+
+<para id="par15">
+		Introductory digital logic courses present digital waveforms as essentially rectangular pulses. Indeed, the internal signals of a
+		digital integrated circuit ideally exist at one of two voltage levels (high and low), with minimal time spent changing from one
+		state to the other. Waveform displays from digital circuit simulators further emphasize the two-level rectangular shape of ideal
+		digital signals.</para>
+
+<para id="par16">		Rectangular pulses are not ideal for transmission through communication links, however, since communication channels
+		always restrict the bandwidth available between the transmitter and the receiver.  Rectangular signaling pulses contain significant
+		spectral energy across a wide frequency range due to the step-like transition between levels, and yet most communication
+		systems do not allocate nearly enough bandwidth to faithfully transmit these abrupt changes. Passing a rectangular pulse through a
+		limited-bandwidth channel distorts the pulse by "smearing" it -- that is, the pulse stretches out in time. The transmitter sends a
+		series of pulses to convey the message, therefore this time smearing causes <term>interference</term> between adjacent
+		time slots (or <term>bit slots</term>). This <term>intersymbol interference</term> (abbreviated <term>ISI</term>) adds extraneous
+		signal energy at the exact moments when a receiver's bit sampler decides whether a received bit should be called a logic "1" or a logic "0." 
+		ISI is not the same as additive random noise, but plays a similar role by reducing the <term>noise margin</term>, i.e., the room for
+		error before the receiver's bit sampler makes an error.</para>
+
+<para id="par17">		This project studies intersymbol interference in an intuitive way by using a LabVIEW VI to simulate a pulse transmitter, finite bandwidth channel, 
+		and received signaling waveform. Rectangular pulses are considered first to demonstrate the ISI problem, and then 
+		two alternative pulse shapes are explored as a way to minimize ISI.</para>
+
+<para id="par18">		The <term>eye diagram</term> is also introduced in this project as a visual aid to present the time-domain signaling waveform to promote understanding
+		of the ISI phenomenon. The eye diagram also reveals other key performance measures such as <term>noise margin</term>,
+		<term>timing jitter</term>, and <term>timing sensitivity</term>.
+</para>
+
+</section>
+
+<section id="sec19">
+<title>ISI_and_EyeDiagram.vi</title>
+
+<para id="par20">
+		<media id="idm2036272" alt=""><image src="../../media/LabVIEW.png" mime-type="image/png"/></media> Download the LabVIEW VI <link resource="ISI_and_EyeDiagram.vi">ISI_and_EyeDiagram.vi</link>,
+		an interactive tool to study various pulse shapes as they pass through a band-limited channel.</para>
+
+<para id="par21">		Open the VI which starts running automatically, and then view the <link target-id="video-orientation"/> 
+		screencast video for a short orientation tour of the VI.
+</para>
+
+<figure id="video-orientation"><title><link url="https://youtu.be/6jEo1uHhW3M" window="new">https://youtu.be/6jEo1uHhW3M</link> (4:11)</title><media id="eip-idm645374016" display="block" alt="Insert alt text here"><video mime-type="video/mpeg" src="https://www.youtube.com/embed/6jEo1uHhW3M?rel=0" autoplay="false" width="640" height="460"/></media>
+<caption>[video] Orientation tour of the "ISI_and_EyeDiagram.vi" LabVIEW VI
+</caption></figure></section>
+
+<section id="sec23">
+<title>Rectangle Pulse Shape</title>
+
+<para id="par24">
+		Restore the front panel controls of "ISI_and_EyeDiagram.vi" to their default values by selecting "Edit | 
+		Reinitialize Values to Defaults." </para>
+
+<para id="par25">		Set the <code display="inline">symbols</code> control to 1 to produce a single rectangular pulse. The channel bandwidth should 
+		already be set to its maximum value of 0.49, which corresponds to essentially unlimited bandwidth. Note that this VI uses <term>normalized frequency</term>,
+		therefore the sampling frequency corresponds to 1 and the Nyquist frequency is 0.5.</para>
+
+<para id="par26">		Compare the "transmitted waveform" and the "received waveform" plots in the lower-right front panel. How well does the received pulse match the
+		transmitted pulse? Also, to what extent does the received pulse "spill out" of its designated time slot?</para>
+
+<para id="par27">		Decrease the channel bandwidth until you begin to observe noticeable pulse shape distortion. At what bandwidth does this occur?</para>
+
+<para id="par28">		Continue decreasing the channel bandwidth. What effects do you begin to observe?</para>
+
+<para id="par29">		Make a series of plots that show the progressive degradation of the rectangular pulse shape as the channel bandwidth is restricted.
+		Right-click on the plot and choose "Export Simplified Image" to copy the graph to the clipboard for pasting into your report.
+		Be sure to indicate the channel bandwidth for each plot.
+</para>
+
+</section>
+
+<section id="sec30">
+<title>Sinc Pulse Shape</title>
+
+<para id="par31">
+		Restore the front panel controls of "ISI_and_EyeDiagram.vi" to their default values.</para>
+
+<para id="par32">		Set the <code display="inline">symbols</code> control to 1 to produce a single pulse, and set the <code display="inline">bandwidth</code> 
+		control to 0.02. The received pulse should show noticeable distortion.</para>
+
+<para id="par33">		Now set the <code display="inline">pulse shape</code>  control to "Sinc." How much distortion is evident at the receiver? 
+		How much lower can you restrict the bandwidth while still preserving the basic sinc waveform shape?</para>
+
+<para id="par34">		The sinc function's ability to maintain its basic shape through a restricted channel bandwidth is important, but its true significance extends beyond this fact,
+		as explored in the next section.
+</para>
+
+</section>
+
+<section id="sec35">
+<title>Multiple Pulses</title>
+
+<para id="par36">
+		A transmitter converts a message, or sequence of bits, into a series of analog pulses to create the signaling waveform.
+		A receiver recovers the bitstream by periodically sampling the signaling waveform and comparing the sample to a threshold
+		value to decide "1" or "0."
+		Sinc-shaped pulse do not interfere with adjacent bit slots, <emphasis>provided</emphasis> that the bit slots are sampled at
+		the correct instant in time.</para>
+
+<para id="par37">		To see this, reinitialize the front panel control values to their default settings, choose the "Sinc" pulse shape, and choose 2 symbols. Look carefully
+		at the transmitted and received pulses on the lower-left front panel plots. The white trace shows the first pulse in the sequence, while the red trace shows the
+		second pulse in the sequence. The first pulse has an amplitude of +1, while the second pulse has an amplitude of -1, corresponding to a bit sequence "10";
+		refer to the <code display="inline">message bitstream</code> indicator to confirm that the first bit is <code display="inline">T</code> (green LED indicator active)
+		and the second bit is <code display="inline">F</code> (inactive LED indicator).</para>
+
+<para id="par38">		The waveform plots on the lower-right front panel show the actual transmitted and received waveforms, which superimpose (i.e., add) the individual pulses together.
+		The plots on the lower-left front panel illustrate the contribution of each individual pulse.</para>
+
+<para id="par39">		Look carefully at the time 450 samples, in which the second (red) pulse is at its most negative value. What is the value of the first (white) pulse
+		at this instant? Hopefully you can see that it is <emphasis>zero</emphasis>, indicating that the first (white) pulse produces <emphasis>zero interference</emphasis> 
+		at the instant the second (red) pulse attains its maximum absolute value.</para>
+
+<para id="par40">		Now, increase the number of symbols to 3, and also to higher values. Study the waveforms to convince yourself that even though a single sinc pulse 
+		extends over many bit time intervals, the contribution of all adjacent pulses is always zero at the moment that a given sinc pulse attains its
+		maximum absolute value. Therefore, the sinc pulse shape achieves zero ISI when properly sampled.</para>
+
+<para id="par41">		Make a series of plots from the "received pulses" waveform display and explain your understanding of the sinc pulse shape and its ability to achieve
+		zero ISI.</para>
+
+<para id="par42">		Restrict the channel bandwidth to 0.02, and confirm that the sinc pulses remain essentially unchanged. Now, set the pulse shape to "Rectangular." 
+		Set the <code display="inline">symbols</code> control to 2 and study the lower-left front panel plots. Identify where the second (red) 
+		pulse attains its maximum absolute value. How much interference is present from the first (white) pulse?</para>
+
+<para id="par43">		Make a series of plots from the "received pulses" waveform display and explain your understanding of the rectangle pulse shape and its
+		susceptibility to intersymbol interference.
+</para>
+
+</section>
+
+<section id="sec44">
+<title>Eye Diagram</title>
+
+<para id="par45">
+		Study the transmitted and received waveform plots on the lower-right front panel as you increase the number of symbols to 40, and try this for the two pulse
+		shapes considered so far. Also try varying the channel bandwidth. The received signaling waveform is reasonably easy to understand for
+		rectangle pulses, but is rather difficult to interpret when sinc pulses are used. For example, you should
+		find that you can easily correlate the "message bitstream" sequence with the high and low regions
+		in the received waveform when rectangular pulse shapes are transmitted; the correlation is more difficult when sinc pulses are used.</para>
+
+<para id="par46">		The <term>eye diagram</term> provides a powerful visualization tool to interpret the behavior of the received waveform regardless of the pulse shape.
+		The <link target-id="video-eyedgm"/> screencast video continues the discussion by explaining the eye diagram plot
+		on the upper-right front panel of "ISI_and_EyeDiagram." Follow along with video, matching the front panel controls of "ISI_and_EyeDiagram.vi"
+		to those of the video.
+</para>
+
+<figure id="video-eyedgm"><title><link url="https://youtu.be/PudR4YJirsM" window="new">https://youtu.be/PudR4YJirsM</link> (4:41)</title><media id="eip-idm395093152" display="block" alt="Insert alt text here"><video mime-type="video/mpeg" src="https://www.youtube.com/embed/PudR4YJirsM?rel=0" autoplay="false" width="640" height="460"/></media>
+
+
+<caption>[video] Explanation of the eye diagram plot in the "ISI_and_EyeDiagram.vi" LabVIEW VI
+</caption></figure><para id="par48">
+		The eye diagram reveals important performance metrics for a communication link, including <term>noise margin</term>, <term>ISI</term>,
+		<term>timing sensitivity</term>, and <term>zero-crossing jitter</term>. In addition, the eye diagram shows the optimum sampling time for the
+		receiver to regenerate a bitstream from the received signaling waveform.
+		View the <link target-id="video-eyemetrics"/> screencast video to learn how to measure these performance metrics and how to determine
+		the optimum sampling time.
+</para>
+
+<figure id="video-eyemetrics"><title><link url="https://youtu.be/zGzuFjXIQ7U" window="new">https://youtu.be/zGzuFjXIQ7U</link> (3:57)</title><media id="eip-idm464182624" display="block" alt="Insert alt text here"><video mime-type="video/mpeg" src="https://www.youtube.com/embed/zGzuFjXIQ7U?rel=0" autoplay="false" width="640" height="460"/></media>
+
+
+<caption>[video] Measuring noise margin, ISI, timing sensitivity, zero-crossing jitter, and optimum sampling time using an eye diagram
+</caption></figure></section>
+
+<section id="sec50">
+<title>Eye Diagram Measurements</title>
+
+<para id="par51">
+		<link target-id="figure-genericeye"/> illustrates a generic eye pattern superimposed on a measured eye diagram plot 
+		and summarizes the definition of the various performance
+		metrics discussed earlier. Use these definitions for the following measurements.
+</para>
+
+<figure id="figure-genericeye">
+<media id="idm11229520" alt=""><image src="../../media/simviz_isi-genericeye.png" mime-type="image/png"/></media>
+<caption>
+   Generic eye pattern and definition of performance metrics
+</caption>
+</figure>
+
+<section id="sec53">
+<title>Rectangle Pulse</title>
+
+<para id="par54">
+		Restore the front panel controls of "ISI_and_EyeDiagram.vi" to their default values, and set the <code display="inline">symbols</code> control
+		to 40. Vary the channel bandwidth and observe its effect on the eye diagram plot, and then set the channel bandwidth to 0.05. Increase the
+		eye diagram <code display="inline">start time</code> to 245 samples to center the eye in the plot window.</para>
+
+<para id="par55">		Export the eye diagram plot to a piece of paper, and then use the eye diagram cursor as a tool to measure the following (show and label the relevant distances
+		you measured on your hardcopy plot):
+</para>
+
+<list id="list56" list-type="enumerated">
+
+<item> 
+			Optimum sampling time; report this as the number of samples from the nearest zero crossing
+	 </item>
+<item> 
+			Peak ISI
+	 </item>
+<item> 
+			Zero crossing jitter; report this as the maximum variation in time samples
+	 </item>
+<item> 
+			Noise margin
+	 </item>
+
+</list>
+
+</section>
+
+<section id="sec57">
+<title>Sinc Pulse</title>
+
+<para id="par58">
+		Ensure that the front panel controls of "ISI_and_EyeDiagram.vi" are the same as in the previous step, and then select the "Sinc" pulse shape. Adjust
+		the eye diagram <code display="inline">start time</code> and <code display="inline">time span</code> to maximize the number of displayed bit intervals
+		and also to avoid the initial startup transient that causes lines to cross through the center of the eye; also make adjustments to place the maximum
+		eye opening at the center of the plot window.
+		</para>
+
+<para id="par59">		As in the previous step, export the eye diagram plot to a piece of paper, and then use the eye diagram cursor as a tool to measure the following 
+		(show and label the relevant distances you measured on your hardcopy plot):
+</para>
+
+<list id="list60" list-type="enumerated">
+
+<item> 
+			Peak ISI
+	 </item>
+<item> 
+			ISI at the optimum sampling time
+	 </item>
+<item> 
+			Zero crossing jitter; report this as the maximum variation in time samples
+	 </item>
+<item> 
+			Noise margin
+	 </item>
+<item> 
+			Timing error sensitivity; report this in terms of time samples
+	 </item>
+
+</list>
+
+</section>
+
+<section id="sec61">
+<title>Raised Cosine Pulse</title>
+
+<para id="par62">
+		Keep the front panel controls of "ISI_and_EyeDiagram.vi" at the same settings you used for the previous "Sinc" pulse measurements, and then
+		select the "Raised Cosine" pulse shape. You should expect to see the maximum eye opening remain centered in the eye diagram plot.</para>
+
+<para id="par63">		As in the previous steps, export the eye diagram plot to a piece of paper, and then use the eye diagram cursor as a tool to measure the 
+		the same five metrics as for the "Sinc" pulse. Show and label the relevant distances you measured on your hardcopy plot.</para>
+
+<para id="par64">		Compare your results for the raised cosine pulse and the sinc pulse. What appears to be advantageous about the raised cosine pulse shape?</para>
+
+<para id="par65">		See the video screencast in <link document="m18566">pam_RaisedCosinePulse.vi</link> for more background about the raised cosine pulse, the
+		most widely-used pulse shape in digital communication systems.
+</para>
+
+</section>
+
+</section>
+
+<section id="sec66">
+<title>Noise</title>
+
+<para id="par67">
+		Add random channel noise to the received waveform by moving the <code display="inline">noise standard deviation</code> control away from zero.
+		Note how the eye pattern begins to close as the noise level increases. </para>
+
+<para id="par68">		Report the noise standard deviation value at which the eye just begins to close completely for each of the three pulse shapes. Make hardcopy plots
+		of the eye diagram for each value that you report.
+</para>
+
+</section>
+
+<section id="sec69">
+<title>Channel Filter</title>
+
+<para id="par70">
+		"ISI_and_EyeDiagram.vi" uses a 10th-order IIR lowpass filter to model the limited-bandwidth channel. This type of filter is fairly realistic, and
+		produces <term>delay distortion</term>, an effect caused by the filter's nonlinear phase response. Delay distortion causes the various signal frequency
+		components to arrive at the receiver at different times, and can severely distort the originally-transmitted pulse shape.</para>
+
+<para id="par71">		Engage the <code display="inline">FIR</code> pushbutton control to select a linear-phase FIR filter that does not introduce delay distortion.
+</para>
+
+</section>
+
+<section id="sec72">
+<title>Final Comments</title>
+
+<para id="par73">
+		The <code display="inline">seed</code> front-panel control in the "Pulses" section primes the random number generator that creates the
+		message bitstream. Feel free to try other seed values to produce other bit sequences for the message.</para>
+
+<para id="par74">		"ISI_and_EyeDiagram.vi" uses two programming techniques that you may wish to investigate further, namely, an <term>event structure</term> and
+		<term>property nodes</term>. Type Ctrl+E to show the block diagram window, and observe the event structure within the while-loop structure. The
+		event structure only "fires" when a front-panel control value changes; the CPU does not do any work except to instantly respond to 
+		front-panel activity. The event structure makes the VI very responsive to user input, but does not burden the CPU as would a plain while-loop.</para>
+
+<para id="par75">		The property nodes allow front panel controls and indicators to be programmatically controlled. For example, changing the value of the
+		<code display="inline">samples</code> front-panel control causes the upper limit of <code display="inline">start time</code> to
+		automatically change to the same value.
+</para>
+
+</section>
+
+<section id="sec76">
+<title>References</title>
+
+<list id="list77" list-type="enumerated">
+
+<item> 
+		Carlson, A. Bruce, Paul B. Crilly, and Janet C. Rutledge, "Communication Systems," 4th ed., McGraw-Hill, 2002. ISBN-13: 978-0-07-011127-1
+	 </item>
+<item> 
+		Couch, Leon W. II, "Digital and Analog Communication Systems," 7th ed., Pearson Prentice Hall, 2007. ISBN-10: 0-13-142492-0
+	 </item>
+<item> 
+		Haykin, Simon. "Communication Systems," 4th ed., Wiley, 2001. ISBN-10: 0-471-17869-1
+	 </item>
+<item> 
+		Haykin, Simon, and Michael Moher, "Introduction to Analog and Digital Communication Systems," 2nd ed., Wiley, 2007. ISBN-13: 978-0-471-43222-7
+	 </item>
+<item> 
+		Proakis, John G., and Masoud Salehi, "Fundamentals of Communication Systems," Pearson Prentice Hall, 2005. ISBN-10: 0-13-147135-X
+	 </item>
+<item> 
+		Proakis, John G., and Masoud Salehi, "Communication Systems Engineering," 2nd ed., Pearson Prentice Hall, 2002. ISBN-10: 0-13-061793-8
+	 </item>
+<item> 
+		Stern, Harold P.E., and Samy A. Mahmoud, "Communication Systems," Pearson Prentice Hall, 2004. ISBN-10: 0-13-040268-0
+	 </item>
+
+</list>
+
+</section>
+
+</content>
+</document>

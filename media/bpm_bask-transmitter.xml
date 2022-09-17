@@ -1,0 +1,623 @@
+<!--
+
+== title ==
+Binary ASK Transmitter
+
+== keywords ==
+amplitude shift keying
+ASK
+digital communications
+digital continuous wave modulation
+impulse response
+pulse shaping filter
+raised cosine pulse
+rectangular pulse
+speaker-air-microphone channel
+transmit filter
+
+== summary ==
+A binary ASK transmitter and receiver is designed to transmit digital information over a "speaker-air-microphone" (SAM) channel. Listening to the channel while making parameter adjustments and viewing plots builds additional insights into the ASK modulation scheme. This project describes the various tradeoffs affecting bandwidth and information rate and provides an application for the pulse shapping transmit filter.
+
+-->
+
+<?xml version='1.0' standalone='yes' ?>
+<LVData>
+<Version>8.2</Version>
+
+<!--SUMMARY------------------------------------------------------>
+<String> <Name>sec</Name> <Val>Summary</Val> </String>
+
+<String> <Name>para</Name> <Val>
+		Three parameters specify a sinusoidal carrier wave: amplitude, frequency, and phase. 
+		An individual parameter or combination of parameters may be {term}modulated{/term} by
+		a message to communicate information. The most basic modulation schemes switch
+		a single parameter between two values to signal a binary 0 or binary 1.
+
+		In this project, construct and study a transmitter that switches the carrier
+		wave's amplitude between zero and a non-zero value. The term {term}switching{/term} is
+		also called {term}keying{/term} (as in a telegraph key), and so the transmitter in this
+		project can be said to use {term}binary amplitude shift keying{/term} ({term}binary ASK{/term}).
+</Val> </String>
+
+
+<!--OBJECTIVES------------------------------------------------------>
+<String> <Name>secend</Name> <Val></Val> </String>
+<String> <Name>sec</Name> <Val>Objectives</Val> </String>
+
+<Cluster> <Name>list</Name> <NumElts>3</NumElts>
+<EW> <Name>type</Name> <Choice>Bulleted</Choice> <Choice>Enumerated</Choice> <Val>1</Val> </EW>
+<String> <Name>list name (optional)</Name> <Val></Val> </String>
+<Array> <Name>list items</Name> <Dimsize>3</Dimsize>
+	<String> <Name>String</Name> <Val>
+			Study the spectral characteristics of binary ASK signals using both rectangular and
+			raised cosine pulse shapes
+	</Val> </String>
+	<String> <Name>String</Name> <Val>
+			Translate the ASK transmitter block diagram into a LabVIEW block diagram
+	</Val> </String>
+	<String> <Name>String</Name> <Val>
+			Develop an ASK transmitter for the speaker-air-microphone (SAM) channel
+	</Val> </String>
+</Array>
+</Cluster>
+
+
+<!--DELIVERABLES------------------------------------------------------>
+<String> <Name>secend</Name> <Val></Val> </String>
+<String> <Name>sec</Name> <Val>Deliverables</Val> </String>
+
+<Cluster> <Name>list</Name> <NumElts>3</NumElts>
+<EW> <Name>type</Name> <Choice>Bulleted</Choice> <Choice>Enumerated</Choice> <Val>1</Val> </EW>
+<String> <Name>list name (optional)</Name> <Val></Val> </String>
+<Array> <Name>list items</Name> <Dimsize>3</Dimsize>
+<String> <Name>String</Name> <Val>Summary write-up of your results</Val> </String>
+<String> <Name>String</Name> <Val>Hardcopy of all LabVIEW code that you develop (block diagrams and front panels)</Val> </String>
+<String> <Name>String</Name> <Val>Any plots or diagrams requested</Val> </String>
+</Array>
+</Cluster>
+
+<Cluster> <Name>note</Name> <NumElts>2</NumElts>
+<EW> <Name>notetype</Name> <Choice>Note</Choice> <Choice>Important</Choice> <Val>0</Val> </EW>
+<String> <Name>text</Name> <Val>
+		You can easily export LabVIEW front-panel waveform plots directly to your report. Right-click on the waveform
+		indicator and choose "Export Simplified Image."
+</Val> </String>
+</Cluster>
+
+<!--SETUP------------------------------------------------------>
+<String> <Name>secend</Name> <Val></Val> </String>
+<String> <Name>sec</Name> <Val>Setup</Val> </String>
+
+<Cluster> <Name>list</Name> <NumElts>3</NumElts>
+<EW> <Name>type</Name> <Choice>Bulleted</Choice> <Choice>Enumerated</Choice> <Val>1</Val> </EW>
+<String> <Name>list name (optional)</Name> <Val></Val> </String>
+<Array> <Name>list items</Name> <Dimsize>3</Dimsize>
+<String> <Name>String</Name> <Val>LabVIEW 8.5 or later version</Val> </String>
+<String> <Name>String</Name> <Val>Computer soundcard</Val> </String>
+<String> <Name>String</Name> <Val>Speaker</Val> </String>
+</Array>
+</Cluster>
+
+<!--TEXTBOOK LINKAGES------------------------------------------------------>
+<String> <Name>secend</Name> <Val></Val> </String>
+<String> <Name>sec</Name> <Val>Textbook Linkages</Val> </String>
+
+<String> <Name>para</Name> <Val>
+		Refer to the following textbooks for additional background on the project activities of this module;
+		see the "References" section below for publication details:
+</Val> </String>
+
+<Cluster> <Name>list</Name> <NumElts>3</NumElts>
+<EW> <Name>type</Name> <Choice>Bulleted</Choice> <Choice>Enumerated</Choice> <Val>0</Val> </EW>
+<String> <Name>list name (optional)</Name> <Val></Val> </String>
+<Array> <Name>list items</Name> <Dimsize>6</Dimsize>
+	<String><Name>String</Name><Val>Carlson, Crilly, and Rutledge -- Ch 14</Val></String>
+	<String><Name>String</Name><Val>Couch -- Ch 5</Val></String>
+	<String><Name>String</Name><Val>Haykin and Moher -- Ch 7</Val></String>
+	<String><Name>String</Name><Val>Lathi -- Ch 13</Val></String>
+	<String><Name>String</Name><Val>Proakis and Salehi (FCS) -- Ch 10</Val></String>
+	<String><Name>String</Name><Val>Stern and Mahmoud -- Ch 5</Val></String>
+</Array>
+</Cluster>
+
+
+<!--PREREQUISITE MODULES ------------------------------------------------------>
+<String> <Name>secend</Name> <Val></Val> </String>
+<String> <Name>sec</Name> <Val>Prerequisite Modules</Val> </String>
+<String> <Name>para</Name> <Val>
+		Complete the lab project
+		{cnxn document=&quot;m18666&quot;}Speaker-Air-Microphone (SAM) Channel Characterization{/cnxn}
+		before you begin this project.
+
+		If you are relatively new to LabVIEW, consider taking the course 
+		{cnxn document=&quot;col10440&quot;}LabVIEW Techniques for Audio Signal Processing{/cnxn} 
+		which provides the foundation you need to complete this project activity, including:
+		block diagram editing techniques, essential programming structures, subVIs, arrays, and
+		audio. 
+</Val> </String>
+
+<!--INTRODUCTION------------------------------------------------------>
+<String> <Name>secend</Name> <Val></Val> </String>
+<String> <Name>sec</Name> <Val>Introduction</Val> </String>
+
+<String> <Name>para</Name> <Val>
+		{term}Bandpass channels{/term} possess a non-zero lower cutoff frequency, and
+		therefore cannot transmit a {term}baseband{/term} signal. For example, the channel
+		established between two voice-grade telephones begins at 300 Hz and ends at 3,000 Hz.
+		A digital signal (baseband type) must be shifted in frequency so that its significant
+		frequency components all exist within the 300 to 3,000 Hz range. Frequency shifting
+		may be accomplished by impressing the baseband signal onto a sinusoidal 
+		{term}carrier wave{/term}.
+
+		A sinusoidal carrier wave 
+{m:math}
+ {m:semantics}
+  {m:mrow}
+   {m:mi}c{/m:mi}{m:mo stretchy=&apos;false&apos;}({/m:mo}{m:mi}t{/m:mi}{m:mo stretchy=&apos;false&apos;}){/m:mo}{m:mo}={/m:mo}{m:msub}
+    {m:mi}A{/m:mi}
+    {m:mi}c{/m:mi}
+   {/m:msub}
+   {m:mi}cos{/m:mi}{m:mo}&amp;#x2061;{/m:mo}{m:mo stretchy=&apos;false&apos;}({/m:mo}{m:mn}2{/m:mn}{m:mi}&amp;#x03C0;{/m:mi}{m:msub}
+    {m:mi}f{/m:mi}
+    {m:mi}c{/m:mi}
+   {/m:msub}
+   {m:mi}t{/m:mi}{m:mo}+{/m:mo}{m:msub}
+    {m:mi}&amp;#x03D5;{/m:mi}
+    {m:mi}c{/m:mi}
+   {/m:msub}
+   {m:mo stretchy=&apos;false&apos;}){/m:mo}
+  {/m:mrow}
+ {m:annotation encoding=&apos;MathType-MTEF&apos;}
+ MathType@MTEF@5@5@+=feaagaart1ev2aqatCvAUfeBSjuyZL2yd9gzLbvyNv2CaerbuLwBLnhiov2DGi1BTfMBaeXatLxBI9gBaerbd9wDYLwzYb1uaebbnrfifHhDYfgasaacH8srps0lbbf9q8WrFfeuY=Hhbbf9v8qqaqFr0xc9pk0xbba9q8WqFfea0=yr0RYxir=Jbba9q8aq0=yq=He9q8qqQ8frFve9Fve9Ff0dmeaabaqaciGacaGaaeqabaWaaeaaeaaakeaacaWGJbGaaiikaiaadshacaGGPaGaeyypa0JaamyqamaaBaaaleaacaWGJbaabeaakiGacogacaGGVbGaai4CaiaacIcacaaIYaGaeqiWdaNaamOzamaaBaaaleaacaWGJbaabeaakiaadshacqGHRaWkcqaHvpGzdaWgaaWcbaGaam4yaaqabaGccaGGPaaaaa@48DA@{/m:annotation}
+ {/m:semantics}
+ {/m:math}
+ 		possesses three parameters that can be switched (or keyed) by a binary message signal: 
+		{term}amplitude{/term}, {term}frequency{/term}, and {term}phase{/term}; the resulting 
+ 		{term}digital continuous wave modulation{/term} schemes are called ASK
+		(amplitude shift keying), FSK (frequency shift keying), and PSK (phase shift keying), 
+		respectively. 
+
+		The {cnxn target=&quot;video-math&quot;/} screencast video introduces
+		the mathematical notation used in this module to discuss ASK modulation, and includes
+		a visualization of the ASK waveform.
+</Val> </String>
+
+<Cluster> <Name>video</Name> <NumElts>4</NumElts>
+<String> <Name>ID (optional)</Name> <Val>video-math</Val> </String>
+<String> <Name>video name</Name> <Val>math</Val> </String>
+<String> <Name>webpage title</Name> <Val>Carrier wave nomenclature</Val> </String>
+<String> <Name>caption</Name> <Val>Mathematical notation for ASK modulation and visualization of the ASK waveform</Val> </String>
+</Cluster>
+
+<String> <Name>para</Name> <Val>
+		{cnxn target=&quot;figure-blockdgm&quot;/} illustrates the block diagram of a
+		binary ASK transmitter. 
+</Val> </String>
+
+<Cluster> <Name>image</Name> <NumElts>3</NumElts>
+<String> <Name>ID (optional)</Name> <Val>figure-blockdgm</Val> </String>
+<String> <Name>name</Name> <Val>blockdgm</Val> </String>
+<String> <Name>caption</Name> <Val>ASK transmitter block diagram</Val> </String>
+</Cluster>
+
+<String> <Name>para</Name> <Val>
+		The transmitter's {term}signal point mapper{/term} selects a value for each bit of 
+		the binary message (bitstream), and the {term}transmit filter{/term} generates
+		an analog signal waveform to be transmitted through the channel. The transmit
+		filter is also known as the {term}pulse shaping filter{/term}.
+		Binary ASK maps a binary 1 to 
+{m:math}
+ {m:semantics}
+  {m:mrow}
+   {m:msqrt}
+    {m:mrow}
+     {m:msub}
+      {m:mi}E{/m:mi}
+      {m:mi}b{/m:mi}
+     {/m:msub}
+    {/m:mrow}
+   {/m:msqrt}
+  {/m:mrow}
+ {m:annotation encoding=&apos;MathType-MTEF&apos;}
+ MathType@MTEF@5@5@+=feaagaart1ev2aqatCvAUfeBSjuyZL2yd9gzLbvyNv2CaerbuLwBLnhiov2DGi1BTfMBaeXatLxBI9gBaerbd9wDYLwzYb1uaebbnrfifHhDYfgasaacH8srps0lbbf9q8WrFfeuY=Hhbbf9v8qqaqFr0xc9pk0xbba9q8WqFfea0=yr0RYxir=Jbba9q8aq0=yq=He9q8qqQ8frFve9Fve9Ff0dmeaabaqaciGacaGaaeqabaWaaeaaeaaakeaadaGcaaqaaiaadweadaWgaaWcbaGaamOyaaqabaaabeaaaaa@3734@{/m:annotation}
+ {/m:semantics}
+ {/m:math}
+ and a binary 0 to zero;
+{m:math}
+ {m:semantics}
+  {m:mrow}
+   {m:msub}
+    {m:mi}E{/m:mi}
+    {m:mi}b{/m:mi}
+   {/m:msub}
+  {/m:mrow}
+ {m:annotation encoding=&apos;MathType-MTEF&apos;}
+ MathType@MTEF@5@5@+=feaagaart1ev2aqatCvAUfeBSjuyZL2yd9gzLbvyNv2CaerbuLwBLnhiov2DGi1BTfMBaeXatLxBI9gBaerbd9wDYLwzYb1uaebbnrfifHhDYfgasaacH8srps0lbbf9q8WrFfeuY=Hhbbf9v8qqaqFr0xc9pk0xbba9q8WqFfea0=yr0RYxir=Jbba9q8aq0=yq=He9q8qqQ8frFve9Fve9Ff0dmeaabaqaciGacaGaaeqabaWaaeaaeaaakeaacaWGfbWaaSbaaSqaaiaadkgaaeqaaaaa@3724@{/m:annotation}
+ {/m:semantics}
+{/m:math} denotes the energy per bit. The transmit filter scales a standard pulse shape
+by these values to produce the baseband signal, which in turn is shifted in frequency
+to match the channel's center frequency by multiplying by a sinusoidal carrier waveform to produce the 
+transmitted signal.
+		
+		The {cnxn target=&quot;video-spectrum-rect&quot;/} screencast video discusses the spectrum of
+		the transmitted signal, especially the impact of a rectangular pulse shape on the
+		required bandwidth of the ASK signal.
+</Val> </String>
+
+<Cluster> <Name>video</Name> <NumElts>4</NumElts>
+<String> <Name>ID (optional)</Name> <Val>video-spectrum-rect</Val> </String>
+<String> <Name>video name</Name> <Val>spectrum-rect</Val> </String>
+<String> <Name>webpage title</Name> <Val>ASK spectrum with rectangular pulses</Val> </String>
+<String> <Name>caption</Name> <Val>ASK spectrum with rectangular pulses</Val> </String>
+</Cluster>
+
+<String> <Name>para</Name> <Val>
+		As discussed in the previous video, the ASK signal created with rectangular pulses is 
+		spectrally inefficient. From an intuitive
+		point of view, signals with sharp corners always possess a wideband spectrum. Rounding the
+		corners should therefore produce a transmitted signal that does not require as much bandwidth.
+
+		The {term}raised cosine pulse{/term} is a standard pulse shape widely used in communication systems that offers much better spectral
+		efficiency; see the video in {cnxn document=&quot;m18566&quot;}pam_RaisedCosinePulse.vi{/cnxn} for more background on this important
+		pulse shape, including an explanation of its {term}excess bandwidth{/term} pulse shape parameter.
+		The {cnxn target=&quot;video-spectrum-rcp&quot;/} screencast video discusses the 
+		spectrum of the transmitted ASK signal with raised cosine pulse shaping.
+</Val> </String>
+
+<Cluster> <Name>video</Name> <NumElts>4</NumElts>
+<String> <Name>ID (optional)</Name> <Val>video-spectrum-rcp</Val> </String>
+<String> <Name>video name</Name> <Val>spectrum-rcp</Val> </String>
+<String> <Name>webpage title</Name> <Val>ASK spectrum with raised cosine pulse shaping</Val> </String>
+<String> <Name>caption</Name> <Val>ASK spectrum with raised cosine pulse shaping</Val> </String>
+</Cluster>
+
+<String> <Name>para</Name> <Val>
+		Consider once again the transmitter block diagram of 
+		{cnxn target=&quot;figure-blockdgm&quot;/}. In a fully digital implementation, the 
+		pulse shaping filter output must be a sampled-value waveform. Rectangular pulse shapes are easy
+		to implement: a given binary symbol simply maps to an array of constant values. Nonrectangular
+		pulses take a bit more effort, however, especially when the pulse shape must extend over more
+		than one bit interval.
+
+		The {cnxn target=&quot;video-transmit-filter&quot;/} screencast video describes a 
+		pulse shaping filter implementation that can be used with any 
+		pulse shape. The basic idea involves driving an FIR filter with an impulse train.
+</Val> </String>
+
+<Cluster> <Name>video</Name> <NumElts>4</NumElts>
+<String> <Name>ID (optional)</Name> <Val>video-transmit-filter</Val> </String>
+<String> <Name>video name</Name> <Val>transmit-filter</Val> </String>
+<String> <Name>webpage title</Name> <Val>Signal point mapper and pulse shaping filter implementation</Val> </String>
+<String> <Name>caption</Name> <Val>Signal point mapper and pulse shaping filter implementation using an FIR filter driven by an impulse train</Val> </String>
+</Cluster>
+
+
+<!--PROCEDURE------------------------------------------------------>
+<String> <Name>secend</Name> <Val></Val> </String>
+<String> <Name>sec</Name> <Val>Procedure</Val> </String>
+
+
+	<!--STEP------------------------------------------>
+<String> <Name>sec</Name> <Val>SubVI construction</Val> </String>
+
+<String> <Name>para</Name> <Val>
+		Build the subVIs listed below. You may already have some of these available
+		from previous projects.
+
+		Demonstrate that each of these subVIs works properly before continuing to the next part.
+</Val> </String>
+
+<Cluster> <Name>list</Name> <NumElts>3</NumElts>
+<EW> <Name>type</Name> <Choice>Bulleted</Choice> <Choice>Enumerated</Choice> <Val>1</Val> </EW>
+<String> <Name>list name (optional)</Name> <Val></Val> </String>
+<Array> <Name>list items</Name> <Dimsize>6</Dimsize>
+	<String> <Name>String</Name> <Val>{cnxn document=&quot;m18528&quot;}util_BitstreamFromRandom.vi{/cnxn} </Val> </String>
+	<String> <Name>String</Name> <Val>{cnxn document=&quot;m18570&quot;}pam_SignalPointMapper.vi{/cnxn} </Val> </String>
+	<String> <Name>String</Name> <Val>{cnxn document=&quot;m18472&quot;}pam_TransmitFilter.vi{/cnxn} </Val> </String>
+	<String> <Name>String</Name> <Val>{cnxn document=&quot;m18454&quot;}pam_RectanglePulse.vi{/cnxn} </Val> </String>
+	<String> <Name>String</Name> <Val>{cnxn document=&quot;m18566&quot;}pam_RaisedCosinePulse.vi{/cnxn} </Val> </String>
+	<String> <Name>String</Name> <Val>{cnxn document=&quot;m18556&quot;}bpm_ProductModulator.vi{/cnxn} </Val> </String>
+</Array>
+</Cluster>
+
+
+	<!--STEP------------------------------------------>
+<String> <Name>secend</Name> <Val></Val> </String>
+<String> <Name>sec</Name> <Val>ASK transmitter</Val> </String>
+
+<String> <Name>para</Name> <Val>
+		Assemble an ASK transmitter using the subVIs you created in the previous step; refer to
+		the ASK transmitter diagram of {cnxn target=&quot;figure-blockdgm&quot;/}.
+		Drive the transmitter with a random bitstream containing equiprobable binary values. Plot 
+		the power spectrum of the ASK signal 
+		using the "Express | Signal Analysis | Spectral Measurements" Express subVI. Connect the 
+		transmitter output to the speaker using the technique you learned in
+		{cnxn document=&quot;m18666&quot;}Speaker-Air-Microphone Channel Characterization{/cnxn}.
+
+		Include the following controls on the front panel:
+</Val> </String>
+
+<Cluster> <Name>list</Name> <NumElts>3</NumElts>
+<EW> <Name>type</Name> <Choice>Bulleted</Choice> <Choice>Enumerated</Choice> <Val>0</Val> </EW>
+<String> <Name>list name (optional)</Name> <Val></Val> </String>
+<Array> <Name>list items</Name> <Dimsize>6</Dimsize>
+	<String> <Name>String</Name> <Val>{code type=&quot;inline&quot;}fc, carrier frequency [Hz]{/code}</Val></String>
+	<String> <Name>String</Name> <Val>{code type=&quot;inline&quot;}fs, sampling frequency [Hz]{/code}</Val></String>
+	<String> <Name>String</Name> <Val>{code type=&quot;inline&quot;}Eb, energy per bit{/code}</Val></String>
+	<String> <Name>String</Name> <Val>{code type=&quot;inline&quot;}Tb, bit interval [s]{/code}</Val></String>
+	<String> <Name>String</Name> <Val>{code type=&quot;inline&quot;}bitstream length{/code}</Val></String>
+	<String> <Name>String</Name> <Val>{code type=&quot;inline&quot;}seed{/code}</Val></String>
+</Array>
+</Cluster>
+
+<String> <Name>para</Name> <Val>
+		Include the following indicators on the front panel:
+</Val> </String>
+
+<Cluster> <Name>list</Name> <NumElts>3</NumElts>
+<EW> <Name>type</Name> <Choice>Bulleted</Choice> <Choice>Enumerated</Choice> <Val>0</Val> </EW>
+<String> <Name>list name (optional)</Name> <Val></Val> </String>
+<Array> <Name>list items</Name> <Dimsize>5</Dimsize>
+	<String> <Name>String</Name> <Val>{code type=&quot;inline&quot;}ASK power spectrum{/code} -- waveform graph</Val></String>
+	<String> <Name>String</Name> <Val>{code type=&quot;inline&quot;}time domain{/code} -- transmit filter and product modulator signals overlaid on the same waveform graph</Val></String>
+	<String> <Name>String</Name> <Val>{code type=&quot;inline&quot;}Rb, bit rate [Hz]{/code}</Val></String>
+	<String> <Name>String</Name> <Val>{code type=&quot;inline&quot;}samples per bit interval{/code}</Val></String>
+	<String> <Name>String</Name> <Val>{code type=&quot;inline&quot;}total signal duration [s]{/code}</Val></String>
+</Array>
+</Cluster>
+
+<String> <Name>para</Name> <Val>
+		{cnxn target=&quot;figure-frontpanel&quot;/} illustrates a suggested layout for the
+		VI front panel and shows the expected results of the initial parameter choices for the next section.
+</Val> </String>
+
+<Cluster> <Name>imagethumb</Name> <NumElts>4</NumElts>
+<String> <Name>ID (optional)</Name> <Val>figure-frontpanel</Val> </String>
+<String> <Name>image filename</Name> <Val>bpm_bask-transmitter-frontpanel.png</Val> </String>
+<String> <Name>thumbnail filename</Name> <Val>bpm_bask-transmitter-frontpanel_t.png</Val> </String>
+<String> <Name>caption</Name> <Val>ASK transmitter VI front panel (click image to see fullsize version)</Val> </String>
+</Cluster>
+
+	<!--STEP------------------------------------------>
+<String> <Name>secend</Name> <Val></Val> </String>
+<String> <Name>sec</Name> <Val>ASK transmitter parameter experiments</Val> </String>
+
+<String> <Name>para</Name> <Val>
+		Begin with the following front panel control values:
+</Val> </String>
+
+<Cluster> <Name>list</Name> <NumElts>3</NumElts>
+<EW> <Name>type</Name> <Choice>Bulleted</Choice> <Choice>Enumerated</Choice> <Val>0</Val> </EW>
+<String> <Name>list name (optional)</Name> <Val></Val> </String>
+<Array> <Name>list items</Name> <Dimsize>6</Dimsize>
+	<String> <Name>String</Name> <Val>{code type=&quot;inline&quot;}fc, carrier frequency [Hz]{/code} = 5,000 Hz</Val></String>
+	<String> <Name>String</Name> <Val>{code type=&quot;inline&quot;}fs, sampling frequency [Hz]{/code} = 40,000 Hz</Val></String>
+	<String> <Name>String</Name> <Val>{code type=&quot;inline&quot;}Eb, energy per bit{/code} = 1</Val></String>
+	<String> <Name>String</Name> <Val>{code type=&quot;inline&quot;}Tb, bit interval [s]{/code} = 0.001 s</Val></String>
+	<String> <Name>String</Name> <Val>{code type=&quot;inline&quot;}bitstream length{/code} = 1000</Val></String>
+	<String> <Name>String</Name> <Val>{code type=&quot;inline&quot;}seed{/code} = -1</Val></String>
+</Array>
+</Cluster>
+
+<String> <Name>para</Name> <Val>
+		These values should produce a bit rate of 1,000 Hz and total signal duration of 1 second.
+</Val> </String>
+
+<Cluster> <Name>list</Name> <NumElts>3</NumElts>
+<EW> <Name>type</Name> <Choice>Bulleted</Choice> <Choice>Enumerated</Choice> <Val>1</Val> </EW>
+<String> <Name>list name (optional)</Name> <Val></Val> </String>
+<Array> <Name>list items</Name> <Dimsize>5</Dimsize>
+	<String> <Name>String</Name> <Val>
+			Run the VI several times. You should observe a different sequence for the bitstream for each run. Next, change the {code type=&quot;inline&quot;}seed{/code}
+		       	to an integer larger than -1 and run the VI several times again. You should now observe the bitstream sequence to be the same
+			for each run. Use a seed value other that -1 to generate a constant bitstream sequence, when needed.
+	</Val></String>
+	<String> <Name>String</Name> <Val>
+			Vary the bit energy 
+{m:math}
+ {m:semantics}
+  {m:mrow}
+   {m:msub}
+    {m:mi}E{/m:mi}
+    {m:mi}b{/m:mi}
+   {/m:msub}
+  {/m:mrow}
+ {m:annotation encoding=&apos;MathType-MTEF&apos;}
+ MathType@MTEF@5@5@+=feaagaart1ev2aqatCvAUfeBSjuyZL2yd9gzLbvyNv2CaerbuLwBLnhiov2DGi1BTfMBaeXatLxBI9gBaerbd9wDYLwzYb1uaebbnrfifHhDYfgasaacH8srps0lbbf9q8WrFfeuY=Hhbbf9v8qqaqFr0xc9pk0xbba9q8WqFfea0=yr0RYxir=Jbba9q8aq0=yq=He9q8qqQ8frFve9Fve9Ff0dmeaabaqaciGacaGaaeqabaWaaeaaeaaakeaacaWGfbWaaSbaaSqaaiaadkgaaeqaaaaa@3724@{/m:annotation}
+ {/m:semantics}
+{/m:math}
+			and study the time-domain signals and power spectrum. Summarize the 
+			behavior of the signals as a function of 
+{m:math}
+ {m:semantics}
+  {m:mrow}
+   {m:msub}
+    {m:mi}E{/m:mi}
+    {m:mi}b{/m:mi}
+   {/m:msub}
+  {/m:mrow}
+ {m:annotation encoding=&apos;MathType-MTEF&apos;}
+ MathType@MTEF@5@5@+=feaagaart1ev2aqatCvAUfeBSjuyZL2yd9gzLbvyNv2CaerbuLwBLnhiov2DGi1BTfMBaeXatLxBI9gBaerbd9wDYLwzYb1uaebbnrfifHhDYfgasaacH8srps0lbbf9q8WrFfeuY=Hhbbf9v8qqaqFr0xc9pk0xbba9q8WqFfea0=yr0RYxir=Jbba9q8aq0=yq=He9q8qqQ8frFve9Fve9Ff0dmeaabaqaciGacaGaaeqabaWaaeaaeaaakeaacaWGfbWaaSbaaSqaaiaadkgaaeqaaaaa@3724@{/m:annotation}
+ {/m:semantics}
+{/m:math}.
+	</Val></String>
+	<String> <Name>String</Name> <Val>
+			Vary the bit interval
+{m:math}
+ {m:semantics}
+  {m:mrow}
+   {m:msub}
+    {m:mi}T{/m:mi}
+    {m:mi}b{/m:mi}
+   {/m:msub}
+  {/m:mrow}
+ {m:annotation encoding=&apos;MathType-MTEF&apos;}
+ MathType@MTEF@5@5@+=feaagaart1ev2aqatCvAUfeBSjuyZL2yd9gzLbvyNv2CaerbuLwBLnhiov2DGi1BTfMBaeXatLxBI9gBaerbd9wDYLwzYb1uaebbnrfifHhDYfgasaacH8srps0lbbf9q8WrFfeuY=Hhbbf9v8qqaqFr0xc9pk0xbba9q8WqFfea0=yr0RYxir=Jbba9q8aq0=yq=He9q8qqQ8frFve9Fve9Ff0dmeaabaqaciGacaGaaeqabaWaaeaaeaaakeaacaWGubWaaSbaaSqaaiaadkgaaeqaaaaa@3733@{/m:annotation}
+ {/m:semantics}
+{/m:math}
+			and study the time-domain signals and power spectrum. Summarize the 
+			behavior of the signals as a function of 
+{m:math}
+ {m:semantics}
+  {m:mrow}
+   {m:msub}
+    {m:mi}T{/m:mi}
+    {m:mi}b{/m:mi}
+   {/m:msub}
+  {/m:mrow}
+ {m:annotation encoding=&apos;MathType-MTEF&apos;}
+ MathType@MTEF@5@5@+=feaagaart1ev2aqatCvAUfeBSjuyZL2yd9gzLbvyNv2CaerbuLwBLnhiov2DGi1BTfMBaeXatLxBI9gBaerbd9wDYLwzYb1uaebbnrfifHhDYfgasaacH8srps0lbbf9q8WrFfeuY=Hhbbf9v8qqaqFr0xc9pk0xbba9q8WqFfea0=yr0RYxir=Jbba9q8aq0=yq=He9q8qqQ8frFve9Fve9Ff0dmeaabaqaciGacaGaaeqabaWaaeaaeaaakeaacaWGubWaaSbaaSqaaiaadkgaaeqaaaaa@3733@{/m:annotation}
+ {/m:semantics}
+{/m:math}. Be sure to comment on the following points:
+			(a) What does ASK sound like for a long bit interval such as 0.01 seconds compared to a short 
+			bit interval such as 0.0005 seconds?
+			(b) How does the bit rate value manifest itself in the power spectrum display? Hint: Recall
+			what you know about the first-null bandwidth of a sinc function.
+			(c) How does the choice of bit interval affect the total time to transmit the message?
+	</Val></String>
+	<String> <Name>String</Name> <Val>
+			Vary the carrier frequency 
+{m:math}
+ {m:semantics}
+  {m:mrow}
+   {m:msub}
+    {m:mi}f{/m:mi}
+    {m:mi}c{/m:mi}
+   {/m:msub}
+  {/m:mrow}
+ {m:annotation encoding=&apos;MathType-MTEF&apos;}
+ MathType@MTEF@5@5@+=feaagaart1ev2aqatCvAUfeBSjuyZL2yd9gzLbvyNv2CaerbuLwBLnhiov2DGi1BTfMBaeXatLxBI9gBaerbd9wDYLwzYb1uaebbnrfifHhDYfgasaacH8srps0lbbf9q8WrFfeuY=Hhbbf9v8qqaqFr0xc9pk0xbba9q8WqFfea0=yr0RYxir=Jbba9q8aq0=yq=He9q8qqQ8frFve9Fve9Ff0dmeaabaqaciGacaGaaeqabaWaaeaaeaaakeaacaWGMbWaaSbaaSqaaiaadogaaeqaaaaa@3746@{/m:annotation}
+ {/m:semantics}
+{/m:math}
+			and study the time-domain signals and power spectrum. Summarize
+			the behavior of the signals as a function of 
+{m:math}
+ {m:semantics}
+  {m:mrow}
+   {m:msub}
+    {m:mi}f{/m:mi}
+    {m:mi}c{/m:mi}
+   {/m:msub}
+  {/m:mrow}
+ {m:annotation encoding=&apos;MathType-MTEF&apos;}
+ MathType@MTEF@5@5@+=feaagaart1ev2aqatCvAUfeBSjuyZL2yd9gzLbvyNv2CaerbuLwBLnhiov2DGi1BTfMBaeXatLxBI9gBaerbd9wDYLwzYb1uaebbnrfifHhDYfgasaacH8srps0lbbf9q8WrFfeuY=Hhbbf9v8qqaqFr0xc9pk0xbba9q8WqFfea0=yr0RYxir=Jbba9q8aq0=yq=He9q8qqQ8frFve9Fve9Ff0dmeaabaqaciGacaGaaeqabaWaaeaaeaaakeaacaWGMbWaaSbaaSqaaiaadogaaeqaaaaa@3746@{/m:annotation}
+ {/m:semantics}
+{/m:math}.
+	</Val></String>
+	<String> <Name>String</Name> <Val>
+			Reset the front panel controls to the initial value listed at the beginning of this section.
+			Change the carrier frequency to 5,001 Hz, then to 5,002 Hz, and so on in small steps. What change do you 
+			observe in the sound of the ASK signal and the time-domain plot? Hint: zoom in on the ASK 
+			signal waveform so that you can see the signal between bit transition. Draw a conclusion: what 
+			relationship must exist between the carrier frequency
+{m:math}
+ {m:semantics}
+  {m:mrow}
+   {m:msub}
+    {m:mi}f{/m:mi}
+    {m:mi}c{/m:mi}
+   {/m:msub}
+  {/m:mrow}
+ {m:annotation encoding=&apos;MathType-MTEF&apos;}
+ MathType@MTEF@5@5@+=feaagaart1ev2aqatCvAUfeBSjuyZL2yd9gzLbvyNv2CaerbuLwBLnhiov2DGi1BTfMBaeXatLxBI9gBaerbd9wDYLwzYb1uaebbnrfifHhDYfgasaacH8srps0lbbf9q8WrFfeuY=Hhbbf9v8qqaqFr0xc9pk0xbba9q8WqFfea0=yr0RYxir=Jbba9q8aq0=yq=He9q8qqQ8frFve9Fve9Ff0dmeaabaqaciGacaGaaeqabaWaaeaaeaaakeaacaWGMbWaaSbaaSqaaiaadogaaeqaaaaa@3746@{/m:annotation}
+ {/m:semantics}
+{/m:math} and the bit interval
+{m:math}
+ {m:semantics}
+  {m:mrow}
+   {m:msub}
+    {m:mi}T{/m:mi}
+    {m:mi}b{/m:mi}
+   {/m:msub}
+  {/m:mrow}
+ {m:annotation encoding=&apos;MathType-MTEF&apos;}
+ MathType@MTEF@5@5@+=feaagaart1ev2aqatCvAUfeBSjuyZL2yd9gzLbvyNv2CaerbuLwBLnhiov2DGi1BTfMBaeXatLxBI9gBaerbd9wDYLwzYb1uaebbnrfifHhDYfgasaacH8srps0lbbf9q8WrFfeuY=Hhbbf9v8qqaqFr0xc9pk0xbba9q8WqFfea0=yr0RYxir=Jbba9q8aq0=yq=He9q8qqQ8frFve9Fve9Ff0dmeaabaqaciGacaGaaeqabaWaaeaaeaaakeaacaWGubWaaSbaaSqaaiaadkgaaeqaaaaa@3733@{/m:annotation}
+ {/m:semantics}
+{/m:math} to ensure that chopped edges do not occur?
+	</Val></String>
+</Array>
+</Cluster>
+
+<String> <Name>para</Name> <Val>
+		Plot time-domain waveforms and power spectra for several representative choices of parameter values.
+</Val> </String>
+
+	<!--STEP------------------------------------------>
+<String> <Name>secend</Name> <Val></Val> </String>
+<String> <Name>sec</Name> <Val>ASK transmitter parameter experiments: raised cosine pulse shaping</Val> </String>
+
+<Cluster> <Name>list</Name> <NumElts>3</NumElts>
+<EW> <Name>type</Name> <Choice>Bulleted</Choice> <Choice>Enumerated</Choice> <Val>1</Val> </EW>
+<String> <Name>list name (optional)</Name> <Val></Val> </String>
+<Array> <Name>list items</Name> <Dimsize>5</Dimsize>
+	<String> <Name>String</Name> <Val>
+			Modify the VI front panel to include a Boolean control to conveniently switch between rectangular and raised cosine
+			pulse shapes. Use a case structure on the block diagram to generate the two types of pulse shapes. Include
+			front panel controls for the {code type=&quot;inline&quot;}{code type=&amp;quot;inline&amp;quot;}alpha{/code}{/code} (excess bandwidth) parameter and 
+			{code type=&quot;inline&quot;}bit intervals for support{/code} controls of
+			the {cnxn document=&quot;m18566&quot;}pam_RaisedCosinePulse.vi{/cnxn} subVI.
+	</Val></String>
+	<String> <Name>String</Name> <Val>
+			Adjust the front panel control values to match those specified at the beginning of the previous section.
+	</Val></String>
+	<String> <Name>String</Name> <Val>
+			Select a rectangular pulse shape, and run the VI one time with autoscaling enabled on the power spectrum display.
+			Right-click on the Y-axis of the power spectrum display and uncheck the "AutoScale Y" option. Next, select the
+			raised cosine pulse shape and run the VI again. Zoom in on the time-domain signal plot, and disable autoscaling
+			on the X-axis to ensure that the zoom level is retained from one run of the VI to the next.
+	</Val></String>
+	<String> <Name>String</Name> <Val>
+			Experiment with different values of the raised cosine pulse controls, then compare your results to those of the
+			rectangular pulse shape. Be sure to comment on the following points: (a) signal shape in the time domain, (b)
+			signal shape in the frequency domain (power spectrum), and (c) sound of the transmitted signal -- try a larger bit
+			interval (and short bitstream length) so that you can clearly hear the difference between rectangular and
+			raised cosine pulse shaping).
+	</Val></String>
+	<String> <Name>String</Name> <Val>
+			Recall the work that you did to characterize the SAM channel in 
+			{cnxn document=&quot;m18666&quot;}Speaker-Air-Microphone (SAM) Channel Characterization{/cnxn}, especially the lower and
+			upper passband limits.  Select raised cosine pulse shaping, and then choose values for carrier frequency and bit interval 
+			to make the transmitted signal fully occupy the channel passband region. State your two values. Listen to this signal for a 
+			bit -- what does a "fully utilized channel" sound like? Can you perhaps now explain some parts of a 
+			{link src=&quot;dialup-modem.mp3&quot;}typical telephone dial-up modem initiation sequence{/link}? (Click link
+			to listen).
+	</Val></String>
+</Array>
+</Cluster>
+
+
+<String> <Name>secend</Name> <Val></Val> </String>
+
+<!--REFERENCES------------------------------------------------------>
+<String> <Name>secend</Name> <Val></Val> </String>
+<String> <Name>sec</Name> <Val>References</Val> </String>
+
+<Cluster> <Name>list</Name> <NumElts>3</NumElts>
+<EW> <Name>type</Name> <Choice>Bulleted</Choice> <Choice>Enumerated</Choice> <Val>1</Val> </EW>
+<String> <Name>list name (optional)</Name> <Val></Val> </String>
+<Array> <Name>list items</Name> <Dimsize>6</Dimsize>
+	<String><Name>String</Name><Val>
+		Carlson, A. Bruce, Paul B. Crilly, and Janet C. Rutledge, "Communication Systems," 4th ed., McGraw-Hill, 2002. ISBN-13: 978-0-07-011127-1
+	</Val></String>
+	<String><Name>String</Name><Val>
+		Couch, Leon W. II, "Digital and Analog Communication Systems," 7th ed., Pearson Prentice Hall, 2007. ISBN-10: 0-13-142492-0
+	</Val></String>
+	<String><Name>String</Name><Val>
+		Haykin, Simon, and Michael Moher, "Introduction to Analog and Digital Communication Systems," 2nd ed., Wiley, 2007. ISBN-13: 978-0-471-43222-7
+	</Val></String>
+	<String><Name>String</Name><Val>
+		Lathi, Bhagwandas P., "Modern Digital and Analog Communication Systems," 3rd ed., Oxford University Press, 1998. ISBN-10: 0-19-511009-9
+	</Val></String>
+	<String><Name>String</Name><Val>
+		Proakis, John G., and Masoud Salehi, "Fundamentals of Communication Systems," Pearson Prentice Hall, 2005. ISBN-10: 0-13-147135-X
+	</Val></String>
+	<String><Name>String</Name><Val>
+		Stern, Harold P.E., and Samy A. Mahmoud, "Communication Systems," Pearson Prentice Hall, 2004. ISBN-10: 0-13-040268-0
+	</Val></String>
+</Array>
+</Cluster>
+
+<String> <Name>secend</Name> <Val></Val> </String>
+
+</LVData>
+

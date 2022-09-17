@@ -1,0 +1,847 @@
+<!--
+
+== title ==
+PAM Transmitter and Receiver Implementing Coherent Detection 
+
+== keywords ==
+integrate-and-dump
+coherent detection
+bit error rate
+BER
+signal to noise ratio
+Eb/No
+additive white Gaussian noise
+AWGN
+pulse amplitude modulation
+PAM
+point-by-point processing
+LabVIEW
+signal point mapper
+transmit filter
+correlator
+stacked chart
+
+== summary == 
+The integrate-and-dump detector is fundamental to coherent detection, the optimal receiver technique that minimizes bit error rate (BER) 
+		for a given signal-to-noise ratio Eb/No. In this project develop a pulse amplitude (PAM) transmitter based on a transmit filter to map a 
+		bitstream onto a signaling waveform (rectangular and Manchester pulse shapes), an additive white Gaussian noise (AWGN) channel, and a 
+		receiver that implements integrate-and-dump detection. All waveforms throughout the signal processing chain are presented 
+		as a stacked chart indicator with a speed control to permit generated waveforms to be studied slowly (i.e., the integrator output ramping 
+		up or down) or quickly to process long message bitstreams. Visualizing the critical system signals as waveforms facilitates exploration 
+		of the effects of specific values of BER and Eb/No, and promotes deeper understanding of coherent detection.
+-->
+
+<?xml version='1.0' standalone='yes' ?>
+<LVData>
+<Version>8.2</Version>
+
+<!--SUMMARY------------------------------------------------------>
+<String> <Name>sec</Name> <Val>Summary</Val> </String>
+
+<String> <Name>para</Name> <Val>
+		The integrate-and-dump detector is fundamental to coherent detection, the optimal receiver technique that minimizes bit error rate (BER) 
+		for a given signal-to-noise ratio Eb/No. In this project develop a pulse amplitude (PAM) transmitter based on a transmit filter to map a 
+		bitstream onto a signaling waveform (rectangular and Manchester pulse shapes), an additive white Gaussian noise (AWGN) channel, and a 
+		receiver that implements integrate-and-dump detection. All waveforms throughout the signal processing chain are presented 
+		as a stacked chart indicator with a speed control to permit generated waveforms to be studied slowly (i.e., the integrator output ramping 
+		up or down) or quickly to process long message bitstreams. Visualizing the critical system signals as waveforms facilitates exploration 
+		of the effects of specific values of BER and Eb/No, and promotes deeper understanding of coherent detection.
+</Val> </String>
+
+
+<!--OBJECTIVES------------------------------------------------------>
+<String> <Name>secend</Name> <Val></Val> </String>
+<String> <Name>sec</Name> <Val>Objectives</Val> </String>
+
+<Cluster> <Name>list</Name> <NumElts>3</NumElts>
+<EW> <Name>type</Name> <Choice>Bulleted</Choice> <Choice>Enumerated</Choice> <Val>1</Val> </EW>
+<String> <Name>list name (optional)</Name> <Val></Val> </String>
+<Array> <Name>list items</Name> <Dimsize>6</Dimsize>
+	<String> <Name>String</Name> <Val>
+		Implement a binary pulse amplitude modulation (PAM) transmitter 
+	</Val> </String>
+	<String> <Name>String</Name> <Val>
+		Model an additive white Gaussian noise (AWGN) channel impairment with a random number generator
+	</Val> </String>
+	<String> <Name>String</Name> <Val>
+		Implement a PAM receiver based on the integrate-and-dump form of coherent detection
+	</Val> </String>
+	<String> <Name>String</Name> <Val>
+			Study the signal processing chain from the source message bitstream to the regenerated bitstream
+	</Val> </String>
+	<String> <Name>String</Name> <Val>
+			Evaluate system performance using a plot of bit error rate (BER) vs. signal-to-noise ratio (Eb/No)
+	</Val> </String>
+	<String> <Name>String</Name> <Val>
+			Learn how to use the LabVIEW point-by-point signal processing design pattern
+	</Val> </String>
+</Array>
+</Cluster>
+
+
+
+
+<!--DELIVERABLES------------------------------------------------------>
+<String> <Name>secend</Name> <Val></Val> </String>
+<String> <Name>sec</Name> <Val>Deliverables</Val> </String>
+
+<Cluster> <Name>list</Name> <NumElts>3</NumElts>
+<EW> <Name>type</Name> <Choice>Bulleted</Choice> <Choice>Enumerated</Choice> <Val>1</Val> </EW>
+<String> <Name>list name (optional)</Name> <Val></Val> </String>
+<Array> <Name>list items</Name> <Dimsize>3</Dimsize>
+<String> <Name>String</Name> <Val>Summary write-up of your results</Val> </String>
+<String> <Name>String</Name> <Val>Hardcopy of all LabVIEW code that you develop (block diagrams and front panels)</Val> </String>
+<String> <Name>String</Name> <Val>Any plots or diagrams requested</Val> </String>
+</Array>
+</Cluster>
+
+<Cluster> <Name>note</Name> <NumElts>2</NumElts>
+<EW> <Name>notetype</Name> <Choice>Note</Choice> <Choice>Important</Choice> <Val>0</Val> </EW>
+<String> <Name>text</Name> <Val>
+		You can easily export LabVIEW front-panel waveform plots directly to your report. Right-click on the waveform
+		indicator and choose "Export Simplified Image."
+</Val> </String>
+</Cluster>
+
+
+<!--SETUP------------------------------------------------------>
+<String> <Name>secend</Name> <Val></Val> </String>
+<String> <Name>sec</Name> <Val>Setup</Val> </String>
+
+<Cluster> <Name>list</Name> <NumElts>3</NumElts>
+<EW> <Name>type</Name> <Choice>Bulleted</Choice> <Choice>Enumerated</Choice> <Val>1</Val> </EW>
+<String> <Name>list name (optional)</Name> <Val></Val> </String>
+<Array> <Name>list items</Name> <Dimsize>1</Dimsize>
+<String> <Name>String</Name> <Val>LabVIEW 8.5 or later version</Val> </String>
+</Array>
+</Cluster>
+
+<!--TEXTBOOK LINKAGES------------------------------------------------------>
+<String> <Name>secend</Name> <Val></Val> </String>
+<String> <Name>sec</Name> <Val>Textbook Linkages</Val> </String>
+
+<String> <Name>para</Name> <Val>
+		Refer to the following textbooks for additional background on the project activities of this module;
+		see the "References" section below for publication details:
+</Val> </String>
+
+<Cluster> <Name>list</Name> <NumElts>3</NumElts>
+<EW> <Name>type</Name> <Choice>Bulleted</Choice> <Choice>Enumerated</Choice> <Val>0</Val> </EW>
+<String> <Name>list name (optional)</Name> <Val></Val> </String>
+<Array> <Name>list items</Name> <Dimsize>8</Dimsize>
+	<String><Name>String</Name><Val>Carlson, Crilly, and Rutledge -- Ch 11</Val></String>
+	<String><Name>String</Name><Val>Couch -- Ch 6</Val></String>
+	<String><Name>String</Name><Val>Haykin -- Ch 5</Val></String>
+	<String><Name>String</Name><Val>Haykin and Moher -- Ch 10</Val></String>
+	<String><Name>String</Name><Val>Lathi -- Ch 14</Val></String>
+	<String><Name>String</Name><Val>Proakis and Salehi (FCS) -- Ch 8</Val></String>
+	<String><Name>String</Name><Val>Proakis and Salehi (CSE) -- Ch 7</Val></String>
+	<String><Name>String</Name><Val>Stern and Mahmoud -- Ch 4</Val></String>
+</Array>
+</Cluster>
+
+
+
+
+<!--PREREQUISITE MODULES ------------------------------------------------------>
+<String> <Name>secend</Name> <Val></Val> </String>
+<String> <Name>sec</Name> <Val>Prerequisite Modules</Val> </String>
+<String> <Name>para</Name> <Val>
+		If you are relatively new to LabVIEW, consider taking the course 
+		{cnxn document=&quot;col10440&quot;}LabVIEW Techniques for Audio Signal Processing{/cnxn} 
+		which provides the foundation you need to complete this project activity, including:
+		block diagram editing techniques, essential programming structures, subVIs, arrays, and
+		audio. 
+</Val> </String>
+
+<!--INTRODUCTION------------------------------------------------------>
+<String> <Name>secend</Name> <Val></Val> </String>
+<String> <Name>sec</Name> <Val>Introduction</Val> </String>
+
+<String> <Name>para</Name> <Val>
+		{term}Noise{/term} represents the most widely-known {term}channel impairment{/term} in a communication system. No doubt you
+		have heard "static" while listening to AM radio during a thunderstorm, soft hissing during a telephone conversation, and other types
+		of background noise. Digital communication system noise causes errors in the recovered (regenerated) bit stream at the receiver.
+
+		In general, digital receivers rely on one of two detection techniques to regenerate the transmitted 
+		bit stream: {term}coherent detection{/term} and {term}non-coherent detection{/term}. "Coherent" means the receiver maintains
+		synchronism with the transmitter, normally by using special subsystems that extract timing signals directly from the transmitted
+		bit stream. Transmitting timing pulses in a separate channel is usually too expensive for long-haul comm links. The synchronizer
+		establishes the precise beginning and ending of each bit interval. A synchronizer increases the receiver's cost and complexity, 
+		but also achieves the lowest bit error rate (BER) of the two techniques for a given signal-to-noise ratio (SNR).
+		Incoherent detection, on the other hand, uses a lower-complexity approach to recover the bit stream, but does not perform as well
+		in terms of BER. In this project the {term}correlation detector{/term} scheme is studied in detail.
+
+		{cnxn target=&quot;figure-blockdgm&quot;/} illustrates a generic communication system (transmitter, channel, and receiver) and a
+		comparator to compare the original source bitstream to the output bitstream and report bit error.
+</Val> </String>
+
+<Cluster> <Name>image</Name> <NumElts>3</NumElts>
+<String> <Name>ID (optional)</Name> <Val>figure-blockdgm</Val> </String>
+<String> <Name>name</Name> <Val>blockdgm</Val> </String>
+<String> <Name>caption</Name> <Val>Generic communication system with comparator</Val> </String>
+</Cluster>
+
+<String> <Name>para</Name> <Val>
+		This project implements {cnxn target=&quot;figure-blockdgm&quot;/} at a moderately realistic level:
+</Val> </String>
+
+<Cluster> <Name>list</Name> <NumElts>3</NumElts>
+<EW> <Name>type</Name> <Choice>Bulleted</Choice> <Choice>Enumerated</Choice> <Val>1</Val> </EW>
+<String> <Name>list name (optional)</Name> <Val></Val> </String>
+<Array> <Name>list items</Name> <Dimsize>4</Dimsize>
+	<String> <Name>String</Name> <Val>
+			The source is a bitstream with equiprobable 0s and 1s.
+	</Val> </String>
+	<String> <Name>String</Name> <Val>
+			The pulse amplitude modulation (PAM) transmitter maps the two source symbols onto rectangular signaling waveforms;
+			these discrete-time waveforms approximate the true analog signaling waveforms that would be applied to a
+			radio transmitter's modulator for wireless communications or a laser diode for fiber optic communications, for example.
+	</Val> </String>
+	<String> <Name>String</Name> <Val>
+			The channel impairs the transmitted signal with additive white Gaussian noise (AWGN).
+	</Val> </String>
+	<String> <Name>String</Name> <Val>
+			The receiver is a coherent receiver implemented as a correlation receiver.
+	</Val> </String>
+</Array>
+</Cluster>
+
+<!--Transmitter------------------------------------------>
+<String> <Name>secend</Name> <Val></Val> </String>
+<String> <Name>sec</Name> <Val>PAM Transmitter</Val> </String>
+
+<String> <Name>para</Name> <Val>
+		{cnxn target=&quot;figure-transmitter&quot;/} illustrates the detailed block diagram of the binary pulse amplitude modulation (PAM) transmitter. 
+</Val> </String>
+
+<Cluster> <Name>image</Name> <NumElts>3</NumElts>
+<String> <Name>ID (optional)</Name> <Val>figure-transmitter</Val> </String>
+<String> <Name>name</Name> <Val>transmitter</Val> </String>
+<String> <Name>caption</Name> <Val>PAM transmitter block diagram</Val> </String>
+</Cluster>
+
+<String> <Name>para</Name> <Val>
+		The bitstream 1 and 0 values map to the amplitudes
+{m:math}
+ {m:semantics}
+  {m:mrow}
+   {m:msqrt}
+    {m:mrow}
+     {m:mrow}{m:mrow}
+      {m:msub}
+       {m:mi}E{/m:mi}
+       {m:mi}b{/m:mi}
+      {/m:msub}
+     {/m:mrow}{m:mo}/{/m:mo}{m:mrow}
+      {m:msub}
+       {m:mi}T{/m:mi}
+       {m:mi}b{/m:mi}
+      {/m:msub}
+     {/m:mrow}{/m:mrow}
+    {/m:mrow}
+   {/m:msqrt}
+  {/m:mrow}
+ {m:annotation encoding=&apos;MathType-MTEF&apos;}
+ MathType@MTEF@5@5@+=feaagaart1ev2aqatCvAUfeBSjuyZL2yd9gzLbvyNv2CaerbuLwBLnhiov2DGi1BTfMBaeXatLxBI9gBaerbd9wDYLwzYb1uaebbnrfifHhDYfgasaacH8srps0lbbf9q8WrFfeuY=Hhbbf9v8qqaqFr0xc9pk0xbba9q8WqFfea0=yr0RYxir=Jbba9q8aq0=yq=He9q8qqQ8frFve9Fve9Ff0dmeaabaqaciGacaGaaeqabaWaaeaaeaaakeaadaGcaaqaamaalyaabaGaamyramaaBaaaleaacaWGIbaabeaaaOqaaiaadsfadaWgaaWcbaGaamOyaaqabaaaaaqabaaaaa@3940@{/m:annotation}
+ {/m:semantics}
+{/m:math}
+and
+{m:math}
+ {m:semantics}
+  {m:mrow}
+   {m:mo}&amp;#x2212;{/m:mo}{m:msqrt}
+    {m:mrow}
+     {m:mrow}{m:mrow}
+      {m:msub}
+       {m:mi}E{/m:mi}
+       {m:mi}b{/m:mi}
+      {/m:msub}
+     {/m:mrow}{m:mo}/{/m:mo}{m:mrow}
+      {m:msub}
+       {m:mi}T{/m:mi}
+       {m:mi}b{/m:mi}
+      {/m:msub}
+     {/m:mrow}{/m:mrow}
+    {/m:mrow}
+   {/m:msqrt}
+  {/m:mrow}
+ {m:annotation encoding=&apos;MathType-MTEF&apos;}
+ MathType@MTEF@5@5@+=feaagaart1ev2aqatCvAUfeBSjuyZL2yd9gzLbvyNv2CaerbuLwBLnhiov2DGi1BTfMBaeXatLxBI9gBaerbd9wDYLwzYb1uaebbnrfifHhDYfgasaacH8srps0lbbf9q8WrFfeuY=Hhbbf9v8qqaqFr0xc9pk0xbba9q8WqFfea0=yr0RYxir=Jbba9q8aq0=yq=He9q8qqQ8frFve9Fve9Ff0dmeaabaqaciGacaGaaeqabaWaaeaaeaaakeaacqGHsisldaGcaaqaamaalyaabaGaamyramaaBaaaleaacaWGIbaabeaaaOqaaiaadsfadaWgaaWcbaGaamOyaaqabaaaaaqabaaaaa@3A2D@{/m:annotation}
+ {/m:semantics}
+ {/m:math}, where
+{m:math}
+ {m:semantics}
+  {m:mrow}
+   {m:msub}
+    {m:mi}E{/m:mi}
+    {m:mi}b{/m:mi}
+   {/m:msub}
+  {/m:mrow}
+ {m:annotation encoding=&apos;MathType-MTEF&apos;}
+ MathType@MTEF@5@5@+=feaagaart1ev2aqatCvAUfeBSjuyZL2yd9gzLbvyNv2CaerbuLwBLnhiov2DGi1BTfMBaeXatLxBI9gBaerbd9wDYLwzYb1uaebbnrfifHhDYfgasaacH8srps0lbbf9q8WrFfeuY=Hhbbf9v8qqaqFr0xc9pk0xbba9q8WqFfea0=yr0RYxir=Jbba9q8aq0=yq=He9q8qqQ8frFve9Fve9Ff0dmeaabaqaciGacaGaaeqabaWaaeaaeaaakeaacaWGfbWaaSbaaSqaaiaadkgaaeqaaaaa@3724@{/m:annotation}
+ {/m:semantics}
+{/m:math}
+is the energy per bit and
+{m:math}
+ {m:semantics}
+  {m:mrow}
+   {m:msub}
+    {m:mi}T{/m:mi}
+    {m:mi}b{/m:mi}
+   {/m:msub}
+  {/m:mrow}
+ {m:annotation encoding=&apos;MathType-MTEF&apos;}
+ MathType@MTEF@5@5@+=feaagaart1ev2aqatCvAUfeBSjuyZL2yd9gzLbvyNv2CaerbuLwBLnhiov2DGi1BTfMBaeXatLxBI9gBaerbd9wDYLwzYb1uaebbnrfifHhDYfgasaacH8srps0lbbf9q8WrFfeuY=Hhbbf9v8qqaqFr0xc9pk0xbba9q8WqFfea0=yr0RYxir=Jbba9q8aq0=yq=He9q8qqQ8frFve9Fve9Ff0dmeaabaqaciGacaGaaeqabaWaaeaaeaaakeaacaWGubWaaSbaaSqaaiaadkgaaeqaaaaa@3733@{/m:annotation}
+ {/m:semantics}
+{/m:math}
+is the bit interval.  The amplitudes are applied to the prototype pulse shape
+{m:math}
+ {m:semantics}
+  {m:mrow}
+   {m:mi}p{/m:mi}{m:mo stretchy=&apos;false&apos;}({/m:mo}{m:mi}t{/m:mi}{m:mo stretchy=&apos;false&apos;}){/m:mo}
+  {/m:mrow}
+ {m:annotation encoding=&apos;MathType-MTEF&apos;}
+ MathType@MTEF@5@5@+=feaagaart1ev2aqatCvAUfeBSjuyZL2yd9gzLbvyNv2CaerbuLwBLnhiov2DGi1BTfMBaeXatLxBI9gBaerbd9wDYLwzYb1uaebbnrfifHhDYfgasaacH8srps0lbbf9q8WrFfeuY=Hhbbf9v8qqaqFr0xc9pk0xbba9q8WqFfea0=yr0RYxir=Jbba9q8aq0=yq=He9q8qqQ8frFve9Fve9Ff0dmeaabaqaciGacaGaaeqabaWaaeaaeaaakeaacaWGWbGaaiikaiaadshacaGGPaaaaa@388E@{/m:annotation}
+ {/m:semantics}
+{/m:math}
+with unit amplitude to generate a pair of signaling waveforms
+{m:math}
+ {m:semantics}
+  {m:mrow}
+   {m:msub}
+    {m:mi}s{/m:mi}
+    {m:mn}1{/m:mn}
+   {/m:msub}
+   {m:mo stretchy=&apos;false&apos;}({/m:mo}{m:mi}t{/m:mi}{m:mo stretchy=&apos;false&apos;}){/m:mo}{m:mo}={/m:mo}{m:msqrt}
+    {m:mrow}
+     {m:mrow}{m:mrow}
+      {m:msub}
+       {m:mi}E{/m:mi}
+       {m:mi}b{/m:mi}
+      {/m:msub}
+     {/m:mrow}{m:mo}/{/m:mo}{m:mrow}
+      {m:msub}
+       {m:mi}T{/m:mi}
+       {m:mi}b{/m:mi}
+      {/m:msub}
+     {/m:mrow}{/m:mrow}
+    {/m:mrow}
+   {/m:msqrt}
+   {m:mi}p{/m:mi}{m:mo stretchy=&apos;false&apos;}({/m:mo}{m:mi}t{/m:mi}{m:mo stretchy=&apos;false&apos;}){/m:mo}
+  {/m:mrow}
+ {m:annotation encoding=&apos;MathType-MTEF&apos;}
+ MathType@MTEF@5@5@+=feaagaart1ev2aqatCvAUfeBSjuyZL2yd9gzLbvyNv2CaerbuLwBLnhiov2DGi1BTfMBaeXatLxBI9gBaerbd9wDYLwzYb1uaebbnrfifHhDYfgasaacH8srps0lbbf9q8WrFfeuY=Hhbbf9v8qqaqFr0xc9pk0xbba9q8WqFfea0=yr0RYxir=Jbba9q8aq0=yq=He9q8qqQ8frFve9Fve9Ff0dmeaabaqaciGacaGaaeqabaWaaeaaeaaakeaacaWGZbWaaSbaaSqaaiaaigdaaeqaaOGaaiikaiaadshacaGGPaGaeyypa0ZaaOaaaeaadaWcgaqaaiaadweadaWgaaWcbaGaamOyaaqabaaakeaacaWGubWaaSbaaSqaaiaadkgaaeqaaaaaaeqaaOGaamiCaiaacIcacaWG0bGaaiykaaaa@41D2@{/m:annotation}
+ {/m:semantics}
+{/m:math}
+and
+{m:math}
+ {m:semantics}
+  {m:mrow}
+   {m:msub}
+    {m:mi}s{/m:mi}
+    {m:mn}0{/m:mn}
+   {/m:msub}
+   {m:mo stretchy=&apos;false&apos;}({/m:mo}{m:mi}t{/m:mi}{m:mo stretchy=&apos;false&apos;}){/m:mo}{m:mo}={/m:mo}{m:mo}&amp;#x2212;{/m:mo}{m:msqrt}
+    {m:mrow}
+     {m:mrow}{m:mrow}
+      {m:msub}
+       {m:mi}E{/m:mi}
+       {m:mi}b{/m:mi}
+      {/m:msub}
+     {/m:mrow}{m:mo}/{/m:mo}{m:mrow}
+      {m:msub}
+       {m:mi}T{/m:mi}
+       {m:mi}b{/m:mi}
+      {/m:msub}
+     {/m:mrow}{/m:mrow}
+    {/m:mrow}
+   {/m:msqrt}
+   {m:mi}p{/m:mi}{m:mo stretchy=&apos;false&apos;}({/m:mo}{m:mi}t{/m:mi}{m:mo stretchy=&apos;false&apos;}){/m:mo}
+  {/m:mrow}
+ {m:annotation encoding=&apos;MathType-MTEF&apos;}
+ MathType@MTEF@5@5@+=feaagaart1ev2aqatCvAUfeBSjuyZL2yd9gzLbvyNv2CaerbuLwBLnhiov2DGi1BTfMBaeXatLxBI9gBaerbd9wDYLwzYb1uaebbnrfifHhDYfgasaacH8srps0lbbf9q8WrFfeuY=Hhbbf9v8qqaqFr0xc9pk0xbba9q8WqFfea0=yr0RYxir=Jbba9q8aq0=yq=He9q8qqQ8frFve9Fve9Ff0dmeaabaqaciGacaGaaeqabaWaaeaaeaaakeaacaWGZbWaaSbaaSqaaiaaicdaaeqaaOGaaiikaiaadshacaGGPaGaeyypa0JaeyOeI0YaaOaaaeaadaWcgaqaaiaadweadaWgaaWcbaGaamOyaaqabaaakeaacaWGubWaaSbaaSqaaiaadkgaaeqaaaaaaeqaaOGaamiCaiaacIcacaWG0bGaaiykaaaa@42BE@{/m:annotation}
+ {/m:semantics}
+{/m:math}.  This signaling scheme is called {term}binary antipodal signaling{/term}.
+
+		Many different pulse shapes are used in practice, based on the application. This project considers two specific pulse shapes,
+		namely, {term}rectangular{/term} and {term}Manchester{/term}. Both of the pulse shapes are of the {term}polar NRZ{/term} (non return to zero) type. 
+		The {cnxn target=&quot;video-pulseshapes&quot;/} screencast video continues the discussion by describing these two pulse shapes in more detail.
+</Val> </String>
+
+<Cluster> <Name>video</Name> <NumElts>4</NumElts>
+<String> <Name>ID (optional)</Name> <Val>video-pulseshapes</Val> </String>
+<String> <Name>video name</Name> <Val>pulseshapes</Val> </String>
+<String> <Name>webpage title</Name> <Val>Rectangular and Manchester pulses</Val> </String>
+<String> <Name>caption</Name> <Val>Rectangular and Manchester polar NRZ pulse shapes</Val> </String>
+</Cluster>
+
+<String> <Name>para</Name> <Val>
+		The {term}signal point mapper{/term} and {term}pulse generator{/term} of {cnxn target=&quot;figure-transmitter&quot;/} describe the desired amplitudes and pulse shape, 
+		while the transmit filter converts the message bitstream into a sequence of signaling waveforms. 
+		The transmit filter is an FIR filter driven by an impulse train derived from the signal point mapper amplitudes; 
+		the FIR filter coefficients are the pulse shape values. Refer to the screencast video in {cnxn document=&quot;m18472&quot;}pam_TransmitFilter.vi{/cnxn}  
+		for full implementation details.
+
+		The {term}bit sync generator{/term} block sends pulses to the receiver to indicate the beginning and ending a bit interval.
+</Val> </String>
+
+<!--Channel------------------------------------------>
+<String> <Name>secend</Name> <Val></Val> </String>
+<String> <Name>sec</Name> <Val>AWGN Channel</Val> </String>
+
+<String> <Name>para</Name> <Val>
+		{term}Additive white Gaussian noise{/term} ({term}AWGN{/term}) impairs signals as they pass through an electromagnetic medium, including the electronics 
+		in the transmitter and receiver. Adding the output of a Gaussian random number generator to the transmitted signal 
+		simulates the AWGN impairment of a real channel.
+
+		The degree of signal impairment is reported as a ratio of signal strength to noise ratio (SNR). Digital communication systems 
+		define signal-to-noise ratio as
+{m:math}
+ {m:semantics}
+  {m:mrow}
+   {m:mrow}{m:mrow}
+    {m:msub}
+     {m:mi}E{/m:mi}
+     {m:mi}b{/m:mi}
+    {/m:msub}
+   {/m:mrow}{m:mo}/{/m:mo}{m:mrow}
+    {m:msub}
+     {m:mi}N{/m:mi}
+     {m:mn}0{/m:mn}
+    {/m:msub}
+   {/m:mrow}{/m:mrow}
+  {/m:mrow}
+ {m:annotation encoding=&apos;MathType-MTEF&apos;}
+ MathType@MTEF@5@5@+=feaagaart1ev2aqatCvAUfeBSjuyZL2yd9gzLbvyNv2CaerbuLwBLnhiov2DGi1BTfMBaeXatLxBI9gBaerbd9wDYLwzYb1uaebbnrfifHhDYfgasaacH8srps0lbbf9q8WrFfeuY=Hhbbf9v8qqaqFr0xc9pk0xbba9q8WqFfea0=yr0RYxir=Jbba9q8aq0=yq=He9q8qqQ8frFve9Fve9Ff0dmeaabaqaciGacaGaaeqabaWaaeaaeaaakeaadaWcgaqaaiaadweadaWgaaWcbaGaamOyaaqabaaakeaacaWGobWaaSbaaSqaaiaaicdaaeqaaaaaaaa@38FD@{/m:annotation}
+ {/m:semantics}
+{/m:math}
+(pronounced "ebb know"), where
+{m:math}
+ {m:semantics}
+  {m:mrow}
+   {m:msub}
+    {m:mi}E{/m:mi}
+    {m:mi}b{/m:mi}
+   {/m:msub}
+  {/m:mrow}
+ {m:annotation encoding=&apos;MathType-MTEF&apos;}
+ MathType@MTEF@5@5@+=feaagaart1ev2aqatCvAUfeBSjuyZL2yd9gzLbvyNv2CaerbuLwBLnhiov2DGi1BTfMBaeXatLxBI9gBaerbd9wDYLwzYb1uaebbnrfifHhDYfgasaacH8srps0lbbf9q8WrFfeuY=Hhbbf9v8qqaqFr0xc9pk0xbba9q8WqFfea0=yr0RYxir=Jbba9q8aq0=yq=He9q8qqQ8frFve9Fve9Ff0dmeaabaqaciGacaGaaeqabaWaaeaaeaaakeaacaWGfbWaaSbaaSqaaiaadkgaaeqaaaaa@3724@{/m:annotation}
+ {/m:semantics}
+{/m:math}
+is the energy per bit and
+{m:math}
+ {m:semantics}
+  {m:mrow}
+   {m:msub}
+    {m:mi}N{/m:mi}
+    {m:mn}0{/m:mn}
+   {/m:msub}
+  {/m:mrow}
+ {m:annotation encoding=&apos;MathType-MTEF&apos;}
+ MathType@MTEF@5@5@+=feaagaart1ev2aqatCvAUfeBSjuyZL2yd9gzLbvyNv2CaerbuLwBLnhiov2DGi1BTfMBaeXatLxBI9gBaerbd9wDYLwzYb1uaebbnrfifHhDYfgasaacH8srps0lbbf9q8WrFfeuY=Hhbbf9v8qqaqFr0xc9pk0xbba9q8WqFfea0=yr0RYxir=Jbba9q8aq0=yq=He9q8qqQ8frFve9Fve9Ff0dmeaabaqaciGacaGaaeqabaWaaeaaeaaakeaacaWGobWaaSbaaSqaaiaaicdaaeqaaaaa@3700@{/m:annotation}
+ {/m:semantics}
+{/m:math}
+is twice the power spectral density of thermal noise at room temperature. The ratio  is dimensionless, and is normally reported in decibels. 
+		Refer to the screencast video in {cnxn document=&quot;m18515&quot;}util_AWGNchannel_PtByPt.vi{/cnxn}  to learn how to 
+		convert a specified
+{m:math}
+ {m:semantics}
+  {m:mrow}
+   {m:mrow}{m:mrow}
+    {m:msub}
+     {m:mi}E{/m:mi}
+     {m:mi}b{/m:mi}
+    {/m:msub}
+   {/m:mrow}{m:mo}/{/m:mo}{m:mrow}
+    {m:msub}
+     {m:mi}N{/m:mi}
+     {m:mn}0{/m:mn}
+    {/m:msub}
+   {/m:mrow}{/m:mrow}
+  {/m:mrow}
+ {m:annotation encoding=&apos;MathType-MTEF&apos;}
+ MathType@MTEF@5@5@+=feaagaart1ev2aqatCvAUfeBSjuyZL2yd9gzLbvyNv2CaerbuLwBLnhiov2DGi1BTfMBaeXatLxBI9gBaerbd9wDYLwzYb1uaebbnrfifHhDYfgasaacH8srps0lbbf9q8WrFfeuY=Hhbbf9v8qqaqFr0xc9pk0xbba9q8WqFfea0=yr0RYxir=Jbba9q8aq0=yq=He9q8qqQ8frFve9Fve9Ff0dmeaabaqaciGacaGaaeqabaWaaeaaeaaakeaadaWcgaqaaiaadweadaWgaaWcbaGaamOyaaqabaaakeaacaWGobWaaSbaaSqaaiaaicdaaeqaaaaaaaa@38FD@{/m:annotation}
+ {/m:semantics}
+{/m:math}
+		ratio into the standard deviation parameter of a Gaussian random number generator.
+</Val> </String>
+
+<!--Receiver------------------------------------------>
+<String> <Name>secend</Name> <Val></Val> </String>
+<String> <Name>sec</Name> <Val>Coherent Detection Receiver</Val> </String>
+
+<String> <Name>para</Name> <Val>
+		{cnxn target=&quot;figure-receiver&quot;/} shows the block diagram of a receiver that implements coherent detection with a correlator, also called an 
+		{term}integrate-and-dump{/term} detector. 
+</Val> </String>
+
+<Cluster> <Name>image</Name> <NumElts>3</NumElts>
+<String> <Name>ID (optional)</Name> <Val>figure-receiver</Val> </String>
+<String> <Name>name</Name> <Val>receiver</Val> </String>
+<String> <Name>caption</Name> <Val>Block diagram of PAM receiver based on coherent detection</Val> </String>
+</Cluster>
+		
+<String> <Name>para</Name> <Val>
+		The {term}correlator{/term} multiplies the received signal by the same pulse shape used by the transmitter, 
+		and then integrates this product signal over one bit interval. The correlator output is sampled at the end of the bit interval 
+		by the {term}sample-and-hold{/term} device, and then compared to the zero threshold. If the sampled correlator output is greater than the 
+		threshold, the received bit is declared a 1, otherwise the received bit is declared a 0. The integrator is reset to zero 
+		at the beginning of each bit interval.
+
+		The receiver requires precise synchronization with the transmitter in two respects: the correlator must multiply the 
+		received signal by the pulse shape in the same time location, and the integrator must be reset precisely at the beginning 
+		of a new bit interval. These requirements are easy to achieve within a simulation, since the transmitter can send pulses 
+		to signal the beginning and ending of the bit interval. In a real system, synchronization subsystems extract these timing pulses 
+		directly from the received signal, adding cost and complexity to the receiver.
+
+		Digital communication system performance in the face of AWGN channel impairment is measured in terms of bit error rate (BER) 
+		for a given signal quality
+{m:math}
+ {m:semantics}
+  {m:mrow}
+   {m:mrow}{m:mrow}
+    {m:msub}
+     {m:mi}E{/m:mi}
+     {m:mi}b{/m:mi}
+    {/m:msub}
+   {/m:mrow}{m:mo}/{/m:mo}{m:mrow}
+    {m:msub}
+     {m:mi}N{/m:mi}
+     {m:mn}0{/m:mn}
+    {/m:msub}
+   {/m:mrow}{/m:mrow}
+  {/m:mrow}
+ {m:annotation encoding=&apos;MathType-MTEF&apos;}
+ MathType@MTEF@5@5@+=feaagaart1ev2aqatCvAUfeBSjuyZL2yd9gzLbvyNv2CaerbuLwBLnhiov2DGi1BTfMBaeXatLxBI9gBaerbd9wDYLwzYb1uaebbnrfifHhDYfgasaacH8srps0lbbf9q8WrFfeuY=Hhbbf9v8qqaqFr0xc9pk0xbba9q8WqFfea0=yr0RYxir=Jbba9q8aq0=yq=He9q8qqQ8frFve9Fve9Ff0dmeaabaqaciGacaGaaeqabaWaaeaaeaaakeaadaWcgaqaaiaadweadaWgaaWcbaGaamOyaaqabaaakeaacaWGobWaaSbaaSqaaiaaicdaaeqaaaaaaaa@38FD@{/m:annotation}
+ {/m:semantics}
+{/m:math}. Coherent detection with binary antipodal signaling as used in this project has a 
+		theoretical BER of
+</Val> </String>
+
+<Cluster> <Name>equation</Name> <NumElts>3</NumElts>
+<String> <Name>ID (optional)</Name> <Val>eqn-BERtheory</Val> </String>
+<String> <Name>name (optional)</Name> <Val></Val> </String>
+<String> <Name>MathML text</Name> <Val>
+{m:math}
+ {m:semantics}
+  {m:mrow}
+   {m:mi}B{/m:mi}{m:mi}E{/m:mi}{m:mi}R{/m:mi}{m:mo}={/m:mo}{m:mi}Q{/m:mi}{m:mrow}{m:mo}({/m:mo}
+    {m:mrow}
+     {m:msqrt}
+      {m:mrow}
+       {m:mfrac}
+        {m:mrow}
+         {m:mn}2{/m:mn}{m:msub}
+          {m:mi}E{/m:mi}
+          {m:mi}b{/m:mi}
+         {/m:msub}
+        {/m:mrow}
+        {m:mrow}
+         {m:msub}
+          {m:mi}N{/m:mi}
+          {m:mn}0{/m:mn}
+         {/m:msub}
+        {/m:mrow}
+       {/m:mfrac}
+      {/m:mrow}
+     {/m:msqrt}
+    {/m:mrow}
+   {m:mo}){/m:mo}{/m:mrow}
+  {/m:mrow}
+ {m:annotation encoding=&apos;MathType-MTEF&apos;}
+ MathType@MTEF@5@5@+=feaagaart1ev2aqatCvAUfeBSjuyZL2yd9gzLbvyNv2CaerbuLwBLnhiov2DGi1BTfMBaeXatLxBI9gBaerbd9wDYLwzYb1uaebbnrfifHhDYfgasaacH8srps0lbbf9q8WrFfeuY=Hhbbf9v8qqaqFr0xc9pk0xbba9q8WqFfea0=yr0RYxir=Jbba9q8aq0=yq=He9q8qqQ8frFve9Fve9Ff0dmeaabaqaciGacaGaaeqabaWaaeaaeaaakeaacaWGcbGaamyraiaadkfacqGH9aqpcaWGrbWaaeWaaeaadaGcaaqaamaalaaabaGaaGOmaiaadweadaWgaaWcbaGaamOyaaqabaaakeaacaWGobWaaSbaaSqaaiaaicdaaeqaaaaaaeqaaaGccaGLOaGaayzkaaaaaa@3F9A@{/m:annotation}
+ {/m:semantics}
+{/m:math}
+</Val> </String>
+</Cluster>
+
+	       
+<String> <Name>para</Name> <Val>
+		where the Q-function
+{m:math}
+ {m:semantics}
+  {m:mrow}
+   {m:mi}Q{/m:mi}{m:mo stretchy=&apos;false&apos;}({/m:mo}{m:mi}x{/m:mi}{m:mo stretchy=&apos;false&apos;}){/m:mo}
+  {/m:mrow}
+ {m:annotation encoding=&apos;MathType-MTEF&apos;}
+ MathType@MTEF@5@5@+=feaagaart1ev2aqatCvAUfeBSjuyZL2yd9gzLbvyNv2CaerbuLwBLnhiov2DGi1BTfMBaeXatLxBI9gBaerbd9wDYLwzYb1uaebbnrfifHhDYfgasaacH8srps0lbbf9q8WrFfeuY=Hhbbf9v8qqaqFr0xc9pk0xbba9q8WqFfea0=yr0RYxir=Jbba9q8aq0=yq=He9q8qqQ8frFve9Fve9Ff0dmeaabaqaciGacaGaaeqabaWaaeaaeaaakeaacaWGrbGaaiikaiaadIhacaGGPaaaaa@3873@{/m:annotation}
+ {/m:semantics}
+{/m:math}
+describes the area under a zero-mean unit-variance Gaussian probability density function from 
+{m:math}
+ {m:semantics}
+  {m:mi}x{/m:mi}
+ {m:annotation encoding=&apos;MathType-MTEF&apos;}
+ MathType@MTEF@5@5@+=feaagaart1ev2aqatCvAUfeBSjuyZL2yd9gzLbvyNv2CaerbuLwBLnhiov2DGi1BTfMBaeXatLxBI9gBaerbd9wDYLwzYb1uaebbnrfifHhDYfgasaacH8srps0lbbf9q8WrFfeuY=Hhbbf9v8qqaqFr0xc9pk0xbba9q8WqFfea0=yr0RYxir=Jbba9q8aq0=yq=He9q8qqQ8frFve9Fve9Ff0dmeaabaqaciGacaGaaeqabaWaaeaaeaaakeaacaWG4baaaa@3644@{/m:annotation}
+ {/m:semantics}
+{/m:math}
+to positive infinity, i.e., the area under the positive tail of the Gaussian.  Equation {cnxn target=&quot;eqn-BERtheory&quot;/} serves as the benchmark for the simulated BER of the 
+		system constructed in this project.
+</Val> </String>
+
+
+<!--PROCEDURE------------------------------------------------------>
+<String> <Name>secend</Name> <Val></Val> </String>
+<String> <Name>sec</Name> <Val>Procedure</Val> </String>
+
+
+	<!--STEP------------------------------------------>
+<String> <Name>sec</Name> <Val>Build the subVIs</Val> </String>
+
+<String> <Name>para</Name> <Val>
+		Build the subVIs listed below. You may already have some of these available
+		from previous projects.
+
+		Demonstrate that each of these subVIs works properly before continuing to the next part.
+</Val> </String>
+
+<Cluster> <Name>list</Name> <NumElts>3</NumElts>
+<EW> <Name>type</Name> <Choice>Bulleted</Choice> <Choice>Enumerated</Choice> <Val>1</Val> </EW>
+<String> <Name>list name (optional)</Name> <Val></Val> </String>
+<Array> <Name>list items</Name> <Dimsize>12</Dimsize>
+	<String> <Name>String</Name> <Val>{cnxn document=&quot;m18570&quot;}pam_SignalPointMapper.vi{/cnxn} </Val> </String>
+	<String> <Name>String</Name> <Val>{cnxn document=&quot;m18454&quot;}pam_RectanglePulse.vi{/cnxn} </Val> </String>
+	<String> <Name>String</Name> <Val>{cnxn document=&quot;m18466&quot;}pam_ManchesterPulse.vi{/cnxn} </Val> </String>
+	<String> <Name>String</Name> <Val>{cnxn document=&quot;m18472&quot;}pam_TransmitFilter.vi{/cnxn} </Val> </String>
+	<String> <Name>String</Name> <Val>{cnxn document=&quot;m18478&quot;}pam_TransmitSync.vi{/cnxn} </Val> </String>
+	<String> <Name>String</Name> <Val>{cnxn document=&quot;m18579&quot;}regen_Correlator.vi{/cnxn} </Val> </String>
+	<String> <Name>String</Name> <Val>{cnxn document=&quot;m18621&quot;}regen_SampleHold.vi{/cnxn} </Val> </String>
+	<String> <Name>String</Name> <Val>{cnxn document=&quot;m18494&quot;}regen_BitstreamBuffer.vi{/cnxn} </Val> </String>
+	<String> <Name>String</Name> <Val>{cnxn document=&quot;m18528&quot;}util_BitstreamFromRandom.vi{/cnxn} </Val> </String>
+	<String> <Name>String</Name> <Val>{cnxn document=&quot;m18515&quot;}util_AWGNchannel_PtByPt.vi{/cnxn} </Val> </String>
+	<String> <Name>String</Name> <Val>{cnxn document=&quot;m18547&quot;}util_MeasureBER.vi{/cnxn} </Val> </String>
+	<String> <Name>String</Name> <Val>{cnxn document=&quot;m18545&quot;}util_Qfunction.vi{/cnxn} </Val> </String>
+</Array>
+</Cluster>
+
+
+	<!--STEP------------------------------------------>
+<String> <Name>secend</Name> <Val></Val> </String>
+<String> <Name>sec</Name> <Val>Build the transmitter</Val> </String>
+
+<String> <Name>para</Name> <Val>
+		Assemble the transmitter by translating {cnxn target=&quot;figure-transmitter&quot;/} into a LabVIEW application VI called {code type=&quot;inline&quot;}Transmitter.vi{/code}. 
+		Create front panel controls with default values as follows:
+</Val> </String>
+
+<Cluster> <Name>list</Name> <NumElts>3</NumElts>
+<EW> <Name>type</Name> <Choice>Bulleted</Choice> <Choice>Enumerated</Choice> <Val>1</Val> </EW>
+<String> <Name>list name (optional)</Name> <Val></Val> </String>
+<Array> <Name>list items</Name> <Dimsize>5</Dimsize>
+	<String> <Name>String</Name> <Val>{code type=&quot;inline&quot;}message length{/code} -- I32 -- 5 bits</Val> </String>
+	<String> <Name>String</Name> <Val>{code type=&quot;inline&quot;}Eb, energy per bit interval [J/bit]{/code} -- DBL -- 1.0</Val> </String>
+	<String> <Name>String</Name> <Val>{code type=&quot;inline&quot;}Tb, bit interval [s]{/code} -- DBL -- 1.0</Val> </String>
+	<String> <Name>String</Name> <Val>{code type=&quot;inline&quot;}pulse shape{/code} -- enumerated data type -- Rectangle</Val> </String>
+	<String> <Name>String</Name> <Val>{code type=&quot;inline&quot;}fs, sampling frequency [Hz]{/code} -- DBL -- 10.0</Val> </String>
+</Array>
+</Cluster>
+
+<String> <Name>para</Name> <Val>
+		Use an enumerated front-panel control to select the pulse shape, and a case structure on the block diagram to select the desired pulse shape. 
+		The {cnxn target=&quot;video-enumerated&quot;/} screencast video explains how to configure the front-panel control and how to use the control 
+		as the selector on the case structure.
+</Val> </String>
+
+<Cluster> <Name>video</Name> <NumElts>4</NumElts>
+<String> <Name>ID (optional)</Name> <Val>video-enumerated</Val> </String>
+<String> <Name>video name</Name> <Val>enumerated</Val> </String>
+<String> <Name>webpage title</Name> <Val>Enumerated control</Val> </String>
+<String> <Name>caption</Name> <Val>Enumerated control as a case selector</Val> </String>
+</Cluster>
+
+<String> <Name>para</Name> <Val>
+		Plot the transmitted signal waveform for both the polar NRZ and Manchester pulse shapes, and confirm that the signal waveform amplitude and 
+		samples per bit interval respond correctly to various selections for sampling frequency, bit interval, energy per bit, and message length.
+</Val> </String>
+
+
+	<!--STEP------------------------------------------>
+<String> <Name>secend</Name> <Val></Val> </String>
+<String> <Name>sec</Name> <Val>Build the channel and receiver</Val> </String>
+
+
+<String> <Name>para</Name> <Val>
+		Visualizing the signal processing chain through the receiver is the main objective of this section. The {term}stacked chart{/term} waveform indicator works best 
+		because it allows timescale adjustments while maintaining synchronism among all of the displayed signals. The stacked chart emulates a strip chart recorder or 
+		oscilloscope display, and is designed to accumulate and display one sample point generated each pass through a repetitive structure such 
+		as a for-loop or while-loop. The {cnxn target=&quot;video-stackedchart&quot;/} screencast video introduces the stacked chart waveform indicator, 
+		explains how to display multiple signals, and describes how to interact with the indicator to view selected time intervals.
+</Val> </String>
+
+<Cluster> <Name>video</Name> <NumElts>4</NumElts>
+<String> <Name>ID (optional)</Name> <Val>video-stackedchart</Val> </String>
+<String> <Name>video name</Name> <Val>stackedchart</Val> </String>
+<String> <Name>webpage title</Name> <Val>Stacked chart waveform indicator</Val> </String>
+<String> <Name>caption</Name> <Val>Display multiple synchronized signals on stacked chart</Val> </String>
+</Cluster>
+
+
+<String> <Name>para</Name> <Val>
+		Copy {code type=&quot;inline&quot;}Transmitter.vi{/code} to a new file called {code type=&quot;inline&quot;}TransmitterReceiver.vi{/code}. Remove the 
+		waveform graph indicator. Add the AWGN channel and coherent receiver to this VI by translating the {cnxn target=&quot;figure-receiver&quot;/} receiver block diagram. 
+		Make a front panel control for the channel Eb/No. Embed the entire channel and receiver into a for-loop structure. Include "Programming | Timing | Wait Until Next ms Multiple" 
+		inside the for-loop and create a front-panel control called {code type=&quot;inline&quot;}loop delay [ms]{/code} to adjust the delay.  Place the control inside the 
+		for-loop structure so that the processing rate of the receiver can be easily adjusted. Display the following signals on a stacked chart:
+</Val> </String>
+
+<Cluster> <Name>list</Name> <NumElts>3</NumElts>
+<EW> <Name>type</Name> <Choice>Bulleted</Choice> <Choice>Enumerated</Choice> <Val>1</Val> </EW>
+<String> <Name>list name (optional)</Name> <Val></Val> </String>
+<Array> <Name>list items</Name> <Dimsize>7</Dimsize>
+	<String> <Name>String</Name> <Val>transmitted signal, s(t)</Val> </String>
+	<String> <Name>String</Name> <Val>received signal, s(t)+n(t)</Val> </String>
+	<String> <Name>String</Name> <Val>transmitter bit interval start pulse</Val> </String>
+	<String> <Name>String</Name> <Val>transmitter bit interval end pulse</Val> </String>
+	<String> <Name>String</Name> <Val>correlator output</Val> </String>
+	<String> <Name>String</Name> <Val>sample-and-hold output</Val> </String>
+	<String> <Name>String</Name> <Val>comparator output</Val> </String>
+</Array>
+</Cluster>
+
+<String> <Name>para</Name> <Val>
+		Include a BER measurement (with {cnxn document=&quot;m18547&quot;}util_MeasureBER.vi{/cnxn}) to compare the transmitted and received message bitstreams.
+
+		Include Boolean indicators for the transmitted bitstream, the regenerated (received) bitstream, and the error bitstream.
+
+		Reserve space for the BER vs. Eb/No plot to be added later.
+
+		{cnxn target=&quot;figure-txrxlayout&quot;/} illustrates a suggested front-panel layout for {code type=&quot;inline&quot;}TransmitterReceiver.vi{/code}.
+</Val> </String>
+
+<Cluster> <Name>image</Name> <NumElts>3</NumElts>
+<String> <Name>ID (optional)</Name> <Val>figure-txrxlayout</Val> </String>
+<String> <Name>name</Name> <Val>txrxlayout</Val> </String>
+<String> <Name>caption</Name> <Val>Suggested front-panel layout for {code type=&quot;inline&quot;}TransmitterReceiver.vi{/code}</Val> </String>
+</Cluster>
+
+
+<String> <Name>para</Name> <Val>
+		Debug the combined transmitter and receiver with a high value of Eb/No such as 40dB to effectively eliminate channel noise. Ensure that the received message 
+		is the same as the transmitted message. The BER should remain zero or nearly so, even for relatively long messages.
+
+		To confirm that the AWGN channel works properly, set the front panel controls to these exact values:
+</Val> </String>
+
+<Cluster> <Name>list</Name> <NumElts>3</NumElts>
+<EW> <Name>type</Name> <Choice>Bulleted</Choice> <Choice>Enumerated</Choice> <Val>1</Val> </EW>
+<String> <Name>list name (optional)</Name> <Val></Val> </String>
+<Array> <Name>list items</Name> <Dimsize>7</Dimsize>
+	<String> <Name>String</Name> <Val>{code type=&quot;inline&quot;}message length{/code} = 10,000 bits</Val> </String>
+	<String> <Name>String</Name> <Val>{code type=&quot;inline&quot;}Eb{/code} = 1 J/bit</Val> </String>
+	<String> <Name>String</Name> <Val>{code type=&quot;inline&quot;}Tb{/code} = 1 s</Val> </String>
+	<String> <Name>String</Name> <Val>{code type=&quot;inline&quot;}Eb/No{/code} = 0 dB</Val> </String>
+	<String> <Name>String</Name> <Val>{code type=&quot;inline&quot;}pulse shape{/code} = Polar NRZ</Val> </String>
+	<String> <Name>String</Name> <Val>{code type=&quot;inline&quot;}fs{/code} = 32 Hz</Val> </String>
+	<String> <Name>String</Name> <Val>{code type=&quot;inline&quot;}loop delay{/code} = 0 ms</Val> </String>
+</Array>
+</Cluster>
+
+<String> <Name>para</Name> <Val>
+The BER should be very close to 0.079 each time the VI is run; the theoretical value is 0.07865.
+</Val> </String>
+<!--Theory value calculated as Q-function of square root of 2 -->
+
+	<!--STEP------------------------------------------>
+<String> <Name>secend</Name> <Val></Val> </String>
+<String> <Name>sec</Name> <Val>Experiment with the transmitter, channel, and receiver</Val> </String>
+
+<String> <Name>para</Name> <Val>
+		Set Eb/No to 40dB to generate a clean transmitter signal at the receiver, and study the correlator output for the polar NRZ pulse shape. 
+		Describe the effect of the "integrate-and-dump" operation as applied to the transmitted signal. Use a loop delay of in the range 10 to 50 ms to observe the waveform unfold slowly.
+
+		Switch to the Manchester pulse shape, and study the correlator output again. The correlator output should look exactly the same as observed for the polar 
+		NRZ pulse shape, even though the two pulse shapes are significantly different. Explain why.
+
+		Try message lengths from 10 bits to 10,000 bits and higher. Confirm that BER is zero or nearly so for each message.
+
+		Set the message length to 10 bits. Gradually decrease Eb/No and observe the effect on the receiver signals. What level of Eb/No causes the received signal to 
+		look noisy and yet still be intelligible to the eye? What level of Eb/No causes the received signal to look essentially unusable, and yet the BER remains small (say, 1 percent)? 
+		From these observations, explain how coherent detection is able to recover a very useable signal from such a noisy input.
+</Val> </String>
+
+	<!--STEP------------------------------------------>
+<String> <Name>secend</Name> <Val></Val> </String>
+<String> <Name>sec</Name> <Val>BER vs. Eb/No performance measure</Val> </String>
+
+
+<String> <Name>para</Name> <Val>
+		Add a structure to retain the Eb/No and measured BER in arrays at the end of each simulation run. Plot BER vs. Eb/No as a scatter plot over the domain Eb/No = 0 dB to 10 dB. 
+		Include a Boolean control to reset the plot by reinitializing the arrays. See the {cnxn target=&quot;video-retainpoints&quot;/} screencast for implementation details.
+</Val> </String>
+
+<Cluster> <Name>video</Name> <NumElts>4</NumElts>
+<String> <Name>ID (optional)</Name> <Val>video-retainpoints</Val> </String>
+<String> <Name>video name</Name> <Val>retainpoints</Val> </String>
+<String> <Name>webpage title</Name> <Val>Retain and plot values</Val> </String>
+<String> <Name>caption</Name> <Val>Retain values across multiple runs of a VI and visualize values as a scatter plot</Val> </String>
+</Cluster>
+
+
+<String> <Name>para</Name> <Val>
+		Engage the "Run Continuously" mode (the circulating arrows icon next to the "Run" button) to continually add points to the plot. 
+		Vary Eb/No from 0 dB to 10 dB for a message length of 100 bits. Make note of the spread of BER
+		values for a particular Eb/No value, as well as the minimum BER.
+		
+		Increase the message length to 1,000 bits and then clear the accumulated plot points. Observe the BER spread and minimum value as Eb/No varies over the same range.
+
+		Repeat the previous step for a message length of 10,000 bits. Consider your results for various message lengths, and then explain the relationship between the minimum recorded 
+		BER and message length. In addition, describe the relationship between the spread (variance) of BER values as a function of Eb/No. Explain why the spread decreases as the noise level increases, 
+		or equivalently, as Eb/No decreases.
+		:w
+		Add the theoretical BER vs. Eb/No curve for binary antipodal signaling as a solid trace to the scatter plot; refer to the {cnxn target=&quot;video-overlayplots&quot;/} screencast video to 
+		learn how to overlay two plots. How well does the simulated scatter plot match theory? What is the critical parameter that causes the measured BER to more closely follow the theoretical value for 
+		higher-quality signals, i.e., when Eb/No is closer to 10 dB? What penalty is incurred to achieve a more accurate estimate of BER for higher quality signals?
+
+		Include representative plots in your report.
+</Val> </String>
+
+<Cluster> <Name>video</Name> <NumElts>4</NumElts>
+<String> <Name>ID (optional)</Name> <Val>video-overlayplots</Val> </String>
+<String> <Name>video name</Name> <Val>overlayplots</Val> </String>
+<String> <Name>webpage title</Name> <Val>Overlay multiple plots</Val> </String>
+<String> <Name>caption</Name> <Val>Overlay two plots</Val> </String>
+</Cluster>
+
+
+<String> <Name>secend</Name> <Val></Val> </String>
+
+<!--REFERENCES------------------------------------------------------>
+<String> <Name>secend</Name> <Val></Val> </String>
+<String> <Name>sec</Name> <Val>References</Val> </String>
+
+<Cluster> <Name>list</Name> <NumElts>3</NumElts>
+<EW> <Name>type</Name> <Choice>Bulleted</Choice> <Choice>Enumerated</Choice> <Val>1</Val> </EW>
+<String> <Name>list name (optional)</Name> <Val></Val> </String>
+<Array> <Name>list items</Name> <Dimsize>8</Dimsize>
+	<String><Name>String</Name><Val>
+		Carlson, A. Bruce, Paul B. Crilly, and Janet C. Rutledge, "Communication Systems," 4th ed., McGraw-Hill, 2002. ISBN-13: 978-0-07-011127-1
+	</Val></String>
+	<String><Name>String</Name><Val>
+		Couch, Leon W. II, "Digital and Analog Communication Systems," 7th ed., Pearson Prentice Hall, 2007. ISBN-10: 0-13-142492-0
+	</Val></String>
+	<String><Name>String</Name><Val>
+		Haykin, Simon. "Communication Systems," 4th ed., Wiley, 2001. ISBN-10: 0-471-17869-1
+	</Val></String>
+	<String><Name>String</Name><Val>
+		Haykin, Simon, and Michael Moher, "Introduction to Analog and Digital Communication Systems," 2nd ed., Wiley, 2007. ISBN-13: 978-0-471-43222-7
+	</Val></String>
+	<String><Name>String</Name><Val>
+		Lathi, Bhagwandas P., "Modern Digital and Analog Communication Systems," 3rd ed., Oxford University Press, 1998. ISBN-10: 0-19-511009-9
+	</Val></String>
+	<String><Name>String</Name><Val>
+		Proakis, John G., and Masoud Salehi, "Fundamentals of Communication Systems," Pearson Prentice Hall, 2005. ISBN-10: 0-13-147135-X
+	</Val></String>
+	<String><Name>String</Name><Val>
+		Proakis, John G., and Masoud Salehi, "Communication Systems Engineering," 2nd ed., Pearson Prentice Hall, 2002. ISBN-10: 0-13-061793-8
+	</Val></String>
+	<String><Name>String</Name><Val>
+		Stern, Harold P.E., and Samy A. Mahmoud, "Communication Systems," Pearson Prentice Hall, 2004. ISBN-10: 0-13-040268-0
+	</Val></String>
+</Array>
+</Cluster>
+
+<String> <Name>secend</Name> <Val></Val> </String>
+
+</LVData>
+

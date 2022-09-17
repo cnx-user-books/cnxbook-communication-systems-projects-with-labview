@@ -1,0 +1,313 @@
+<document xmlns="http://cnx.rice.edu/cnxml">
+  <title>Hamming Block Code Channel Decoder</title>
+<metadata xmlns:md="http://cnx.rice.edu/mdml">
+  <md:content-id>m18665</md:content-id>
+  <md:title>Hamming Block Code Channel Decoder</md:title>
+  <md:abstract>Channel encoding inserts additional information into a transmitted bit stream to facilitate error detection and error correction at the receiver. Block coding breaks up a bit stream into words of length k bits and appends check bits to form a codeword of length n bits. A corresponding channel decoder examines the complete codeword, and detects and even corrects certain types of erroneous bits caused by the channel.  In the prerequisite project "Hamming Block Code Channel Encoder" you developed a channel encoder using a special class of block code called a Hamming code. In this project, develop the companion channel decoder, and then evaluate the performance of the complete encoder/decoder system.</md:abstract>
+  <md:uuid>5e08ce66-1f15-473a-8b79-c86c4408cc55</md:uuid>
+</metadata>
+<content>
+
+<table id="labview_banner" frame="none" summary=""><tgroup cols="2">
+<colspec rowsep="0" colsep="0"/> <colspec colwidth="6in" rowsep="0" colsep="0"/>
+<tbody>
+  <row>
+    <entry morerows="3"><media id="id21378641" alt=""><image src="../../media/LabVIEWtop.png" mime-type="image/png"/></media></entry>
+    <entry> This module refers to LabVIEW, a software development environment that features a graphical programming language.
+       Please see the <link document="m15428">LabVIEW QuickStart Guide</link> module for tutorials and documentation that will help you:</entry>
+  </row>
+  <row> <entry>• Apply LabVIEW to Audio Signal Processing </entry> </row>
+  <row> <entry>• Get started with LabVIEW</entry> </row>
+  <row> <entry>• Obtain a fully-functional evaluation edition of LabVIEW</entry> </row>
+</tbody>
+</tgroup>
+</table>
+
+<note id="id22927005">
+Visit <link document="m17319">LabVIEW Setup</link> to learn how to adjust your own LabVIEW environment to match the settings used by the LabVIEW screencast video(s) in this module.
+Click the "Fullscreen" button at the lower right corner of the video player if the video does not fit properly within your browser window.
+</note>
+
+<section id="sec1">
+<title>Summary</title>
+
+<para id="par2">
+		<term>Channel encoding</term> inserts additional information into a transmitted bit stream to facilitate <term>error detection</term> and <term>error correction</term> at the receiver. <term>Block coding</term> breaks up a bit stream into words of length k bits and appends check bits to form a <term>codeword</term> of length n bits. A corresponding <term>channel decoder</term> examines the complete codeword, and detects and even corrects certain types of erroneous bits caused by the channel.</para>
+
+<para id="par3">		In the prerequisite project <link document="m18663">Hamming Block Code Channel Encoder</link> you developed a channel encoder using a special class of block code called a Hamming code. In this project, develop the companion channel decoder, and then evaluate the performance of the complete encoder/decoder system.
+</para>
+
+</section>
+
+<section id="sec4">
+<title>Objectives</title>
+
+<list id="list5" list-type="enumerated">
+
+<item> Develop an (n,k) Hamming block code channel decoder capable of error detection and correction </item>
+<item> Examine the behavior of the encoded bitstream before and after passing through the decoder </item>
+<item> Evaluate the performance of the complete encoder/decoder system </item>
+
+</list>
+
+</section>
+
+<section id="sec6">
+<title>Deliverables</title>
+
+<list id="list7" list-type="enumerated">
+
+<item> Summary write-up of your results </item>
+<item> Hardcopy of all LabVIEW code that you develop (block diagrams and front panels) </item>
+<item> Any plots or diagrams requested </item>
+
+</list>
+
+<note id="id26907241">
+		You can easily export LabVIEW front-panel waveform plots directly to your report. Right-click on the waveform
+		indicator and choose "Export Simplified Image."
+</note>
+
+</section>
+
+<section id="sec8">
+<title>Setup</title>
+
+<list id="list9" list-type="enumerated">
+
+<item> LabVIEW 8.5 or later version </item>
+
+</list>
+
+</section>
+
+<section id="sec10">
+<title>Textbook Linkages</title>
+
+<para id="par11">
+		Refer to the following textbooks for additional background on the project activities of this module;
+		see the "References" section below for publication details:
+</para>
+
+<list id="list12" list-type="bulleted">
+
+<item> Carlson, Crilly, and Rutledge -- Ch 13 (basis for notation used in this module) </item>
+<item> Haykin -- Ch 10 </item>
+<item> Lathi -- Ch 16 </item>
+<item> Proakis and Salehi (FCS) -- Ch 13 </item>
+<item> Proakis and Salehi (CSE) -- Ch 9 </item>
+<item> Stern and Mahmoud -- Ch 10 </item>
+
+</list>
+
+</section>
+
+<section id="sec13">
+<title>Prerequisite Modules</title>
+
+<para id="par14"/>
+
+<para id="par15">		If you have not done so already, please complete the prerequisite module 
+		<link document="m18663">Hamming Block Code Channel Encoder</link>.
+		
+		If you are relatively new to LabVIEW, consider taking the course 
+		<link document="col10440">LabVIEW Techniques for Audio Signal Processing</link> 
+		which provides the foundation you need to complete this project activity, including:
+		block diagram editing techniques, essential programming structures, subVIs, arrays, and
+		audio. 
+</para>
+
+</section>
+
+<section id="sec16">
+<title>Introduction</title>
+
+<para id="par17">
+		<term>Error control coding</term> describes a class of techniques that prepare
+		a digital message bitstream to pass through a noisy channel so that the 
+		receiver can detect and in some cases correct transmission errors. 
+		The prerequisite project <link document="m18663">Hamming Block Code Channel Encoder</link> describes
+		how to create a specific type of channel encoder based on the 
+		<term>(n,k) Hamming code</term>. The codeword length "n" and message length "k" are
+		specific values calculated from the user-defined number of checkbits "q".
+		As discussed in the prerequisite module, the code rate of the Hamming code
+		approaches 1 (100% efficiency) as "q" increases, but the minimum Hamming distance
+		"dmin" is fixed at 3. Therefore, the Hamming code can detect up to two bit errors
+		in a received codeword, and can correct up to one bit error.</para>
+
+<para id="par18">		The <term>channel decoder</term>, a subsystem of the receiver, serves as a complement
+		to the channel encoder in the transmitter. The channel decoder examines each received
+		codeword, indicates detectable errors, fixes correctable errors, and extracts the
+		message. Not all types of errors are detectable nor correctable, therefore the channel
+		decoder can certainly emit garbled messages. Fortunately the channel noise must be rather
+		severe before this becomes a problem.</para>
+
+<para id="par19">		The channel decoder developed in this project is called a <term>table lookup syndrome decoder</term>.
+		View the <link target-id="video-decoder-syndrome"/> screencast video to learn
+		how to calculate the <term>syndrome</term> of a codeword, how to develop a <term>lookup table</term> 
+		of most-likely error patterns indexed by syndrome value, and how to use these results as the
+		basic components of a channel decoder capable of detecting and correcting some types of
+		error patterns.
+</para>
+
+<figure id="video-decoder-syndrome"><title><link url="https://youtu.be/Ev6vewW4ydY" window="new">https://youtu.be/Ev6vewW4ydY</link> (10:20)</title><media id="eip-idm500535472" display="block" alt="Insert alt text here"><video mime-type="video/mpeg" src="https://www.youtube.com/embed/Ev6vewW4ydY?rel=0" autoplay="false" width="640" height="460"/></media>
+
+
+<caption>[video] Table lookup syndrome channel decoder for Hamming block code
+</caption></figure></section>
+
+<section id="sec21">
+<title>Procedure</title>
+
+<section id="sec22">
+<title>Manual calculations</title>
+
+<para id="par23">
+		Work through the syndrome calculation process by hand to lay a good
+		foundation for developing a correct and understandable computer 
+		implementation. Write up this work on a separate page.</para>
+
+<para id="par24">		The end of the <link target-id="video-decoder-syndrome"/> screencast video
+		presents an example of a specific Hamming code generator matrix "G", a specific message vector "M" and 
+		associated codeword vector "X", and three received versions of the same transmitted codeword with
+		varying severity of bit errors.
+</para>
+
+<list id="list25" list-type="enumerated">
+
+<item> Determine the parity check matrix "HT" (the transpose of the matrix "H") that corresponds
+			to the generator matrix "G". </item>
+<item> Write the three received codeword vectors. </item>
+<item> Calculate the syndrome for each of the three received codewords. Remember to use modulo-2
+		arithmetic for the matrix calculations. </item>
+<item> Discuss your results in terms of the potential to detect and correct errors for
+		each of the three received codewords based on their calculated syndromes. </item>
+
+</list>
+
+</section>
+
+<section id="sec26">
+<title>SubVI construction</title>
+
+<para id="par27">
+		Build the subVIs listed below. You may already have some of these available
+		from previous projects.</para>
+
+<para id="par28">		Demonstrate that each of these subVIs works properly before continuing to the next part.
+</para>
+
+<list id="list29" list-type="enumerated">
+
+<item> <link document="m18460">hamming_ParityCheckMatrix.vi</link>  </item>
+<item> <link document="m18618">hamming_SyndromeTable.vi</link>  </item>
+<item> <link document="m18427">hamming_DetectorCorrector.vi</link>  </item>
+<item> <link document="m18631">util_BitstreamFromText.vi</link>  </item>
+<item> <link document="m18629">util_BitstreamToText.vi</link>  </item>
+
+</list>
+
+</section>
+
+<section id="sec30">
+<title>Hamming block code channel decoder</title>
+
+<para id="par31">
+		Use your top-level application VI from the prerequisite channel encoder project as a starting point for
+		this project.</para>
+
+<para id="par32">		Review again the background theory presented earlier for the Hamming block code channel decoder, then
+		extend the top-level application VI to decode the output of the channel. Follow the block diagram 
+		described near the end of the <link target-id="video-decoder-syndrome"/> screencast video.</para>
+
+<para id="par33">		Display Boolean array front-panel indicators for the following values:
+</para>
+
+<list id="list34" list-type="bulleted">
+
+<item> message -- original message words </item>
+<item> encoded message -- message words with appended checkbits (transmitted codewords) </item>
+<item> received message -- received codewords after passing through noisy channel </item>
+<item> pre-decoding errors -- bit error locations in received codewords </item>
+<item> corrected message -- received codewords with error correction applied </item>
+<item> post-decoding errors -- bit error locations in corrected codewords </item>
+<item> error detected (1-D array) -- error detected (non-zero syndrome) </item>
+
+</list>
+
+</section>
+
+<section id="sec35">
+<title>Combined channel encoder/decoder performance</title>
+
+<list id="list36" list-type="enumerated">
+
+<item> 
+			Generate 50 words, and begin with 3 checkbits. Run the VI repeatedly and observe the channel decoder
+			output indicators. What bit error rate tends to limit the received codeword errors to single-bit errors?
+	 </item>
+<item> 
+			Increase to 4 checkbits, then to 5 checkbits, and so on while holding the bit error rate fixed.
+       			Recalling the positive effect of increasing the number of checkbits (increased code rate), what appears to
+			be the negative effect of an increased number of checkbits? Explain.
+	 </item>
+<item> 
+			Return to 3 checkbits. Run the VI until you observe a two-bit error in a received codeword. Does
+			the "error detected" indicator work properly? How about the corrected codeword? Explain these results.
+	 </item>
+<item> 
+			Set the number of checkbits to 2 and run the VI several times. What is another name (hopefully familiar to you) for this code?
+	 </item>
+
+</list>
+
+</section>
+
+<section id="sec37">
+<title>Text messaging</title>
+
+<para id="par38">
+		Replace the random number generator in the transmit section with the text data source 
+		<link document="m18631">util_BitstreamFromText.vi</link>. Use the companion
+		subVI <link document="m18629">util_BitstreamToText.vi</link> to display the receiver output. 
+		Experiment with short messages and long messages, making sure that
+		the intermediate Boolean displays make sense.</para>
+
+<para id="par39">		Experiment with intelligibility in the received message as a function of bit error rate (BER). Determine specific BER values you
+		associate with the following qualitative labels: <emphasis>excellent</emphasis>, <emphasis>good</emphasis>, <emphasis>barely acceptable</emphasis>, and <emphasis>unintelligible</emphasis>.
+</para>
+
+</section>
+
+</section>
+
+<section id="sec40">
+<title>References</title>
+
+<list id="list41" list-type="enumerated">
+
+<item> 
+		Carlson, A. Bruce, Paul B. Crilly, and Janet C. Rutledge, "Communication Systems," 4th ed., McGraw-Hill, 2002. ISBN-13: 978-0-07-011127-1
+	 </item>
+<item> 
+		Haykin, Simon. "Communication Systems," 4th ed., Wiley, 2001. ISBN-10: 0-471-17869-1
+	 </item>
+<item> 
+		Lathi, Bhagwandas P., "Modern Digital and Analog Communication Systems," 3rd ed., Oxford University Press, 1998. ISBN-10: 0-19-511009-9
+	 </item>
+<item> 
+		Proakis, John G., and Masoud Salehi, "Fundamentals of Communication Systems," Pearson Prentice Hall, 2005. ISBN-10: 0-13-147135-X
+	 </item>
+<item> 
+		Proakis, John G., and Masoud Salehi, "Communication Systems Engineering," 2nd ed., Pearson Prentice Hall, 2002. ISBN-10: 0-13-061793-8
+	 </item>
+<item> 
+		Stern, Harold P.E., and Samy A. Mahmoud, "Communication Systems," Pearson Prentice Hall, 2004. ISBN-10: 0-13-040268-0
+	 </item>
+
+</list>
+
+</section>
+
+</content>
+</document>

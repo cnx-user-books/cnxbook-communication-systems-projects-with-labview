@@ -1,0 +1,375 @@
+<document xmlns="http://cnx.rice.edu/cnxml">
+  <title>Speaker-Air-Microphone (SAM) Channel Characterization</title>
+<metadata xmlns:md="http://cnx.rice.edu/mdml">
+  <md:content-id>m18666</md:content-id>
+  <md:title>Speaker-Air-Microphone (SAM) Channel Characterization</md:title>
+  <md:abstract>A speaker and microphone connected to a computer serve as an excellent communications channel because the transmitted information is audible. Listening to the channel while making parameter adjustments and viewing plots builds additional insight into the specific modulation scheme under study.
+This project describes how to characterize a "speaker-air-microphone" (SAM) channel for use in subsequent projects that use bandpass modulation techniques.</md:abstract>
+  <md:uuid>4a9a0b01-6d8c-44f7-bc07-cfead1eae5d9</md:uuid>
+</metadata>
+<content>
+
+<table id="labview_banner" frame="none" summary=""><tgroup cols="2">
+<colspec rowsep="0" colsep="0"/> <colspec colwidth="6in" rowsep="0" colsep="0"/>
+<tbody>
+  <row>
+    <entry morerows="3"><media id="idp7826432" alt=""><image src="../../media/LabVIEWtop.png" mime-type="image/png"/></media></entry>
+    <entry> This module refers to LabVIEW, a software development environment that features a graphical programming language.
+       Please see the <link document="m15428">LabVIEW QuickStart Guide</link> module for tutorials and documentation that will help you:</entry>
+  </row>
+  <row> <entry>• Apply LabVIEW to Communications / Signal Processing </entry> </row>
+  <row> <entry>• Get started with LabVIEW</entry> </row>
+  <row> <entry>• Obtain a fully-functional evaluation edition of LabVIEW</entry> </row>
+</tbody>
+</tgroup>
+</table>
+
+<note id="idm300208">
+Visit <link document="m17319">LabVIEW Setup</link> to learn how to adjust your own LabVIEW environment to match the settings used by the LabVIEW screencast video(s) in this module.
+Click the "Fullscreen" button at the lower right corner of the video player if the video does not fit properly within your browser window.
+</note>
+
+<section id="sec1">
+<title>Summary</title>
+
+<para id="par2">
+A speaker and microphone connected to a computer serve as an excellent communications channel because the transmitted information is audible. Listening to the channel while making parameter adjustments and viewing plots builds additional insight into the specific modulation scheme under study.</para>
+
+<para id="par3">The passband limits and bandwidth of the <term>SAM channel</term> (Speaker-to-Air-to-Microphone) must be characterized to effectively choose modulation parameters such as carrier frequency, bit rate, and signal pulse shape. This project describes how to characterize a SAM channel for use in subsequent projects that use bandpass modulation techniques.
+</para>
+
+</section>
+
+<section id="sec4">
+<title>Objectives</title>
+
+<list id="list5" list-type="enumerated">
+
+<item> Measure the passband limits and bandwidth of a speaker-air-microphone (SAM) channel </item>
+<item> Learn how to use LabVIEW Express subVIs for audio and power spectrum measurement </item>
+
+</list>
+
+</section>
+
+<section id="sec6">
+<title>Deliverables</title>
+
+<list id="list7" list-type="enumerated">
+
+<item> Summary write-up of your results </item>
+<item> Hardcopy of all LabVIEW code that you develop (block diagrams and front panels) </item>
+<item> Any plots or diagrams requested </item>
+
+</list>
+
+<note id="idp19136032">
+		You can easily export LabVIEW front-panel waveform plots directly to your report. Right-click on the waveform
+		indicator and choose "Export Simplified Image."
+</note>
+
+</section>
+
+<section id="sec8">
+<title>Setup</title>
+
+<list id="list9" list-type="enumerated">
+
+<item> LabVIEW 8.5 or later version </item>
+<item> Computer soundcard </item>
+<item> Speaker </item>
+<item> Microphone </item>
+
+</list>
+
+</section>
+
+<section id="sec10">
+<title>Textbook Linkages</title>
+
+<para id="par11">
+		Refer to the following textbooks for additional background on the project activities of this module;
+		see the "References" section below for publication details:
+</para>
+
+<list id="list12" list-type="bulleted">
+
+<item> Carlson, Crilly, and Rutledge -- Ch 9 </item>
+<item> Couch -- Ch 6 </item>
+<item> Haykin -- Ch 1 </item>
+<item> Haykin and Moher -- Ch 8 </item>
+<item> Lathi -- Ch 3 </item>
+<item> Proakis and Salehi (FCS) -- Ch 5 </item>
+<item> Proakis and Salehi (CSE) -- Ch 4 </item>
+<item> Stern and Mahmoud -- Ch 2 </item>
+
+</list>
+
+</section>
+
+<section id="sec13">
+<title>Prerequisite Modules</title>
+
+<para id="par14">
+		If you are relatively new to LabVIEW, consider taking the course 
+		<link document="col10440">LabVIEW Techniques for Audio Signal Processing</link> 
+		which provides the foundation you need to complete this project activity, including:
+		block diagram editing techniques, essential programming structures, subVIs, arrays, and
+		audio. 
+</para>
+
+</section>
+
+<section id="sec15">
+<title>Introduction</title>
+
+<para id="par16">
+		<link target-id="fig-SAM-channel-diagram"/> illustrates the speaker-to-air-to-microphone (SAM) channel.
+</para>
+
+<figure id="fig-SAM-channel-diagram">
+<media id="idp19327584" alt=""><image src="../../media/samch_characterize-SAM-channel-diagram.png" mime-type="image/png"/></media>
+<caption>
+   Speaker-air-microphone channel
+</caption>
+</figure>
+
+<para id="par18">
+The magnitude frequency response of the SAM channel can be easily measured by applying white noise to the speaker, recording the result, and calculating the power spectrum of the of the recorded signal.  White noise contains equal contribution from all frequencies; therefore, any deviation from a flat power spectrum at the channel output must be the response of the channel. </para>
+
+<para id="par19">The computer sound card forms part of the channel, as well. Sound card microphone inputs are often AC-coupled and do not pass DC. Microphone inputs are sometimes intentionally lowpass filtered to reduce high-frequency hiss, and all soundcard inputs include lowpass filters to serve as anti-aliasing filters.</para>
+
+<para id="par20">Most modern sound cards are <term>full duplex</term>, meaning that they can simultaneously generate and record sound -- a necessary feature for this project. Older <term>half duplex</term> sound cards can still be used but require two computers, one to transmit the sound and another to receive the sound.
+</para>
+
+</section>
+
+<section id="sec21">
+<title>Procedure</title>
+
+<section id="sec22">
+<title>White noise source</title>
+
+<para id="par23">
+		Create a white noise sound source to serve as the SAM channel excitation:
+</para>
+
+<list id="list24" list-type="enumerated">
+
+<item> 
+			Use the "Express | Output | Play Waveform" Express VI to generate audio for the speaker.
+	 </item>
+<item> 
+			Use the "Express | Signal Analysis | Simulate Signal" Express VI to generate uniform white noise in the range -1 to +1.
+	 </item>
+<item> 
+			Set the Express VI parameters to generate a signal with 44.1 kHz sampling frequency and duration of 10 seconds.
+	 </item>
+
+</list>
+
+<para id="par25">
+		Refer to the video of <link target-id="video-white-noise-source"/> for LabVIEW coding techniques for the white noise source.
+</para>
+
+<figure id="video-white-noise-source"><title><link url="https://youtu.be/A39R5jPTEI0" window="new">https://youtu.be/A39R5jPTEI0</link> (2:34)</title><media id="eip-idm600430032" display="block" alt="Insert alt text here"><video mime-type="video/mpeg" src="https://www.youtube.com/embed/A39R5jPTEI0?rel=0" autoplay="false" width="640" height="460"/></media>
+
+
+<caption>[video] LabVIEW coding techniques for white noise source
+</caption></figure></section>
+
+<section id="sec27">
+<title>Recording device</title>
+
+<para id="par28">
+		Create a device to record the microphone signal:
+</para>
+
+<list id="list29" list-type="enumerated">
+
+<item> 
+			Use the "Express | Input | Acquire Sound" Express VI configured for the same sampling frequency
+			as the white noise source (44.1 kHz) and a 0.1 second duration.
+	 </item>
+<item> 
+			Monitor the recorded signal as a time-domain plot.
+	 </item>
+<item> 
+			Use the "Express | Signal Manipulation | Extract Portion of Signal" Express VI to discard a 
+			user-specified number of samples at the beginning of the waveform to account for transient startup.
+	 </item>
+
+</list>
+
+<para id="par30">
+		Refer to the video of <link target-id="video-recording-device"/> for LabVIEW coding techniques for the recording device.
+</para>
+
+<figure id="video-recording-device"><title><link url="https://youtu.be/_eRLgn3rW0c" window="new">https://youtu.be/_eRLgn3rW0c</link> (2:30)</title><media id="eip-idm256764896" display="block" alt="Insert alt text here"><video mime-type="video/mpeg" src="https://www.youtube.com/embed/_eRLgn3rW0c?rel=0" autoplay="false" width="640" height="460"/></media>
+
+
+<caption>[video] LabVIEW coding techniques for recording device
+</caption></figure></section>
+
+<section id="sec32">
+<title>Power spectrum display</title>
+
+<para id="par33">
+		Create a graphical indicator to display the power spectrum of the recorded microphone signal:
+</para>
+
+<list id="list34" list-type="enumerated">
+
+<item> 
+			Use the "Express | Signal Analysis | Spectral Measurements" Express VI configured for power spectrum measurement.
+	 </item>
+<item> 
+			Create a "Waveform Graph" indicator to display the power spectrum. Calibrate the Y-axis in decibels and the 
+			X-axis in hertz. Use logarithmic mapping for the frequency axis.
+	 </item>
+<item> 
+			Enclose the power spectrum measurement and recording-related subVIs in a for-loop structure (N=80). 
+			This arrangement takes 80 short recordings, calculates the power spectrum for each, and averages them together 
+			to improve the estimated frequency response of the channel. The value of N is chosen to allow the 
+			recording/measurement process to complete before the white noise source stops. </item>
+
+</list>
+
+<note id="idp19706960">
+		The white noise source and recording/measurement sections of the overall VI must be kept separate from each 
+		other to allow them to operate in parallel.</note>
+
+<para id="par35">
+		Refer to the video of <link target-id="video-power-spectrum"/> for LabVIEW coding techniques for the power spectrum display.
+</para>
+
+<figure id="video-power-spectrum"><title><link url="https://youtu.be/fIat5B4M9UY" window="new">https://youtu.be/fIat5B4M9UY</link> (5:42)</title><media id="eip-idm407451968" display="block" alt="Insert alt text here"><video mime-type="video/mpeg" src="https://www.youtube.com/embed/fIat5B4M9UY?rel=0" autoplay="false" width="640" height="460"/></media>
+
+
+<caption>[video] LabVIEW coding techniques for power spectrum display
+</caption></figure></section>
+
+<section id="sec37">
+<title>SAM channel physical setup</title>
+
+<para id="par38">
+		Set up the hardware for the SAM channel. Place the microphone within a few inches of the speaker. 
+		Adjust the soundcard setup and volume controls to generate and record sound to satisfy two goals:
+</para>
+
+<list id="list39" list-type="enumerated">
+
+<item> 
+			Signal applied to sound card lies within the range ±1 with no clipping (saturation)
+	 </item>
+<item> 
+			Signal recorded from sound card fills as much as possible the range ±1 without clipping
+	 </item>
+
+</list>
+
+<para id="par40">
+		The video of <link target-id="video-winXP-audio-setup"/> for LabVIEW coding techniques for the power spectrum display.
+</para>
+
+<figure id="video-winXP-audio-setup"><title><link url="https://youtu.be/njhuE11O354" window="new">https://youtu.be/njhuE11O354</link> (1:43)</title><media id="eip-idm466082576" display="block" alt="Insert alt text here"><video mime-type="video/mpeg" src="https://www.youtube.com/embed/njhuE11O354?rel=0" autoplay="false" width="640" height="460"/></media>
+
+
+<caption>[video] Adjust the audio settings in Windows XP
+</caption></figure></section>
+
+<section id="sec42">
+<title>SAM channel measurements</title>
+
+<para id="par43">
+		Apply the white noise source to the SAM channel and record its response for 5 to 10 seconds. 
+		Also record the <term>noise floor</term> of the channel; use the identical speaker/microphone arrangement but do not 
+		generate any sound (set the "Noise Amplitude" parameter of the noise source to zero).</para>
+
+<para id="par44">		Subtract the noise floor measurement from the white noise measurement. The result should be 
+		approximately zero dB outside the passband region of the SAM channel.</para>
+
+<para id="par45">		Make hardcopy of your two measurements on the SAM channel as well as the measurement with the noise floor 
+		subtracted (right-click on the "Waveform Graph" indicator and choose "Export Simplified Image"). 
+		Annotate the plots with hand-written labels to identify the lower passband limit, the upper passband limit, 
+		and the overall bandwidth of the channel. </para>
+
+<para id="par46">		State your numerical criterion for choosing the passband limits. <term>Half-power frequency</term>, the frequency at which 
+		the response drops by 3 dB, is a standard method.
+</para>
+
+</section>
+
+</section>
+
+<section id="sec47">
+<title>Optional: To Go Further</title>
+
+<para id="par48">
+		Your instructor may ask you to complete one or more of the following activities:
+</para>
+
+<list id="list49" list-type="enumerated">
+
+<item> 
+			If supported by your sound card, change the soundcard recording device to "Stereo Mix" and repeat 
+			the two measurements above. This soundcard loopback test helps you distinguish which parts of the 
+			frequency response to attribute to the soundcard itself as opposed to the speaker/microphone combination.
+	 </item>
+<item> 
+			Repeat the SAM channel measurement for other combinations of speakers and microphones
+	 </item>
+<item> 
+			Enhance the overall VI to record the white noise source on a first run of the VI and the noise floor 
+			on the next run of the VI. Subtract the noise floor from the white noise recording and display the result.
+	 </item>
+
+</list>
+
+<para id="par50">
+		The video of <link target-id="video-subtract-noisefloor"/> shows how to retain a measurement from one run 
+		of the VI to the next.
+</para>
+
+<figure id="video-subtract-noisefloor"><title><link url="https://youtu.be/RFsXbwe8jRU" window="new">https://youtu.be/RFsXbwe8jRU</link> (3:48)</title><media id="eip-idm487064688" display="block" alt="Insert alt text here"><video mime-type="video/mpeg" src="https://www.youtube.com/embed/RFsXbwe8jRU?rel=0" autoplay="false" width="640" height="460"/></media>
+
+
+<caption>[video] Retain a measurement from one run of a VI to the next
+</caption></figure></section>
+
+<section id="sec52">
+<title>References</title>
+
+<list id="list53" list-type="enumerated">
+
+<item> 
+		Carlson, A. Bruce, Paul B. Crilly, and Janet C. Rutledge, "Communication Systems," 4th ed., McGraw-Hill, 2002. ISBN-13: 978-0-07-011127-1
+	 </item>
+<item> 
+		Couch, Leon W. II, "Digital and Analog Communication Systems," 7th ed., Pearson Prentice Hall, 2007. ISBN-10: 0-13-142492-0
+	 </item>
+<item> 
+		Haykin, Simon. "Communication Systems," 4th ed., Wiley, 2001. ISBN-10: 0-471-17869-1
+	 </item>
+<item> 
+		Haykin, Simon, and Michael Moher, "Introduction to Analog and Digital Communication Systems," 2nd ed., Wiley, 2007. ISBN-13: 978-0-471-43222-7
+	 </item>
+<item> 
+		Lathi, Bhagwandas P., "Modern Digital and Analog Communication Systems," 3rd ed., Oxford University Press, 1998. ISBN-10: 0-19-511009-9
+	 </item>
+<item> 
+		Proakis, John G., and Masoud Salehi, "Fundamentals of Communication Systems," Pearson Prentice Hall, 2005. ISBN-10: 0-13-147135-X
+	 </item>
+<item> 
+		Proakis, John G., and Masoud Salehi, "Communication Systems Engineering," 2nd ed., Pearson Prentice Hall, 2002. ISBN-10: 0-13-061793-8
+	 </item>
+<item> 
+		Stern, Harold P.E., and Samy A. Mahmoud, "Communication Systems," Pearson Prentice Hall, 2004. ISBN-10: 0-13-040268-0
+	 </item>
+
+</list>
+
+</section>
+
+</content>
+</document>

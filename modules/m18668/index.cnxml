@@ -1,0 +1,595 @@
+<document xmlns="http://cnx.rice.edu/cnxml" xmlns:m="http://www.w3.org/1998/Math/MathML">
+  <title>Binary ASK Transmitter</title>
+<metadata xmlns:md="http://cnx.rice.edu/mdml">
+  <md:content-id>m18668</md:content-id>
+  <md:title>Binary ASK Transmitter</md:title>
+  <md:abstract>A binary ASK transmitter and receiver is designed to transmit digital information over a "speaker-air-microphone" (SAM) channel. Listening to the channel while making parameter adjustments and viewing plots
+builds additional insights into the ASK modulation scheme. This project describes the various tradeoffs
+affecting bandwidth and information rate and provides an application for the pulse shapping transmit filter.</md:abstract>
+  <md:uuid>5032ff7e-6f20-4887-966d-dcc3ce4b93c7</md:uuid>
+</metadata>
+<content>
+
+<table id="labview_banner" frame="none" summary=""><tgroup cols="2">
+<colspec rowsep="0" colsep="0"/> <colspec colwidth="6in" rowsep="0" colsep="0"/>
+<tbody>
+  <row>
+    <entry morerows="3"><media id="idm10368848" alt=""><image src="../../media/LabVIEWtop.png" mime-type="image/png"/></media></entry>
+    <entry> This module refers to LabVIEW, a software development environment that features a graphical programming language.
+       Please see the <link document="m15428">LabVIEW QuickStart Guide</link> module for tutorials and documentation that will help you:</entry>
+  </row>
+  <row> <entry>• Apply LabVIEW to Audio Signal Processing </entry> </row>
+  <row> <entry>• Get started with LabVIEW</entry> </row>
+  <row> <entry>• Obtain a fully-functional evaluation edition of LabVIEW</entry> </row>
+</tbody>
+</tgroup>
+</table>
+
+<note id="idm18799888">
+Visit <link document="m17319">LabVIEW Setup</link> to learn how to adjust your own LabVIEW environment to match the settings used by the LabVIEW screencast video(s) in this module.
+Click the "Fullscreen" button at the lower right corner of the video player if the video does not fit properly within your browser window.
+</note>
+
+<section id="sec1">
+<title>Summary</title>
+
+<para id="par2">
+		Three parameters specify a sinusoidal carrier wave: amplitude, frequency, and phase. 
+		An individual parameter or combination of parameters may be <term>modulated</term> by
+		a message to communicate information. The most basic modulation schemes switch
+		a single parameter between two values to signal a binary 0 or binary 1.</para>
+
+<para id="par3">		In this project, construct and study a transmitter that switches the carrier
+		wave's amplitude between zero and a non-zero value. The term <term>switching</term> is
+		also called <term>keying</term> (as in a telegraph key), and so the transmitter in this
+		project can be said to use <term>binary amplitude shift keying</term> (<term>binary ASK</term>).
+</para>
+
+</section>
+
+<section id="sec4">
+<title>Objectives</title>
+
+<list id="list5" list-type="enumerated">
+
+<item> 
+			Study the spectral characteristics of binary ASK signals using both rectangular and
+			raised cosine pulse shapes
+	 </item>
+<item> 
+			Translate the ASK transmitter block diagram into a LabVIEW block diagram
+	 </item>
+<item> 
+			Develop an ASK transmitter for the speaker-air-microphone (SAM) channel
+	 </item>
+
+</list>
+
+</section>
+
+<section id="sec6">
+<title>Deliverables</title>
+
+<list id="list7" list-type="enumerated">
+
+<item> Summary write-up of your results </item>
+<item> Hardcopy of all LabVIEW code that you develop (block diagrams and front panels) </item>
+<item> Any plots or diagrams requested </item>
+
+</list>
+
+<note id="idm11304640">
+		You can easily export LabVIEW front-panel waveform plots directly to your report. Right-click on the waveform
+		indicator and choose "Export Simplified Image."
+</note>
+
+</section>
+
+<section id="sec8">
+<title>Setup</title>
+
+<list id="list9" list-type="enumerated">
+
+<item> LabVIEW 8.5 or later version </item>
+<item> Computer soundcard </item>
+<item> Speaker </item>
+
+</list>
+
+</section>
+
+<section id="sec10">
+<title>Textbook Linkages</title>
+
+<para id="par11">
+		Refer to the following textbooks for additional background on the project activities of this module;
+		see the "References" section below for publication details:
+</para>
+
+<list id="list12" list-type="bulleted">
+
+<item> Carlson, Crilly, and Rutledge -- Ch 14 </item>
+<item> Couch -- Ch 5 </item>
+<item> Haykin and Moher -- Ch 7 </item>
+<item> Lathi -- Ch 13 </item>
+<item> Proakis and Salehi (FCS) -- Ch 10 </item>
+<item> Stern and Mahmoud -- Ch 5 </item>
+
+</list>
+
+</section>
+
+<section id="sec13">
+<title>Prerequisite Modules</title>
+
+<para id="par14">
+		Complete the lab project
+		<link document="m18666">Speaker-Air-Microphone (SAM) Channel Characterization</link>
+		before you begin this project.</para>
+
+<para id="par15">		If you are relatively new to LabVIEW, consider taking the course 
+		<link document="col10440">LabVIEW Techniques for Audio Signal Processing</link> 
+		which provides the foundation you need to complete this project activity, including:
+		block diagram editing techniques, essential programming structures, subVIs, arrays, and
+		audio. 
+</para>
+
+</section>
+
+<section id="sec16">
+<title>Introduction</title>
+
+<para id="par17">
+		<term>Bandpass channels</term> possess a non-zero lower cutoff frequency, and
+		therefore cannot transmit a <term>baseband</term> signal. For example, the channel
+		established between two voice-grade telephones begins at 300 Hz and ends at 3,000 Hz.
+		A digital signal (baseband type) must be shifted in frequency so that its significant
+		frequency components all exist within the 300 to 3,000 Hz range. Frequency shifting
+		may be accomplished by impressing the baseband signal onto a sinusoidal 
+		<term>carrier wave</term>.</para>
+
+<para id="par18">		A sinusoidal carrier wave 
+<m:math>
+ <m:semantics>
+  <m:mrow>
+   <m:mi>c</m:mi><m:mo stretchy="false">(</m:mo><m:mi>t</m:mi><m:mo stretchy="false">)</m:mo><m:mo>=</m:mo><m:msub>
+    <m:mi>A</m:mi>
+    <m:mi>c</m:mi>
+   </m:msub>
+   <m:mi>cos</m:mi><m:mo>⁡</m:mo><m:mo stretchy="false">(</m:mo><m:mn>2</m:mn><m:mi>π</m:mi><m:msub>
+    <m:mi>f</m:mi>
+    <m:mi>c</m:mi>
+   </m:msub>
+   <m:mi>t</m:mi><m:mo>+</m:mo><m:msub>
+    <m:mi>ϕ</m:mi>
+    <m:mi>c</m:mi>
+   </m:msub>
+   <m:mo stretchy="false">)</m:mo>
+  </m:mrow>
+ <m:annotation encoding="MathType-MTEF">
+ MathType@MTEF@5@5@+=feaagaart1ev2aqatCvAUfeBSjuyZL2yd9gzLbvyNv2CaerbuLwBLnhiov2DGi1BTfMBaeXatLxBI9gBaerbd9wDYLwzYb1uaebbnrfifHhDYfgasaacH8srps0lbbf9q8WrFfeuY=Hhbbf9v8qqaqFr0xc9pk0xbba9q8WqFfea0=yr0RYxir=Jbba9q8aq0=yq=He9q8qqQ8frFve9Fve9Ff0dmeaabaqaciGacaGaaeqabaWaaeaaeaaakeaacaWGJbGaaiikaiaadshacaGGPaGaeyypa0JaamyqamaaBaaaleaacaWGJbaabeaakiGacogacaGGVbGaai4CaiaacIcacaaIYaGaeqiWdaNaamOzamaaBaaaleaacaWGJbaabeaakiaadshacqGHRaWkcqaHvpGzdaWgaaWcbaGaam4yaaqabaGccaGGPaaaaa@48DA@</m:annotation>
+ </m:semantics>
+ </m:math>
+ 		possesses three parameters that can be switched (or keyed) by a binary message signal: 
+		<term>amplitude</term>, <term>frequency</term>, and <term>phase</term>; the resulting 
+ 		<term>digital continuous wave modulation</term> schemes are called ASK
+		(amplitude shift keying), FSK (frequency shift keying), and PSK (phase shift keying), 
+		respectively. </para>
+
+<para id="par19">		The <link target-id="video-math"/> screencast video introduces
+		the mathematical notation used in this module to discuss ASK modulation, and includes
+		a visualization of the ASK waveform.
+</para>
+
+<figure id="video-math"><title><link url="https://youtu.be/XeXyCw5AZuk" window="new">https://youtu.be/XeXyCw5AZuk</link> (4:25)</title><media id="eip-idm252575904" display="block" alt="Insert alt text here"><video mime-type="video/mpeg" src="https://www.youtube.com/embed/XeXyCw5AZuk?rel=0" autoplay="false" width="640" height="460"/></media>
+<caption>[video] Mathematical notation for ASK modulation and visualization of the ASK waveform
+</caption></figure><para id="par21">
+		<link target-id="figure-blockdgm"/> illustrates the block diagram of a
+		binary ASK transmitter. 
+</para>
+
+<figure id="figure-blockdgm">
+<media id="idm19658384" alt=""><image src="../../media/bpm_bask-transmitter-blockdgm.png" mime-type="image/png"/></media>
+<caption>
+   ASK transmitter block diagram
+</caption>
+</figure>
+
+<para id="par23">
+		The transmitter's <term>signal point mapper</term> selects a value for each bit of 
+		the binary message (bitstream), and the <term>transmit filter</term> generates
+		an analog signal waveform to be transmitted through the channel. The transmit
+		filter is also known as the <term>pulse shaping filter</term>.
+		Binary ASK maps a binary 1 to 
+<m:math>
+ <m:semantics>
+  <m:mrow>
+   <m:msqrt>
+    <m:mrow>
+     <m:msub>
+      <m:mi>E</m:mi>
+      <m:mi>b</m:mi>
+     </m:msub>
+    </m:mrow>
+   </m:msqrt>
+  </m:mrow>
+ <m:annotation encoding="MathType-MTEF">
+ MathType@MTEF@5@5@+=feaagaart1ev2aqatCvAUfeBSjuyZL2yd9gzLbvyNv2CaerbuLwBLnhiov2DGi1BTfMBaeXatLxBI9gBaerbd9wDYLwzYb1uaebbnrfifHhDYfgasaacH8srps0lbbf9q8WrFfeuY=Hhbbf9v8qqaqFr0xc9pk0xbba9q8WqFfea0=yr0RYxir=Jbba9q8aq0=yq=He9q8qqQ8frFve9Fve9Ff0dmeaabaqaciGacaGaaeqabaWaaeaaeaaakeaadaGcaaqaaiaadweadaWgaaWcbaGaamOyaaqabaaabeaaaaa@3734@</m:annotation>
+ </m:semantics>
+ </m:math>
+ and a binary 0 to zero;
+<m:math>
+ <m:semantics>
+  <m:mrow>
+   <m:msub>
+    <m:mi>E</m:mi>
+    <m:mi>b</m:mi>
+   </m:msub>
+  </m:mrow>
+ <m:annotation encoding="MathType-MTEF">
+ MathType@MTEF@5@5@+=feaagaart1ev2aqatCvAUfeBSjuyZL2yd9gzLbvyNv2CaerbuLwBLnhiov2DGi1BTfMBaeXatLxBI9gBaerbd9wDYLwzYb1uaebbnrfifHhDYfgasaacH8srps0lbbf9q8WrFfeuY=Hhbbf9v8qqaqFr0xc9pk0xbba9q8WqFfea0=yr0RYxir=Jbba9q8aq0=yq=He9q8qqQ8frFve9Fve9Ff0dmeaabaqaciGacaGaaeqabaWaaeaaeaaakeaacaWGfbWaaSbaaSqaaiaadkgaaeqaaaaa@3724@</m:annotation>
+ </m:semantics>
+</m:math> denotes the energy per bit. The transmit filter scales a standard pulse shape
+by these values to produce the baseband signal, which in turn is shifted in frequency
+to match the channel's center frequency by multiplying by a sinusoidal carrier waveform to produce the 
+transmitted signal.
+		
+		The <link target-id="video-spectrum-rect"/> screencast video discusses the spectrum of
+		the transmitted signal, especially the impact of a rectangular pulse shape on the
+		required bandwidth of the ASK signal.
+</para>
+
+<figure id="video-spectrum-rect"><title><link url="https://youtu.be/bucZOVGAxW8" window="new">https://youtu.be/bucZOVGAxW8</link> (5:25)</title><media id="eip-idm659636704" display="block" alt="Insert alt text here"><video mime-type="video/mpeg" src="https://www.youtube.com/embed/bucZOVGAxW8?rel=0" autoplay="false" width="640" height="460"/></media>
+
+
+<caption>[video] ASK spectrum with rectangular pulses
+</caption></figure><para id="par25">
+		As discussed in the previous video, the ASK signal created with rectangular pulses is 
+		spectrally inefficient. From an intuitive
+		point of view, signals with sharp corners always possess a wideband spectrum. Rounding the
+		corners should therefore produce a transmitted signal that does not require as much bandwidth.</para>
+
+<para id="par26">		The <term>raised cosine pulse</term> is a standard pulse shape widely used in communication systems that offers much better spectral
+		efficiency; see the video in <link document="m18566">pam_RaisedCosinePulse.vi</link> for more background on this important
+		pulse shape, including an explanation of its <term>excess bandwidth</term> pulse shape parameter.
+		The <link target-id="video-spectrum-rcp"/> screencast video discusses the 
+		spectrum of the transmitted ASK signal with raised cosine pulse shaping.
+</para>
+
+<figure id="video-spectrum-rcp"><title><link url="https://youtu.be/dMthFA-q0Ss" window="new">https://youtu.be/dMthFA-q0Ss</link> (2:05)</title><media id="eip-idm642360768" display="block" alt="Insert alt text here"><video mime-type="video/mpeg" src="https://www.youtube.com/embed/dMthFA-q0Ss?rel=0" autoplay="false" width="640" height="460"/></media>
+
+<caption>[video] ASK spectrum with raised cosine pulse shaping
+</caption></figure><para id="par28">
+		Consider once again the transmitter block diagram of 
+		<link target-id="figure-blockdgm"/>. In a fully digital implementation, the 
+		pulse shaping filter output must be a sampled-value waveform. Rectangular pulse shapes are easy
+		to implement: a given binary symbol simply maps to an array of constant values. Nonrectangular
+		pulses take a bit more effort, however, especially when the pulse shape must extend over more
+		than one bit interval.</para>
+
+<para id="par29">		The <link target-id="video-transmit-filter"/> screencast video describes a 
+		pulse shaping filter implementation that can be used with any 
+		pulse shape. The basic idea involves driving an FIR filter with an impulse train.
+</para>
+
+<figure id="video-transmit-filter"><title><link url="https://youtu.be/TeIsvZfPCMY" window="new">https://youtu.be/TeIsvZfPCMY</link> (14:42)</title><media id="eip-idm500719424" display="block" alt="Insert alt text here"><video mime-type="video/mpeg" src="https://www.youtube.com/embed/TeIsvZfPCMY?rel=0" autoplay="false" width="640" height="460"/></media>
+
+
+<caption>[video] Signal point mapper and pulse shaping filter implementation using an FIR filter driven by an impulse train
+</caption></figure></section>
+
+<section id="sec31">
+<title>Procedure</title>
+
+<section id="sec32">
+<title>SubVI construction</title>
+
+<para id="par33">
+		Build the subVIs listed below. You may already have some of these available
+		from previous projects.</para>
+
+<para id="par34">		Demonstrate that each of these subVIs works properly before continuing to the next part.
+</para>
+
+<list id="list35" list-type="enumerated">
+
+<item> <link document="m18528">util_BitstreamFromRandom.vi</link>  </item>
+<item> <link document="m18570">pam_SignalPointMapper.vi</link>  </item>
+<item> <link document="m18472">pam_TransmitFilter.vi</link>  </item>
+<item> <link document="m18454">pam_RectanglePulse.vi</link>  </item>
+<item> <link document="m18566">pam_RaisedCosinePulse.vi</link>  </item>
+<item> <link document="m18556">bpm_ProductModulator.vi</link>  </item>
+
+</list>
+
+</section>
+
+<section id="sec36">
+<title>ASK transmitter</title>
+
+<para id="par37">
+		Assemble an ASK transmitter using the subVIs you created in the previous step; refer to
+		the ASK transmitter diagram of <link target-id="figure-blockdgm"/>.
+		Drive the transmitter with a random bitstream containing equiprobable binary values. Plot 
+		the power spectrum of the ASK signal 
+		using the "Express | Signal Analysis | Spectral Measurements" Express subVI. Connect the 
+		transmitter output to the speaker using the technique you learned in
+		<link document="m18666">Speaker-Air-Microphone Channel Characterization</link>.</para>
+
+<para id="par38">		Include the following controls on the front panel:
+</para>
+
+<list id="list39" list-type="bulleted">
+
+<item> <code display="inline">fc, carrier frequency [Hz]</code> </item>
+<item> <code display="inline">fs, sampling frequency [Hz]</code> </item>
+<item> <code display="inline">Eb, energy per bit</code> </item>
+<item> <code display="inline">Tb, bit interval [s]</code> </item>
+<item> <code display="inline">bitstream length</code> </item>
+<item> <code display="inline">seed</code> </item>
+
+</list>
+
+<para id="par40">
+		Include the following indicators on the front panel:
+</para>
+
+<list id="list41" list-type="bulleted">
+
+<item> <code display="inline">ASK power spectrum</code> -- waveform graph </item>
+<item> <code display="inline">time domain</code> -- transmit filter and product modulator signals overlaid on the same waveform graph </item>
+<item> <code display="inline">Rb, bit rate [Hz]</code> </item>
+<item> <code display="inline">samples per bit interval</code> </item>
+<item> <code display="inline">total signal duration [s]</code> </item>
+
+</list>
+
+<para id="par42">
+		<link target-id="figure-frontpanel"/> illustrates a suggested layout for the
+		VI front panel and shows the expected results of the initial parameter choices for the next section.
+</para>
+
+<figure id="figure-frontpanel">
+<media id="idm8366416" alt=""><image src="../../media/bpm_bask-transmitter-frontpanel.png" mime-type="image/png" thumbnail="bpm_bask-transmitter-frontpanel_t.png"/></media>
+<caption>
+   ASK transmitter VI front panel (click image to see fullsize version)
+</caption>
+</figure>
+
+</section>
+
+<section id="sec44">
+<title>ASK transmitter parameter experiments</title>
+
+<para id="par45">
+		Begin with the following front panel control values:
+</para>
+
+<list id="list46" list-type="bulleted">
+
+<item> <code display="inline">fc, carrier frequency [Hz]</code> = 5,000 Hz </item>
+<item> <code display="inline">fs, sampling frequency [Hz]</code> = 40,000 Hz </item>
+<item> <code display="inline">Eb, energy per bit</code> = 1 </item>
+<item> <code display="inline">Tb, bit interval [s]</code> = 0.001 s </item>
+<item> <code display="inline">bitstream length</code> = 1000 </item>
+<item> <code display="inline">seed</code> = -1 </item>
+
+</list>
+
+<para id="par47">
+		These values should produce a bit rate of 1,000 Hz and total signal duration of 1 second.
+</para>
+
+<list id="list48" list-type="enumerated">
+
+<item> 
+			Run the VI several times. You should observe a different sequence for the bitstream for each run. Next, change the <code display="inline">seed</code>
+		       	to an integer larger than -1 and run the VI several times again. You should now observe the bitstream sequence to be the same
+			for each run. Use a seed value other that -1 to generate a constant bitstream sequence, when needed.
+	 </item>
+<item> 
+			Vary the bit energy 
+<m:math>
+ <m:semantics>
+  <m:mrow>
+   <m:msub>
+    <m:mi>E</m:mi>
+    <m:mi>b</m:mi>
+   </m:msub>
+  </m:mrow>
+ <m:annotation encoding="MathType-MTEF">
+ MathType@MTEF@5@5@+=feaagaart1ev2aqatCvAUfeBSjuyZL2yd9gzLbvyNv2CaerbuLwBLnhiov2DGi1BTfMBaeXatLxBI9gBaerbd9wDYLwzYb1uaebbnrfifHhDYfgasaacH8srps0lbbf9q8WrFfeuY=Hhbbf9v8qqaqFr0xc9pk0xbba9q8WqFfea0=yr0RYxir=Jbba9q8aq0=yq=He9q8qqQ8frFve9Fve9Ff0dmeaabaqaciGacaGaaeqabaWaaeaaeaaakeaacaWGfbWaaSbaaSqaaiaadkgaaeqaaaaa@3724@</m:annotation>
+ </m:semantics>
+</m:math>
+			and study the time-domain signals and power spectrum. Summarize the 
+			behavior of the signals as a function of 
+<m:math>
+ <m:semantics>
+  <m:mrow>
+   <m:msub>
+    <m:mi>E</m:mi>
+    <m:mi>b</m:mi>
+   </m:msub>
+  </m:mrow>
+ <m:annotation encoding="MathType-MTEF">
+ MathType@MTEF@5@5@+=feaagaart1ev2aqatCvAUfeBSjuyZL2yd9gzLbvyNv2CaerbuLwBLnhiov2DGi1BTfMBaeXatLxBI9gBaerbd9wDYLwzYb1uaebbnrfifHhDYfgasaacH8srps0lbbf9q8WrFfeuY=Hhbbf9v8qqaqFr0xc9pk0xbba9q8WqFfea0=yr0RYxir=Jbba9q8aq0=yq=He9q8qqQ8frFve9Fve9Ff0dmeaabaqaciGacaGaaeqabaWaaeaaeaaakeaacaWGfbWaaSbaaSqaaiaadkgaaeqaaaaa@3724@</m:annotation>
+ </m:semantics>
+</m:math>.
+	 </item>
+<item> 
+			Vary the bit interval
+<m:math>
+ <m:semantics>
+  <m:mrow>
+   <m:msub>
+    <m:mi>T</m:mi>
+    <m:mi>b</m:mi>
+   </m:msub>
+  </m:mrow>
+ <m:annotation encoding="MathType-MTEF">
+ MathType@MTEF@5@5@+=feaagaart1ev2aqatCvAUfeBSjuyZL2yd9gzLbvyNv2CaerbuLwBLnhiov2DGi1BTfMBaeXatLxBI9gBaerbd9wDYLwzYb1uaebbnrfifHhDYfgasaacH8srps0lbbf9q8WrFfeuY=Hhbbf9v8qqaqFr0xc9pk0xbba9q8WqFfea0=yr0RYxir=Jbba9q8aq0=yq=He9q8qqQ8frFve9Fve9Ff0dmeaabaqaciGacaGaaeqabaWaaeaaeaaakeaacaWGubWaaSbaaSqaaiaadkgaaeqaaaaa@3733@</m:annotation>
+ </m:semantics>
+</m:math>
+			and study the time-domain signals and power spectrum. Summarize the 
+			behavior of the signals as a function of 
+<m:math>
+ <m:semantics>
+  <m:mrow>
+   <m:msub>
+    <m:mi>T</m:mi>
+    <m:mi>b</m:mi>
+   </m:msub>
+  </m:mrow>
+ <m:annotation encoding="MathType-MTEF">
+ MathType@MTEF@5@5@+=feaagaart1ev2aqatCvAUfeBSjuyZL2yd9gzLbvyNv2CaerbuLwBLnhiov2DGi1BTfMBaeXatLxBI9gBaerbd9wDYLwzYb1uaebbnrfifHhDYfgasaacH8srps0lbbf9q8WrFfeuY=Hhbbf9v8qqaqFr0xc9pk0xbba9q8WqFfea0=yr0RYxir=Jbba9q8aq0=yq=He9q8qqQ8frFve9Fve9Ff0dmeaabaqaciGacaGaaeqabaWaaeaaeaaakeaacaWGubWaaSbaaSqaaiaadkgaaeqaaaaa@3733@</m:annotation>
+ </m:semantics>
+</m:math>. Be sure to comment on the following points:
+			(a) What does ASK sound like for a long bit interval such as 0.01 seconds compared to a short 
+			bit interval such as 0.0005 seconds?
+			(b) How does the bit rate value manifest itself in the power spectrum display? Hint: Recall
+			what you know about the first-null bandwidth of a sinc function.
+			(c) How does the choice of bit interval affect the total time to transmit the message?
+	 </item>
+<item> 
+			Vary the carrier frequency 
+<m:math>
+ <m:semantics>
+  <m:mrow>
+   <m:msub>
+    <m:mi>f</m:mi>
+    <m:mi>c</m:mi>
+   </m:msub>
+  </m:mrow>
+ <m:annotation encoding="MathType-MTEF">
+ MathType@MTEF@5@5@+=feaagaart1ev2aqatCvAUfeBSjuyZL2yd9gzLbvyNv2CaerbuLwBLnhiov2DGi1BTfMBaeXatLxBI9gBaerbd9wDYLwzYb1uaebbnrfifHhDYfgasaacH8srps0lbbf9q8WrFfeuY=Hhbbf9v8qqaqFr0xc9pk0xbba9q8WqFfea0=yr0RYxir=Jbba9q8aq0=yq=He9q8qqQ8frFve9Fve9Ff0dmeaabaqaciGacaGaaeqabaWaaeaaeaaakeaacaWGMbWaaSbaaSqaaiaadogaaeqaaaaa@3746@</m:annotation>
+ </m:semantics>
+</m:math>
+			and study the time-domain signals and power spectrum. Summarize
+			the behavior of the signals as a function of 
+<m:math>
+ <m:semantics>
+  <m:mrow>
+   <m:msub>
+    <m:mi>f</m:mi>
+    <m:mi>c</m:mi>
+   </m:msub>
+  </m:mrow>
+ <m:annotation encoding="MathType-MTEF">
+ MathType@MTEF@5@5@+=feaagaart1ev2aqatCvAUfeBSjuyZL2yd9gzLbvyNv2CaerbuLwBLnhiov2DGi1BTfMBaeXatLxBI9gBaerbd9wDYLwzYb1uaebbnrfifHhDYfgasaacH8srps0lbbf9q8WrFfeuY=Hhbbf9v8qqaqFr0xc9pk0xbba9q8WqFfea0=yr0RYxir=Jbba9q8aq0=yq=He9q8qqQ8frFve9Fve9Ff0dmeaabaqaciGacaGaaeqabaWaaeaaeaaakeaacaWGMbWaaSbaaSqaaiaadogaaeqaaaaa@3746@</m:annotation>
+ </m:semantics>
+</m:math>.
+	 </item>
+<item> 
+			Reset the front panel controls to the initial value listed at the beginning of this section.
+			Change the carrier frequency to 5,001 Hz, then to 5,002 Hz, and so on in small steps. What change do you 
+			observe in the sound of the ASK signal and the time-domain plot? Hint: zoom in on the ASK 
+			signal waveform so that you can see the signal between bit transition. Draw a conclusion: what 
+			relationship must exist between the carrier frequency
+<m:math>
+ <m:semantics>
+  <m:mrow>
+   <m:msub>
+    <m:mi>f</m:mi>
+    <m:mi>c</m:mi>
+   </m:msub>
+  </m:mrow>
+ <m:annotation encoding="MathType-MTEF">
+ MathType@MTEF@5@5@+=feaagaart1ev2aqatCvAUfeBSjuyZL2yd9gzLbvyNv2CaerbuLwBLnhiov2DGi1BTfMBaeXatLxBI9gBaerbd9wDYLwzYb1uaebbnrfifHhDYfgasaacH8srps0lbbf9q8WrFfeuY=Hhbbf9v8qqaqFr0xc9pk0xbba9q8WqFfea0=yr0RYxir=Jbba9q8aq0=yq=He9q8qqQ8frFve9Fve9Ff0dmeaabaqaciGacaGaaeqabaWaaeaaeaaakeaacaWGMbWaaSbaaSqaaiaadogaaeqaaaaa@3746@</m:annotation>
+ </m:semantics>
+</m:math> and the bit interval
+<m:math>
+ <m:semantics>
+  <m:mrow>
+   <m:msub>
+    <m:mi>T</m:mi>
+    <m:mi>b</m:mi>
+   </m:msub>
+  </m:mrow>
+ <m:annotation encoding="MathType-MTEF">
+ MathType@MTEF@5@5@+=feaagaart1ev2aqatCvAUfeBSjuyZL2yd9gzLbvyNv2CaerbuLwBLnhiov2DGi1BTfMBaeXatLxBI9gBaerbd9wDYLwzYb1uaebbnrfifHhDYfgasaacH8srps0lbbf9q8WrFfeuY=Hhbbf9v8qqaqFr0xc9pk0xbba9q8WqFfea0=yr0RYxir=Jbba9q8aq0=yq=He9q8qqQ8frFve9Fve9Ff0dmeaabaqaciGacaGaaeqabaWaaeaaeaaakeaacaWGubWaaSbaaSqaaiaadkgaaeqaaaaa@3733@</m:annotation>
+ </m:semantics>
+</m:math> to ensure that chopped edges do not occur?
+	 </item>
+
+</list>
+
+<para id="par49">
+		Plot time-domain waveforms and power spectra for several representative choices of parameter values.
+</para>
+
+</section>
+
+<section id="sec50">
+<title>ASK transmitter parameter experiments: raised cosine pulse shaping</title>
+
+<list id="list51" list-type="enumerated">
+
+<item> 
+			Modify the VI front panel to include a Boolean control to conveniently switch between rectangular and raised cosine
+			pulse shapes. Use a case structure on the block diagram to generate the two types of pulse shapes. Include
+			front panel controls for the <code display="inline"><code display="inline">alpha</code></code> (excess bandwidth) parameter and 
+			<code display="inline">bit intervals for support</code> controls of
+			the <link document="m18566">pam_RaisedCosinePulse.vi</link> subVI.
+	 </item>
+<item> 
+			Adjust the front panel control values to match those specified at the beginning of the previous section.
+	 </item>
+<item> 
+			Select a rectangular pulse shape, and run the VI one time with autoscaling enabled on the power spectrum display.
+			Right-click on the Y-axis of the power spectrum display and uncheck the "AutoScale Y" option. Next, select the
+			raised cosine pulse shape and run the VI again. Zoom in on the time-domain signal plot, and disable autoscaling
+			on the X-axis to ensure that the zoom level is retained from one run of the VI to the next.
+	 </item>
+<item> 
+			Experiment with different values of the raised cosine pulse controls, then compare your results to those of the
+			rectangular pulse shape. Be sure to comment on the following points: (a) signal shape in the time domain, (b)
+			signal shape in the frequency domain (power spectrum), and (c) sound of the transmitted signal -- try a larger bit
+			interval (and short bitstream length) so that you can clearly hear the difference between rectangular and
+			raised cosine pulse shaping).
+	 </item>
+<item> 
+			Recall the work that you did to characterize the SAM channel in 
+			<link document="m18666">Speaker-Air-Microphone (SAM) Channel Characterization</link>, especially the lower and
+			upper passband limits.  Select raised cosine pulse shaping, and then choose values for carrier frequency and bit interval 
+			to make the transmitted signal fully occupy the channel passband region. State your two values. Listen to this signal for a 
+			bit -- what does a "fully utilized channel" sound like? Can you perhaps now explain some parts of a 
+			<link resource="dialup-modem.mp3">typical telephone dial-up modem initiation sequence</link>? (Click link
+			to listen).
+	 </item>
+
+</list>
+
+</section>
+
+</section>
+
+<section id="sec52">
+<title>References</title>
+
+<list id="list53" list-type="enumerated">
+
+<item> 
+		Carlson, A. Bruce, Paul B. Crilly, and Janet C. Rutledge, "Communication Systems," 4th ed., McGraw-Hill, 2002. ISBN-13: 978-0-07-011127-1
+	 </item>
+<item> 
+		Couch, Leon W. II, "Digital and Analog Communication Systems," 7th ed., Pearson Prentice Hall, 2007. ISBN-10: 0-13-142492-0
+	 </item>
+<item> 
+		Haykin, Simon, and Michael Moher, "Introduction to Analog and Digital Communication Systems," 2nd ed., Wiley, 2007. ISBN-13: 978-0-471-43222-7
+	 </item>
+<item> 
+		Lathi, Bhagwandas P., "Modern Digital and Analog Communication Systems," 3rd ed., Oxford University Press, 1998. ISBN-10: 0-19-511009-9
+	 </item>
+<item> 
+		Proakis, John G., and Masoud Salehi, "Fundamentals of Communication Systems," Pearson Prentice Hall, 2005. ISBN-10: 0-13-147135-X
+	 </item>
+<item> 
+		Stern, Harold P.E., and Samy A. Mahmoud, "Communication Systems," Pearson Prentice Hall, 2004. ISBN-10: 0-13-040268-0
+	 </item>
+
+</list>
+
+</section>
+
+</content>
+</document>
